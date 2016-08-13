@@ -285,7 +285,7 @@ class tilelist():
 		techID+=1
 	
 		self.tlist['global_caves'] = []
-	
+	#0
 		t=tile(techID = techID,
 					name = 'Cave ground',
 					tile_color = 'light_brown',
@@ -298,7 +298,7 @@ class tilelist():
 					tile_pos = (9,0))
 		self.tlist['global_caves'].append(t)
 		techID+=1
-	
+	#1
 		t=tile(techID = techID,
 					name = 'Worn rock',
 					tile_color = 'light_grey',
@@ -315,7 +315,7 @@ class tilelist():
 					conected_resources = ('stone',3))
 		self.tlist['global_caves'].append(t)
 		techID+=1
-	
+	#2
 		t=tile(techID = techID,
 					name = 'Soft soil',
 					tile_color = 'brown',
@@ -331,7 +331,7 @@ class tilelist():
 					transparency = False)
 		self.tlist['global_caves'].append(t)
 		techID+=1
-	
+	#3
 		t=tile(techID = techID,
 					name = 'Hard rock',
 					tile_color = 'grey',
@@ -348,7 +348,7 @@ class tilelist():
 					conected_resources = ('stone',5))
 		self.tlist['global_caves'].append(t)
 		techID+=1
-	
+	#4
 		t=tile(techID = techID,
 					name = 'Lava',
 					tile_color = 'red',
@@ -2022,7 +2022,7 @@ class tilelist():
 					move_group = 'door',
 					grow_group = 'None',
 					damage = 0, 
-					move_message = 'You find a hidden door.', 
+					move_message = 'You notice a hidden door.', 
 					damage_message = None,
 					build_here = False,
 					can_grown = False,
@@ -2079,7 +2079,7 @@ class tilelist():
 		techID+=1
 		#10
 		t=tile(techID = techID,
-					name = 'Trap Hidden',
+					name = 'Trap Active',
 					tile_color = 'light_red',
 					use_group = 'None',
 					move_group = 'soil',
@@ -2089,7 +2089,7 @@ class tilelist():
 					damage_message = None,
 					build_here = False,
 					can_grown = False,
-					tile_pos = (10,8))#change to 10,10!!!!!!########10,10 must always stay transparent
+					tile_pos = (10,10))#########10,10 must always stay transparent
 		self.tlist['dungeon'].append(t)
 		techID+=1
 		#11
@@ -2105,5 +2105,125 @@ class tilelist():
 					build_here = False,
 					can_grown = False,
 					tile_pos = (10,9))
+		self.tlist['dungeon'].append(t)
+		techID+=1
+		#12
+		t=tile(techID = techID,
+					name = 'Acid Fontain',
+					tile_color = 'blue',
+					use_group = 'drink_acid',
+					move_group = 'soil',
+					grow_group = 'None',
+					damage = 0, 
+					move_message = 'You stand in front of a fontain.', 
+					damage_message = None,
+					build_here = False,
+					can_grown = False,
+					tile_pos = (6,3))
+		self.tlist['dungeon'].append(t)
+		techID+=1
+		#13
+		t=tile(techID = techID,
+					name = 'Healing Fontain',
+					tile_color = 'blue',
+					use_group = 'drink_heal',
+					move_group = 'soil',
+					grow_group = 'None',
+					damage = 0, 
+					move_message = 'You stand in front of a fontain.', 
+					damage_message = None,
+					build_here = False,
+					can_grown = False,
+					tile_pos = (6,3))
+		self.tlist['dungeon'].append(t)
+		techID+=1
+		#14
+		t=tile(techID = techID,
+					name = 'Grot Stair Down',
+					tile_color = 'white',
+					use_group = 'grot_down',
+					move_group = 'soil',
+					grow_group = 'None',
+					damage = 0, 
+					move_message = 'There is a downleading stair here.', 
+					damage_message = None,
+					build_here = False,
+					can_grown = False,
+					tile_pos = (3,4))
+		self.tlist['dungeon'].append(t)
+		techID+=1
+		#15
+		t=tile(techID = techID,
+					name = 'Grot Stair up',
+					tile_color = 'white',
+					use_group = 'grot_up',
+					move_group = 'soil',
+					grow_group = 'None',
+					damage = 0, 
+					move_message = 'There is a up leading stair here.', 
+					damage_message = None,
+					build_here = False,
+					can_grown = False,
+					tile_pos = (3,3))
+		self.tlist['dungeon'].append(t)
+		techID+=1
+		#16
+		t=tile(techID = techID,
+					name = 'Mine Stair Down',
+					tile_color = 'white',
+					use_group = 'mine_down',
+					move_group = 'soil',
+					grow_group = 'None',
+					damage = 0, 
+					move_message = 'There is a downleading stair here.', 
+					damage_message = None,
+					build_here = False,
+					can_grown = False,
+					tile_pos = (3,4))
+		self.tlist['dungeon'].append(t)
+		techID+=1
+		#17
+		t=tile(techID = techID,
+					name = 'Mine Stair up',
+					tile_color = 'white',
+					use_group = 'mine_up',
+					move_group = 'soil',
+					grow_group = 'None',
+					damage = 0, 
+					move_message = 'There is a up leading stair here.', 
+					damage_message = None,
+					build_here = False,
+					can_grown = False,
+					tile_pos = (3,3))
+		self.tlist['dungeon'].append(t)
+		techID+=1
+		#18
+		t=tile(techID = techID,
+					name = 'Tomb Stair Down',
+					tile_color = 'white',
+					use_group = 'tomb_down',
+					move_group = 'soil',
+					grow_group = 'None',
+					damage = 0, 
+					move_message = 'There is a downleading stair here.', 
+					damage_message = None,
+					build_here = False,
+					can_grown = False,
+					tile_pos = (3,4))
+		self.tlist['dungeon'].append(t)
+		techID+=1
+		#19
+		t=tile(techID = techID,
+					name = 'Tomb Stair up',
+					tile_color = 'white',
+					use_group = 'tomb_up',
+					move_group = 'soil',
+					grow_group = 'None',
+					damage = 0, 
+					move_message = 'There is a up leading stair here.', 
+					damage_message = None,
+					build_here = False,
+					can_grown = False,
+					tile_pos = (3,3))
 		self.tlist['dungeon'].append(t)
 		techID+=1

@@ -913,6 +913,8 @@ class g_screen():
 			string = 'Generate orcish mines...'
 		elif num == 18:
 			string = 'Generate desert...'
+		elif num == 19:
+			string = 'Initialize level...'
 		
 		######add more here
 		
@@ -2346,7 +2348,7 @@ class g_screen():
 					
 class map():
 	
-	def __init__(self, name, tilemap, visit=False, map_type='overworld'):
+	def __init__(self, name, tilemap, visit=False, map_type='overworld',monster_num=1):
 		
 		self.name = name
 		self.known = []
@@ -2355,6 +2357,7 @@ class map():
 		self.visit = visit
 		self.last_visit = 0 #-------test only
 		self.map_type = map_type
+		self.monster_num = monster_num
 		self.build_type = 'Full' #Full: build everything you want, Part: no stairs, None: Buildmode is not callable
 		self.thirst_multi_day = 1
 		self.thirst_multi_night = 1
@@ -2382,6 +2385,40 @@ class map():
 			for x in range(0,max_map_size):
 				self.tilemap[y][x] = deepcopy(tile)
 	
+	def set_round_frame(self,tile,radius):
+		center = int(max_map_size/2)
+		for y in range(0,max_map_size):
+			for x in range(0,max_map_size):
+				range_x = x-center
+				range_y = y-center
+				if ((range_x**2+range_y**2)**0.5) > radius:
+					self.tilemap[y][x] = tile
+	
+	def drunken_walker(self,startx,starty,tile_replace,num_replace):
+		
+		num = 1
+		x = startx
+		y = starty
+		
+		self.tilemap[y][x] = tile_replace
+		
+		while num < num_replace:
+			#step 0: get possible directions
+			dir_list = []
+			for n in range(-1,2):
+				if x+n < max_map_size-2 and x+n > 2:
+					dir_list.append([x+n,y])
+				if y+n < max_map_size-2 and y+n > 2:
+					dir_list.append([x,y+n])
+					
+			#step 1: set tile new tile
+			ran = random.randint(0,len(dir_list)-1)
+			x = dir_list[ran][0]
+			y = dir_list[ran][1]
+			if self.tilemap[y][x].techID != tile_replace.techID:
+				self.tilemap[y][x] = tile_replace
+				num += 1
+				
 	def floating(self,startx,starty,tile_fill,tile_border):
 		#its important to use a tile_fill that isn't on the map and a tile_border that is on the map 
 		
@@ -2595,6 +2632,8 @@ class map():
 		else:
 			monster_max = (max_map_size*max_map_size)/30
 		
+		monster_max = int(monster_max * self.monster_num)
+		
 		if self.map_type == 'grot':
 			spawnpoints = self.find_all_moveable(False)
 		else:
@@ -2640,7 +2679,11 @@ class map():
 			else:#spawn a civilian
 				self.npcs[spawnpoints[ran2][1]][spawnpoints[ran2][0]] = deepcopy(ml.mlist['civilian'][ran3])
 				self.set_monster_strange(spawnpoints[ran2][1],spawnpoints[ran2][1],depth)
-	
+			
+			#set monsters personal_id
+			
+			self.npcs[spawnpoints[ran2][1]][spawnpoints[ran2][0]].personal_id = str(self.npcs[spawnpoints[ran2][1]][spawnpoints[ran2][0]].techID)+'_'+str(spawnpoints[ran2][0])+'_'+str(spawnpoints[ran2][1])+'_'+str(random.randint(0,9999))
+			
 	def set_monster_strange(self,x,y,z):
 		
 		if self.npcs[y][x] != 0:
@@ -2785,7 +2828,7 @@ class map():
 					
 					if self.npcs[y][x].AI_style == 'hostile':
 						
-						if self.npcs[y][x].lp <= 3 and player.lp > 2 and self.npcs[y][x].num_special > 0 :#this is a defensive situation for the monster
+						if self.npcs[y][x].lp < self.npcs[y][x].basic_attribute.max_lp and player.lp > 2 and self.npcs[y][x].num_special > 0 :#this is a defensive situation for the monster
 							
 							ran = random.randint(0,99)
 							
@@ -2829,6 +2872,43 @@ class map():
 						if self.npcs[y][x] != 0:
 							if distances[0] > 1 and self.npcs[y][x].move_done != 1: #moves[0] is always the position of the monster right now, so distances 0 is always it's distance towards the player
 							
+								ran = random.randint(0,99)
+								
+								if ran < self.npcs[y][x].spawn_skeleton or ran < self.npcs[y][x].spawn_shadow:
+									xlist = []
+									ylist = []
+									for yy in range(y-1,y+2):
+										for xx in range(x-1,x+2):
+											if self.tilemap[yy][xx].move_group == 'soil' and self.npcs[yy][xx] == 0:
+												xlist.append(xx)
+												ylist.append(yy)
+												
+									if len(xlist) == len(ylist) and len(xlist) > 0:
+										if len(xlist) > 1:
+											num = random.randint(0,len(xlist)-1)
+										else:
+											num = 0
+									
+										if self.npcs[y][x].spawn_skeleton > 0 and self.npcs[y][x].move_done != 1 and self.npcs[y][x].num_special > 0:
+											self.npcs[ylist[num]][xlist[num]] = deepcopy(ml.mlist['special'][7])
+											self.npcs[ylist[num]][xlist[num]].personal_id = self.npcs[y][x].personal_id + '_child'
+											self.set_monster_strange(x,y,player.pos[2])
+											mes = 'A ' + self.npcs[y][x].name + ' summones a skeleton.'
+											message.add(mes)
+											screen.write_hit_matrix(xlist[num],ylist[num],7)
+											self.npcs[y][x].move_done = 1
+											self.npcs[y][x].num_special -= 1
+									
+										if self.npcs[y][x].spawn_shadow > 0 and self.npcs[y][x].move_done != 1 and self.npcs[y][x].num_special > 0:
+											self.npcs[ylist[num]][xlist[num]] = deepcopy(ml.mlist['special'][8])
+											self.npcs[ylist[num]][xlist[num]].personal_id = self.npcs[y][x].personal_id + '_child'
+											self.set_monster_strange(x,y,player.pos[2])
+											mes = 'A ' + self.npcs[y][x].name + ' summones a shadow.'
+											message.add(mes)
+											screen.write_hit_matrix(xlist[num],ylist[num],7)
+											self.npcs[y][x].move_done = 1
+											self.npcs[y][x].num_special -= 1
+									
 								if x == player.pos[0] or y == player.pos[1]:
 									straight_line = True
 								else:
@@ -2836,7 +2916,6 @@ class map():
 							
 								if straight_line == True and self.npcs[y][x].range_shoot != 0 and distances[0] < 5:
 									#Step 0: Random
-									ran = random.randint(0,99)
 									
 									if ran < self.npcs[y][x].range_shoot:
 										#Step 1: find the right direction
@@ -2853,26 +2932,46 @@ class map():
 											x_dir = 1
 										else:
 											x_dir = 0
-											
-										#Step 2: Fire!
+										
+										#Step 2: Check for borders
+										
 										run = True
 										count = 1
-										sfx.play('fire')
+										fire_free = True 
 										
 										while run:
-											xx = x + (count*x_dir)
-											yy = y + (count*y_dir)
+											cx = x + (count*x_dir)
+											cy = y + (count*y_dir)
 											
-											if xx != player.pos[0] or yy != player.pos[1]:
-												screen.write_hit_matrix(xx,yy,2)
-												if self.tilemap[yy][xx].transparency == False:
-													run = False
-											else:
-												player.monster_attacks(x,y)
+											if self.tilemap[cy][cx].transparency == False:
+												fire_free = False
 												run = False
 											
-											count += 1
-											self.npcs[y][x].move_done = 1
+											count +=1
+												
+											if cx == player.pos[0] and cy == player.pos[1]:
+												run = False
+											
+										#Step 3: Fire!
+										if fire_free == True:
+											run = True
+											count = 1
+											sfx.play('fire')
+										
+											while run:
+												xx = x + (count*x_dir)
+												yy = y + (count*y_dir)
+											
+												if xx != player.pos[0] or yy != player.pos[1]:
+													screen.write_hit_matrix(xx,yy,2)
+													if self.tilemap[yy][xx].transparency == False:
+														run = False
+												else:
+													player.monster_attacks(x,y)
+													run = False
+											
+												count += 1
+												self.npcs[y][x].move_done = 1
 								
 								if self.npcs[y][x].move_done == 0:
 								
@@ -3162,6 +3261,26 @@ class map():
 					self.tilemap[y][x] = deepcopy(tl.tlist['misc'][9])#set a lost gem
 					self.tilemap[y][x].replace = replace
 					self.tilemap[y][x].conected_resources = ('gem',self.npcs[y][x].corps_lvl)#for thiefs the corps lvl determinates the number of gems they are dropping
+			
+			elif self.npcs[y][x].corps_style == 'reset_parent':
+				
+				parent_id = self.npcs[y][x].personal_id.replace('_child','')
+				
+				for yy in range(0,max_map_size):
+					for xx in range(0,max_map_size):
+						if self.npcs[yy][xx] != 0:
+							if self.npcs[yy][xx].personal_id == parent_id:
+								self.npcs[yy][xx].num_special += 1
+							
+			elif self.npcs[y][x].corps_style == 'kill_childs':
+				
+				child_id = self.npcs[y][x].personal_id + '_child'
+				
+				for yy in range(0,max_map_size):
+					for xx in range(0,max_map_size):
+						if self.npcs[yy][xx] != 0:
+							if self.npcs[yy][xx].personal_id == child_id:
+								self.npcs[yy][xx] = 0
 					
 			elif self.npcs[y][x].corps_style == 'vase':
 				
@@ -3228,8 +3347,12 @@ class map():
 		
 		for i in range (0,num):
 			
-			x = random.randint(5,max_map_size-5)
-			y = random.randint(5,max_map_size-5)
+			poses = self.find_all_moveable(False,False)
+			ran = random.randint(0,len(poses)-1)
+			pos = poses[ran]
+			
+			x = pos[0]
+			y = pos[1]
 			
 			for yy in range(y-2,y+3):
 				for xx in range(x-2,x+3):
@@ -3601,13 +3724,19 @@ class map():
 						
 						if ran < 10:
 							self.npcs[pos[1]][pos[0]] = deepcopy(ml.mlist['special'][1]) #spawn a monster vase
+							self.npcs[pos[1]][pos[0]].attribute = attribute(0,0,0,0,0,1,0)
 						else:
 							self.npcs[pos[1]][pos[0]] = deepcopy(ml.mlist['special'][0]) #spawn a vase
+							self.npcs[pos[1]][pos[0]].attribute = attribute(0,0,0,0,0,1,0)
 							
 					elif monster_type == 'mimic':
 						
 						pos = self.find_any(on_tile)
 						self.npcs[pos[1]][pos[0]] = deepcopy(ml.mlist['special'][3]) #spawn a sleeping mimic
+						self.npcs[pos[1]][pos[0]].attribute = attribute(0,0,0,0,0,1,0)
+					
+					#set monsters personal_id
+					self.npcs[pos[1]][pos[0]].personal_id = str(self.npcs[pos[1]][pos[0]].techID)+'_'+str(pos[0])+'_'+str(pos[1])+'_'+str(random.randint(0,9999))
 			
 	def make_containers(self, min_no, max_no, on_tile, item_min, item_max, container_type='remains'):
 		
@@ -3630,20 +3759,43 @@ class map():
 					for t in range (0,num_items):
 					
 						if container_type == 'chest':
+							
+							coin = random.randint(0,1)
+							
+							if coin == 0:#add equipmen
+								classes = ['sword', 'axe', 'hammer', 'spear', 'helmet', 'armor', 'cuisse', 'shoes', 'wand', 'rune', 'rune staff', 'artefact', 'amulet', 'ring', 'talisman', 'necklace', 'pickaxe']
 					
-							classes = ['sword', 'axe', 'hammer', 'spear', 'helmet', 'armor', 'cuisse', 'shoes', 'wand', 'rune', 'rune staff', 'artefact', 'amulet', 'ring', 'talisman', 'necklace', 'pickaxe']
-					
-							class_num = random.randint(0,len(classes)-1)
-							material = random.randint(0,20)
-							plus = random.randint(-3,3)
-							state = random.randint(80,100)
-					
-							curses = (0,1,2)
-							curse_num = random.randint(0,2) 
-					
-							item = item_wear(classes[class_num], material, plus, state, curses[curse_num], False)
-							inventory.append(item)
-					
+								class_num = random.randint(0,len(classes)-1)
+								material = random.randint(0,20)
+								plus = random.randint(-3,3)
+								state = random.randint(80,100)
+								
+								curses = (0,1,2)
+								curse_num = random.randint(0,2) 
+								
+								item = item_wear(classes[class_num], material, plus, state, curses[curse_num], False)
+								inventory.append(item)
+								
+							elif coin == 1:
+								items = []
+								
+								for i in range(14,21):
+									items.append(il.ilist['misc'][i])
+								for i in range(22,40):
+									items.append(il.ilist['misc'][i])
+								for i in range(44,47):
+									items.append(il.ilist['misc'][i])
+								
+								for j in range(6,9):
+									items.append(il.ilist['food'][j])	
+								for j in range(13,25):
+									items.append(il.ilist['food'][j])
+								for j in range(29,32):
+									items.append(il.ilist['food'][j])
+									
+								ran = random.randint(0,len(items)-1)
+								inventory.append(deepcopy(items[ran]))
+									
 						elif container_type == 'remains':
 						
 							classes = ['sword', 'axe', 'hammer', 'spear', 'helmet', 'armor', 'cuisse', 'shoes', 'wand', 'rune', 'rune staff', 'artefact', 'amulet', 'ring', 'talisman', 'necklace', 'pickaxe']
@@ -3864,18 +4016,19 @@ class world_class():
 		
 	def grot_generator(self,layer):
 		
-		cave_name = 'local_0_0'
+		cave_name = 'dungeon_0_0'
 		m = self.default_map_generator(cave_name,'global_caves', tilelist)
 		m.map_type = 'grot'
+		m.build_type = 'None'
 		
-		m.exchange(tl.tlist['global_caves'][4],tl.tlist['misc'][0])#exchange lava against low water
-		m.exchange(tl.tlist['global_caves'][0],tl.tlist['misc'][1])#exchange caveground against mud
-		m.exchange(tl.tlist['global_caves'][2],tl.tlist['misc'][0])#exchange soft soil against low water
+		m.fill(tl.tlist['global_caves'][3])#fill with hard rock
+		m.drunken_walker(int(max_map_size/2),int(max_map_size/2),tl.tlist['misc'][0],(((max_map_size*max_map_size)/100)*40))#set low water
+		m.set_round_frame(tl.tlist['global_caves'][3],int(max_map_size/2)-3)
 		
 		m.set_frame(tl.tlist['functional'][0])
 		
-		chance_ore = layer
-		chance_gem = layer/2
+		chance_ore = layer*5
+		chance_gem = layer*3
 			
 		for y in range (0,max_map_size):
 			for x in range (0,max_map_size):
@@ -3922,6 +4075,9 @@ class world_class():
 					
 			except:
 				None
+		
+		pos = m.find_any(tl.tlist['misc'][0])#find any low water tile
+		m.tilemap[pos[1]][pos[0]] = tl.tlist['dungeon'][15]#set stair up
 		
 		m.make_shops()
 		
@@ -4218,15 +4374,14 @@ class world_class():
 		
 	def mine_generator(self,layer):
 		
-		cave_name = 'local_0_0'
+		cave_name = 'dungeon_0_0'
 		m = self.default_map_generator(cave_name,'global_caves', tilelist)
 		m.map_type = 'orcish_mines'
+		m.build_type = 'None'
 		
-		m.exchange(tl.tlist['global_caves'][4],tl.tlist['mine'][0])#exchange lava against mine floor
-		m.exchange(tl.tlist['global_caves'][0],tl.tlist['mine'][0])#exchange cave ground against mine floor
-		m.exchange(tl.tlist['global_caves'][2],tl.tlist['mine'][0])#exchange soft soil against mine floor
-		m.exchange(tl.tlist['global_caves'][1],tl.tlist['mine'][1])#exchange worn rock against mine wall
-		m.exchange(tl.tlist['global_caves'][3],tl.tlist['mine'][1])#exchange hard rock against mine wall
+		m.fill(tl.tlist['mine'][1])#fill with mine wall
+		m.drunken_walker(int(max_map_size/2),int(max_map_size/2),tl.tlist['mine'][0],((max_map_size**2/100)*45))
+		m.set_round_frame(tl.tlist['mine'][1],(int(max_map_size/2)-3))
 		
 		m.exchange_when_surrounded(tl.tlist['mine'][1],tl.tlist['global_caves'][3],8) #only the outer tiles become mine wall
 		
@@ -4259,9 +4414,12 @@ class world_class():
 			except:
 				None
 		
+		pos = m.find_any(tl.tlist['mine'][0])#find any low water tile
+		m.tilemap[pos[1]][pos[0]] = tl.tlist['dungeon'][17]#set stair up
+		
 		m.spawn_monsters(9)
 							
-		self.maplist[layer][cave_name] = m		
+		self.maplist[layer][cave_name] = m
 		
 	def cave_generator(self, deep):
 			
@@ -4362,6 +4520,18 @@ class world_class():
 						ran = random.randint(1,2)
 						m.tilemap[pos[1]+1][y] = deepcopy(tl.tlist['global_caves'][ran])
 			
+			#set grot/mine at lvl 1 and 4
+			
+			if d == 1:
+				ran_pos = m.find_any(tl.tlist['global_caves'][0])
+				m.tilemap[ran_pos[1]][ran_pos[0]] = tl.tlist['dungeon'][14]
+				print ('Debug: Grot at',ran_pos)
+			
+			if d == 4:
+				ran_pos = m.find_any(tl.tlist['global_caves'][0])
+				m.tilemap[ran_pos[1]][ran_pos[0]] = tl.tlist['dungeon'][16]
+				print ('Debug: Mine at',ran_pos)
+			
 			m.make_containers(1,2,tl.tlist['global_caves'][0],2,5,'chest')#set some chests
 			m.make_special_monsters(0,1,tl.tlist['global_caves'][0],d,'mimic')#maybe set some mimics
 			m.make_special_monsters(15,25,tl.tlist['global_caves'][0],d,'vase')#set some vases
@@ -4460,14 +4630,17 @@ class world_class():
 		
 		screen.render_load(3,8)
 		
-		m.tilemap[pos[1]+10][pos[0]] = tl.tlist['dungeon'][7]#Change this!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		
 		#set guidepost
 		y = max_map_size -2
 		x = random.randint(2,max_map_size-2)
 		m.tilemap[y][x] = tl.tlist['extra'][6]
 		m.tilemap[y][x].replace = tl.tlist['local'][0]#grass
 		m.tilemap[y-1][x] = tl.tlist['local'][0]#grass
+		
+		#set dungeon
+		ran_pos = m.find_any(tl.tlist['local'][0])
+		m.tilemap[ran_pos[1]][ran_pos[0]] = tl.tlist['dungeon'][7]
+		print ('Debug: Dungeon at',ran_pos)
 		
 		m.spawn_monsters(0)
 					
@@ -4477,9 +4650,20 @@ class world_class():
 		
 		return pos
 	
-	def dungeon_generator(self,monster_plus,stair_down=True,num_traps=10):
+	def dungeon_generator(self,monster_plus,stair_down=True,num_traps=10,style='Dungeon'):#possible other style = 'Tomb'
 		
 		#0: Basic initializing
+		
+		screen.render_load(19,0)
+		
+		if style == 'Tomb':
+			tl.tlist['dungeon'][1].tile_pos = (4,6)
+			tl.tlist['dungeon'][6].tile_pos = (4,7)
+			tl.tlist['dungeon'][9].tile_pos = (4,7)
+		else:
+			tl.tlist['dungeon'][1].tile_pos = (10,6)
+			tl.tlist['dungeon'][6].tile_pos = (2,6)
+			tl.tlist['dungeon'][9].tile_pos = (2,6)
 		
 		name = 'dungeon_0_0'
 		
@@ -4490,11 +4674,18 @@ class world_class():
 				tilemap[a].append(0)
 		
 		m = map(name,tilemap)
-		m.map_type = 'dungeon'
+		if style == 'Tomb':
+			m.map_type = 'tomb'
+		else:
+			m.map_type = 'dungeon'
 		m.build_type = 'None'
 		m.monster_plus = monster_plus
+		m.monster_num = 0.3
 		
 		m.fill(tl.tlist['dungeon'][9])
+		
+		screen.render_load(19,10)
+		
 		#1: Set rooms
 		test_build = True
 		while test_build:
@@ -4539,6 +4730,8 @@ class world_class():
 			for yy in range(coord_y[i]-y_minus,coord_y[i]+y_plus):
 				for xx in range(coord_x[i]-x_minus,coord_x[i]+x_plus):
 					m.tilemap[yy][xx] = tl.tlist['dungeon'][0]
+		
+		screen.render_load(19,25)
 			
 		#2: Set doors			
 						
@@ -4578,14 +4771,20 @@ class world_class():
 						if m.tilemap[rry][xxx+1].move_group != 'soil':
 							m.tilemap[rry][xxx+1] = tl.tlist['dungeon'][1]
 		
+		screen.render_load(19,40)
+		
 		test = deepcopy(m)
 		pos = test.find_first(tl.tlist['dungeon'][0])
 		test.floating(pos[0],pos[1],tl.tlist['misc'][0],tl.tlist['dungeon'][9])#fill the dungeon with water
+		
+		screen.render_load(19,50)
 		
 		for yyy in range(0,52):
 			for xxx in range(0,52):			#the 52 is hard scripted to safe performance
 				if test.tilemap[yyy][xxx].techID != tl.tlist['dungeon'][9].techID and test.tilemap[yyy][xxx].techID != tl.tlist['misc'][0].techID:
 					m.tilemap[yyy][xxx] = tl.tlist['dungeon'][9]
+		
+		screen.render_load(19,60)
 		
 		for yyy in range(0,52):
 			for xxx in range(0,52):			#the 52 is hard scripted to safe performance
@@ -4594,14 +4793,24 @@ class world_class():
 					ran = random.randint(3,6)
 					m.tilemap[yyy][xxx] = tl.tlist['dungeon'][ran]
 					
+		
+		screen.render_load(19,70)
 						
 		#3: Make stairs
 		stair_up_pos = m.find_any(tl.tlist['dungeon'][0])
-		m.tilemap[stair_up_pos[1]][stair_up_pos[0]] = tl.tlist['dungeon'][8]
+		if style == 'Tomb':
+			m.tilemap[stair_up_pos[1]][stair_up_pos[0]] = tl.tlist['dungeon'][19]
+		else:
+			m.tilemap[stair_up_pos[1]][stair_up_pos[0]] = tl.tlist['dungeon'][8]
 			
 		if stair_down == True:
 			stair_down_pos = m.find_any(tl.tlist['dungeon'][0])
-			m.tilemap[stair_down_pos[1]][stair_down_pos[0]] = tl.tlist['dungeon'][7]
+			if style == 'Tomb':
+				m.tilemap[stair_down_pos[1]][stair_down_pos[0]] = tl.tlist['dungeon'][18]
+			else:
+				m.tilemap[stair_down_pos[1]][stair_down_pos[0]] = tl.tlist['dungeon'][7]
+		
+		screen.render_load(19,80)
 		
 		#4: Make Traps
 		
@@ -4610,11 +4819,45 @@ class world_class():
 			replace = m.tilemap[pos[1]][pos[0]]
 			m.tilemap[pos[1]][pos[0]] = deepcopy(tl.tlist['dungeon'][10])#traps have to be deepcopied to work proper
 			m.tilemap[pos[1]][pos[0]].replace = replace
+		
+		screen.render_load(19,90)
+		#make interiour
+		num_rooms = len(parts_with_rooms)
+		m.make_containers(int(num_rooms/3),int(num_rooms/2),tl.tlist['dungeon'][0],1,3,'chest')
+		
+		for c in range(0,num_rooms):
+			pos = m.find_any(tl.tlist['dungeon'][0])
+			ran = random.randint(0,99)
+			if ran < 15:
+				tile = deepcopy(tl.tlist['dungeon'][12])#acid fontain
+			elif ran > 84:
+				tile = deepcopy(tl.tlist['dungeon'][13])#healing fontain
+			else:
+				tile = deepcopy(tl.tlist['functional'][7])#fontain
+				tile.civilisation = False
+				tile.build_here = False
+				tile.can_grown = False
+			tile.replace = tl.tlist['dungeon'][0]	
+			m.tilemap[pos[1]][pos[0]] = tile
+			
+		coin = random.randint(0,1)
+		if coin == 1:
+			pos = m.find_any(tl.tlist['dungeon'][0])
+			tile = deepcopy(tl.tlist['functional'][15])#altar
+			tile.civilisation = False
+			tile.build_here = False
+			tile.can_grown = False
+			tile.replace = tl.tlist['dungeon'][0]
+			m.tilemap[pos[1]][pos[0]] = tile
 			
 		m.spawn_monsters(0)
+		m.make_special_monsters(10,20,tl.tlist['dungeon'][0],m.monster_plus,'vase')
+		m.make_special_monsters(1,2,tl.tlist['dungeon'][0],m.monster_plus,'mimic')
 			
 		self.maplist[1][name] = m
-				
+		
+		screen.render_load(19,99)
+		
 	def desert_generator(self,chance_object):
 		# chance_scrubs and chance_trees must be between 0 and 99
 		
@@ -4817,6 +5060,11 @@ class world_class():
 		m.tilemap[y][x].replace = tl.tlist['extra'][0]#sand
 		m.tilemap[y+1][x] = tl.tlist['extra'][0]#sand
 		
+		#set tomb
+		ran_pos = m.find_any(tl.tlist['extra'][0])
+		m.tilemap[ran_pos[1]][ran_pos[0]] = tl.tlist['dungeon'][18]
+		print ('Debug: Tomb at',ran_pos)
+		
 		m.spawn_monsters(0)
 					
 		self.maplist[0][name] = m
@@ -4924,7 +5172,10 @@ class mob():
 		self.mp = attribute.max_mp
 		self.pos = pos	
 		self.glob_pos = glob_pos
-
+		self.last_map = 'Foo'
+		self.cur_map = 'Bar'
+		self.cur_z = self.pos[2]
+		self.last_z = 'Baz'
 		
 	def move(self, x=0, y=0):
 		
@@ -5060,6 +5311,14 @@ class mob():
 			
 	def stand_check(self):
 		
+		if self.on_map != self.cur_map:
+			self.last_map = self.cur_map
+			self.cur_map = self.on_map
+		 	
+		if self.pos[2] != self.cur_z:
+			self.last_z = self.cur_z
+			self.cur_z = self.pos[2]
+		
 		radius = 4
 		
 		if player.pos[2] > 0:
@@ -5088,19 +5347,21 @@ class mob():
 			if self.lp < self.attribute.max_lp:	
 				self.lp = self.lp - world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]][self.pos[0]].damage
 		
+		luck = player.attribute.luck + player.inventory.wearing['Neck'].attribute.luck
+		
 		for y in range(player.pos[1]-1,player.pos[1]+2):
 			for x in range(player.pos[0]-1,player.pos[0]+2):
 				if world.maplist[self.pos[2]][self.on_map].tilemap[y][x].techID == tl.tlist['dungeon'][6].techID:#this is a secret door
 					ran = random.randint(0,25)#check players luck
-					if ran < player.attribute.luck:
+					if ran < luck:
 						world.maplist[self.pos[2]][self.on_map].tilemap[y][x] = tl.tlist['dungeon'][3]
-						message.add('You found something.')
+						message.add('You notice a hidden door.')
 				
 				if world.maplist[self.pos[2]][self.on_map].tilemap[y][x].techID == tl.tlist['dungeon'][10].techID:#this is a trap
 					ran = random.randint(0,25)#check players luck
-					if ran < player.attribute.luck:
+					if ran < luck:
 						world.maplist[self.pos[2]][self.on_map].tilemap[y][x].tile_pos = (10,8)
-						message.add('You found something.')
+						message.add('You notice a trap.')
 				
 		for y in range (-radius,radius+1):#line of sight
 			for x in range (-radius,radius+1):
@@ -5137,6 +5398,44 @@ class mob():
 								run = False
 				except:
 					None
+		
+		if world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]][self.pos[0]].techID == tl.tlist['dungeon'][10].techID:
+			
+			kind =random.randint(0,3)
+			position = deepcopy(player.pos)#coppy player pos before the trap is triggered because teleport traps could change it
+			
+			if kind == 0:#dart trap
+				ran = random.randint(0,25)
+				
+				if ran < luck:
+					screen.write_hit_matrix(player.pos[0],player.pos[1],3)
+					message.add('A flying dagger miss you.')
+				else:
+					player.lp -= 3
+					screen.write_hit_matrix(player.pos[0],player.pos[1],4)
+					message.add('A flying dagger hits you.')
+					
+			elif kind == 1:#teleport trap
+				t=world.maplist[self.pos[2]][self.on_map].find_all_moveable()
+				ran = random.randint(0,len(t)-1)
+				player.pos[0] = t[ran][0]
+				player.pos[1] = t[ran][1]
+				message.add('You are teleported randomly.')
+				player.stand_check()
+				
+			elif kind == 2:#blinding trap
+				ran = random.randint(10,30)
+				player.buffs.set_buff('blind',ran)
+				message.add('A garish flash blinds you.')
+				
+			elif kind == 3:#magic trap
+				player.mp = 0
+				screen.write_hit_matrix(player.pos[0],player.pos[1],7)
+				message.add('You loose your focus.')
+				
+			replace = world.maplist[self.pos[2]][self.on_map].tilemap[position[1]][position[0]].replace
+			world.maplist[self.pos[2]][self.on_map].tilemap[position[1]][position[0]] = deepcopy(tl.tlist['dungeon'][11])
+			world.maplist[self.pos[2]][self.on_map].tilemap[position[1]][position[0]].replace = replace
 					
 		if player.lp <= 0:
 			screen.render_dead()
@@ -5166,6 +5465,40 @@ class mob():
 				player.attribute.thirst += 240 #this is 1/3 of the water te player needs per day
 				if player.attribute.thirst > player.attribute.thirst_max:
 					player.attribute.thirst = player.attribute.thirst_max+1#the +1 is because the player will lose one point at the same round so you would get just 99%
+			else:
+				message.add('You are not thirsty right now.')
+		
+		elif world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]][self.pos[0]].use_group == 'drink_acid':#this is a acid fontain
+			#drink acid water
+			if player.attribute.thirst < player.attribute.thirst_max:
+				message.add('You take a sip of water.')
+				player.lp -= 5
+				message.add('It hurts like acid.')
+				replace = world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]][self.pos[0]].replace
+				world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]][self.pos[0]] = deepcopy(tl.tlist['functional'][7])
+				world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]][self.pos[0]].civilisation = False
+				world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]][self.pos[0]].build_here = False
+				world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]][self.pos[0]].can_grown = False
+				world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]][self.pos[0]].replace = replace
+			else:
+				message.add('You are not thirsty right now.')
+		
+		elif world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]][self.pos[0]].use_group == 'drink_heal':#this is a healing fontain
+			#drink healing water
+			if player.attribute.thirst < player.attribute.thirst_max:
+				message.add('You take a sip of water.')
+				if player.lp < player.attribute.max_lp:
+					player.lp += 5
+					if player.lp > player.attribute.max_lp:
+						player.lp = player.attribute.max_lp
+						message.add('Your wounds are cured.')
+				
+				replace = world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]][self.pos[0]].replace
+				world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]][self.pos[0]] = deepcopy(tl.tlist['functional'][7])
+				world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]][self.pos[0]].civilisation = False
+				world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]][self.pos[0]].build_here = False
+				world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]][self.pos[0]].can_grown = False
+				world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]][self.pos[0]].replace = replace
 			else:
 				message.add('You are not thirsty right now.')
 				
@@ -5854,6 +6187,7 @@ class mob():
 				world.dungeon_generator(plus+1,False)
 				
 			player.on_map = 'dungeon_0_0'
+			player.last_z = player.pos[2]
 			player.pos[2] = 1
 			
 			pos = world.maplist[player.pos[2]][player.on_map].find_first(tl.tlist['dungeon'][8])
@@ -5864,10 +6198,84 @@ class mob():
 		elif world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]][self.pos[0]].use_group == 'grassland_up':#this is a grassland dungeon stair up
 			choose = screen.get_choice('Do you want to give up?',['No','Yes'],True)
 			if choose == 1:
-				player.on_map = 'local_0_0'
-				player.pos[2] = 0
+				player.on_map = player.last_map
+				player.pos[2] = player.last_z
 				
 				pos = world.maplist[player.pos[2]][player.on_map].find_first(tl.tlist['dungeon'][7])
+				player.pos[0] = pos[0]
+				player.pos[1] = pos[1]
+				player.stand_check()
+		
+		elif world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]][self.pos[0]].use_group == 'tomb_down':#this is a grassland dungeon stair down
+			plus = world.maplist[self.pos[2]][self.on_map].monster_plus
+			if plus < 3:
+				world.dungeon_generator(plus+1,stair_down=True,style='Tomb')
+			else:
+				world.dungeon_generator(plus+1,stair_down=False,style='Tomb')
+				
+			player.on_map = 'dungeon_0_0'
+			player.last_z = player.pos[2]
+			player.pos[2] = 1
+			
+			pos = world.maplist[player.pos[2]][player.on_map].find_first(tl.tlist['dungeon'][19])
+			player.pos[0] = pos[0]
+			player.pos[1] = pos[1]
+			player.stand_check()
+		
+		elif world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]][self.pos[0]].use_group == 'tomb_up':#this is a grassland dungeon stair up
+			choose = screen.get_choice('Do you want to give up?',['No','Yes'],True)
+			if choose == 1:
+				player.on_map = player.last_map
+				player.pos[2] = player.last_z
+				
+				pos = world.maplist[player.pos[2]][player.on_map].find_first(tl.tlist['dungeon'][18])
+				player.pos[0] = pos[0]
+				player.pos[1] = pos[1]
+				player.stand_check()
+		
+		elif world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]][self.pos[0]].use_group == 'grot_down':#this is a grassland dungeon stair down
+			plus = world.grot_generator(1)
+				
+			player.on_map = 'dungeon_0_0'
+			player.last_z = player.pos[2]
+			player.pos[2] = 1
+			
+			pos = world.maplist[player.pos[2]][player.on_map].find_first(tl.tlist['dungeon'][15])
+			player.pos[0] = pos[0]
+			player.pos[1] = pos[1]
+			player.stand_check()
+		
+		elif world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]][self.pos[0]].use_group == 'grot_up':#this is a grassland dungeon stair up
+			choose = screen.get_choice('Do you want to leave?',['No','Yes'],True)
+			if choose == 1:
+				player.on_map = player.last_map
+				player.pos[2] = player.last_z
+				print player.last_z
+				
+				pos = world.maplist[player.pos[2]][player.on_map].find_first(tl.tlist['dungeon'][14])
+				player.pos[0] = pos[0]
+				player.pos[1] = pos[1]
+				player.stand_check()
+		
+		elif world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]][self.pos[0]].use_group == 'mine_down':#this is a grassland dungeon stair down
+			plus = world.mine_generator(1)
+				
+			player.on_map = 'dungeon_0_0'
+			player.last_z = player.pos[2]
+			player.pos[2] = 1
+			
+			pos = world.maplist[player.pos[2]][player.on_map].find_first(tl.tlist['dungeon'][17])
+			player.pos[0] = pos[0]
+			player.pos[1] = pos[1]
+			player.stand_check()
+		
+		elif world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]][self.pos[0]].use_group == 'mine_up':#this is a grassland dungeon stair up
+			choose = screen.get_choice('Do you want to leave?',['No','Yes'],True)
+			if choose == 1:
+				player.on_map = player.last_map
+				player.pos[2] = player.last_z
+				
+				pos = world.maplist[player.pos[2]][player.on_map].find_first(tl.tlist['dungeon'][16])
 				player.pos[0] = pos[0]
 				player.pos[1] = pos[1]
 				player.stand_check()
@@ -5920,6 +6328,11 @@ class player_class(mob):
 			self.buffs = temp.buffs
 			self.xp = temp.xp
 			self.lvl = temp.lvl
+			
+			self.cur_map = temp.cur_map
+			self.last_map = temp.last_map
+			self.cur_z = temp.cur_z
+			self.last_z = temp.last_z
 			
 		except:
 			if build == 'Manual':
@@ -6283,9 +6696,13 @@ class player_class(mob):
 			
 			screen.render_load(5)
 		
-	def user_input(self):
+	def user_input(self,immobilized=False):
 		
 		ui = getch(screen.displayx,screen.displayy,0,game_options.turnmode,mouse=game_options.mousepad)
+		
+		if immobilized == True:
+			if ui != 'x':
+				ui = 'none'
 		
 		if ui == 'w':
 			if screen.fire_mode == 0:
@@ -6352,12 +6769,12 @@ class player_class(mob):
 				screen.fire_mode = 0
 				time.tick()
 			
+		if ui == 'x':
+			screen.render_brake()
+			
 		if ui == 'none':
 			time.tick()
 			player.stand_check()
-			
-		if ui == 'x':
-			screen.render_brake()
 			
 	def lvl_up(self):
 		
@@ -6418,47 +6835,51 @@ class player_class(mob):
 			if ui == 'w':
 				
 				if style != 'Door' and style != 'Stair up' and style != 'Stair down':
-					ymin += 1
+					if player.pos[1]-ymin > 0:
+						ymin += 1
 				
 					if ymin >= xymax:
 						ymin = xymin
 				
 				else:
-					if ymin >= -3:
+					if ymin >= -3 and player.pos[1]+ymin > 0:
 						ymin -= 1
 					
 			if ui == 's':
 				
 				if style != 'Door' and style != 'Stair up' and style != 'Stair down':
-					ymax += 1
+					if player.pos[1]+ymax < max_map_size-1:
+						ymax += 1
 				
 					if ymax >= xymax:
 						ymax = xymin
 					
 				else:
-					if ymin <= 3:
+					if ymin <= 3 and player.pos[1]+ymin < max_map_size-1:
 						ymin += 1
 					
 			if ui == 'a':
 				if style != 'Door' and style != 'Stair up' and style != 'Stair down':
-					xmin += 1
+					if player.pos[0]-xmin > 0:
+						xmin += 1
 				
 					if xmin >= xymax:
 						xmin = xymin
 						
 				else:
-					if xmin >= -3:
+					if xmin >= -3 and player.pos[0]+xmin > 0:
 						xmin -= 1
 					
 			if ui == 'd':
 				if style != 'Door' and style != 'Stair up' and style != 'Stair down':
-					xmax += 1
+					if player.pos[0]+xmax < max_map_size-1:
+						xmax += 1
 				
 					if xmax >= xymax:
 						xmax = xymin
 				
 				else:
-					if xmin <= 3:
+					if xmin <= 3 and player.pos[0]+xmin < max_map_size-1:
 						xmin += 1
 					
 			
@@ -6687,7 +7108,7 @@ class player_class(mob):
 		
 		if world.maplist[self.pos[2]][self.on_map].npcs[y][x].behavior == 'attack_melee' or random_attack == 'melee':
 			
-			bodypart = world.maplist[self.pos[2]][self.on_map].npcs[y][x].attack_were[random.randint(0,len(world.maplist[self.pos[2]][self.on_map].npcs[y][x].attack_were))-1]
+			bodypart = world.maplist[self.pos[2]][self.on_map].npcs[y][x].attack_were[random.randint(0,len(world.maplist[self.pos[2]][self.on_map].npcs[y][x].attack_were)-1)]
 			
 			monster_strange  = 0
 			for i in range(0,world.maplist[self.pos[2]][self.on_map].npcs[y][x].basic_attribute.p_strange):
@@ -8581,10 +9002,7 @@ def main():
 						move_border += 1
 				
 				if player.buffs.immobilized > 0:
-					screen.reset_hit_matrix()
-					ui = getch(screen.displayx,screen.displayy,game_options.sfxmode,game_options.turnmode,mouse=game_options.mousepad)
-					if ui == 'x':
-						screen.render_brake()
+					player.user_input(True)
 				else:
 					move_chance = random.randint(1,9)
 					if move_border < move_chance:

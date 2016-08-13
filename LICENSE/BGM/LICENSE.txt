@@ -16,6 +16,12 @@ menu.ogg: Timeworn Pagoda
 
 
 
+Tracks by "CodeManu"(http://opengameart.org/content/platformer-game-music-pack):
+
+desert.ogg: Desert Theme
+dungeon.ogg: Mushroom Theme
+tomb.ogg: Dungeon Theme
+
 
 All songs are licensed under CC-BY 3.0 (http://creativecommons.org/licenses/by/3.0/)
 

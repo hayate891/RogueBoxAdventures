@@ -27,7 +27,7 @@ from attribute import attribute
 
 class monster():
 	
-	def __init__(self,techID, name, sprite_pos, move_border, attribute_prev,worn_equipment, AI_style, corps_style, corps_lvl, move_groups, personal_id, behavior, attack_were, possible_effect, effect_duration, effect_probability, message, anger = 'None', anger_monster = 'None', def_flee = 0, def_teleport= 0, def_potion = 0, range_shoot = 0, close_steal = 0, close_flame = 0, num_special = 2):
+	def __init__(self,techID, name, sprite_pos, move_border, attribute_prev,worn_equipment, AI_style, corps_style, corps_lvl, move_groups, personal_id, behavior, attack_were, possible_effect, effect_duration, effect_probability, message, anger = 'None', anger_monster = 'None', def_flee = 0, def_teleport= 0, def_potion = 0, range_shoot = 0, close_steal = 0, close_flame = 0, spawn_skeleton = 0, spawn_shadow = 0, num_special = 2):
 		
 		self.techID = techID
 		self.name = name
@@ -57,5 +57,7 @@ class monster():
 		self.range_shoot = range_shoot
 		self.close_steal = close_steal
 		self.close_flame = close_flame
+		self.spawn_skeleton = spawn_skeleton
+		self.spawn_shadow = spawn_shadow
 		self.num_special = num_special
 		self.move_done = 0

@@ -201,7 +201,7 @@ class monsterlist():
 		#cave
 
 		self.mlist['cave'] = []
-		
+		#0
 		m=monster(techID = techID,
 				name = 'cave orc',
 				sprite_pos = (2,3),
@@ -222,7 +222,7 @@ class monsterlist():
 				message = 'None.')
 		techID+=1
 		self.mlist['cave'].append(m)
-
+		#1
 		m=monster(techID = techID,
 				name = 'blue blob',
 				sprite_pos = (2,5),
@@ -242,7 +242,7 @@ class monsterlist():
 				message = 'None.')
 		techID+=1
 		self.mlist['cave'].append(m)
-
+		#2
 		m=monster(techID = techID,
 				name = 'bat',
 				sprite_pos = (2,7),
@@ -262,7 +262,7 @@ class monsterlist():
 				message = 'None.')
 		techID+=1
 		self.mlist['cave'].append(m)
-
+		#3
 		m=monster(techID = techID,
 				name = 'soil spirit',
 				sprite_pos = (1,0),
@@ -283,7 +283,7 @@ class monsterlist():
 				message = 'None.')
 		techID+=1
 		self.mlist['cave'].append(m)
-
+		#4
 		m=monster(techID = techID,
 				name = 'goblin',
 				sprite_pos = (3,7),
@@ -529,7 +529,7 @@ class monsterlist():
 		self.mlist['angry_monster'].append(m)
 		#4
 		m=monster(techID = techID,
-				name = 'female female',
+				name = 'female neko',
 				sprite_pos = (2,9),
 				move_border = 0,
 				attribute_prev = (0,1,2,2,2),
@@ -638,7 +638,7 @@ class monsterlist():
 		#lava cave
 
 		self.mlist['lava_cave'] = []
-				
+		#0		
 		m=monster(techID = techID,
 				name = 'lava monster',
 				sprite_pos = (0,8),
@@ -658,7 +658,7 @@ class monsterlist():
 				message = 'None')
 		techID+=1
 		self.mlist['lava_cave'].append(m)
-
+		#1
 		m=monster(techID = techID,
 				name = 'flame spirit',
 				sprite_pos = (0,10),
@@ -680,7 +680,7 @@ class monsterlist():
 				message = 'You can\'t move!')
 		techID+=1
 		self.mlist['lava_cave'].append(m)
-
+		#2
 		m=monster(techID = techID,
 				name = 'red blob',
 				sprite_pos = (1,3),
@@ -700,7 +700,7 @@ class monsterlist():
 				message = 'None')
 		techID+=1
 		self.mlist['lava_cave'].append(m)
-
+		#3
 		m=monster(techID = techID,
 				name = 'fire bat',
 				sprite_pos = (1,10),
@@ -868,6 +868,46 @@ class monsterlist():
 				anger_monster = 3)
 		techID+=1
 		self.mlist['special'].append(m)
+		#7
+		m=monster(techID = techID,
+				name = 'skeleton',
+				sprite_pos = (4,0),
+				move_border = 1,
+				attribute_prev = (2,2,1,1,2),
+				worn_equipment = (0,0,0,0,0),
+				AI_style = 'hostile',
+				corps_style = 'reset_parent',
+				corps_lvl = 0,
+				personal_id = 'None',
+				move_groups = ('soil','low_liquid'), 
+				behavior = 'attack_melee', 
+				attack_were = ('Head','Body','Legs','Feet'),
+				possible_effect = None, 
+				effect_duration = 0,
+				effect_probability = 0,
+				message = 'None')
+		techID+=1
+		self.mlist['special'].append(m)
+		#8
+		m=monster(techID = techID,
+				name = 'shadow',
+				sprite_pos = (4,1),
+				move_border = 1,
+				attribute_prev = (1,1,2,2,2),
+				worn_equipment = (0,0,0,0,0),
+				AI_style = 'hostile',
+				corps_style = 'reset_parent',
+				corps_lvl = 0,
+				personal_id = 'None',
+				move_groups = ('soil','low_liquid'), 
+				behavior = 'attack_magic', 
+				attack_were = ('Head','Body','Legs','Feet'),
+				possible_effect = None, 
+				effect_duration = 0,
+				effect_probability = 0,
+				message = 'None')
+		techID+=1
+		self.mlist['special'].append(m)
 		
 		#shop
 		
@@ -1019,10 +1059,128 @@ class monsterlist():
 		
 		#dungeon monster
 		self.mlist['dungeon'] = []
+		for count in range(0,2):
+		#0
+			m=monster(techID = techID,
+				name = 'floating eye',
+				sprite_pos = (3,8),
+				move_border = 4,
+				attribute_prev = (1,0,1,0,1),
+				worn_equipment = (0,0,0,0,0),
+				AI_style = 'hostile',
+				corps_style = 'vanish',
+				corps_lvl = 10,
+				personal_id = 'None',
+				move_groups = ('soil','low_liquid','swim'),
+				behavior = 'attack_melee',
+				attack_were = ('Head','Head'),
+				possible_effect = 'immobilized', 
+				effect_duration = 10, 
+				effect_probability = 30, 
+				message = 'The floating eye stares at you.')
+			techID+=1
+			self.mlist['dungeon'].append(m)
+			#1
+			m=monster(techID = techID,
+				name = 'nymph',
+				sprite_pos = (3,10),
+				move_border = 0,
+				attribute_prev = (0,1,2,1,1),
+				worn_equipment = (0,1,0,1,1),
+				AI_style = 'hostile',
+				corps_style = 'vanish',
+				corps_lvl = 10,
+				personal_id = 'None',
+				move_groups = ('soil','soil'), 
+				behavior = 'attack_magic',
+				attack_were = ('Head','Body'),
+				possible_effect = None, 
+				effect_duration = 0, 
+				effect_probability = 0, 
+				message = 'None',
+				def_teleport = 80,
+				close_steal = 60)
+			techID+=1
+			self.mlist['dungeon'].append(m)
+		#2
+		m=monster(techID = techID,
+				name = 'wisp',
+				sprite_pos = (4,2),
+				move_border = 5,
+				attribute_prev = (0,2,2,2,0),
+				worn_equipment = (0,0,0,1,1),
+				AI_style = 'hostile',
+				corps_style = 'kill_childs',
+				corps_lvl = 0,
+				personal_id = 'None',
+				move_groups = ('soil','low_liquid','swim'), 
+				behavior = 'attack_melee',
+				attack_were = ('Head','Body'),
+				possible_effect = 'blind', 
+				effect_duration = 30, 
+				effect_probability = 30,
+				message = 'The wisp glows.',
+				spawn_shadow = 40,
+				num_special = 3)
+		techID+=1
+		self.mlist['dungeon'].append(m)
 		
-		for a in self.mlist['grot']:
-			self.mlist['dungeon'].append(a)
+		for count in range(0,3):
+			self.mlist['dungeon'].append(self.mlist['cave'][0])#cave orc
+			self.mlist['dungeon'].append(self.mlist['cave'][2])#bat
+			self.mlist['dungeon'].append(self.mlist['cave'][4])#goblin
+			self.mlist['dungeon'].append(self.mlist['orcish_mines'][0])#orc warlord
+			self.mlist['dungeon'].append(self.mlist['orcish_mines'][1])#orcish hag
 			
-		for b in self.mlist['orcish_mines']:
-			self.mlist['dungeon'].append(b)
-				
+		#tomb monster
+		self.mlist['tomb'] = []
+		for count in range(0,2):
+		#0
+			m=monster(techID = techID,
+				name = 'mummy',
+				sprite_pos = (3,9),
+				move_border = 3,
+				attribute_prev = (2,2,0,1,1),
+				worn_equipment = (1,0,1,0,0),
+				AI_style = 'hostile',
+				corps_style = 'vanish',
+				corps_lvl = 10,
+				personal_id = 'None',
+				move_groups = ('soil','low_liquid'),
+				behavior = 'attack_melee',
+				attack_were = ('Head','Body','Legs'),
+				possible_effect = 'hexed', 
+				effect_duration = 30, 
+				effect_probability = 15, 
+				message = 'The mummy puts a curse on you.')
+			techID+=1
+			self.mlist['tomb'].append(m)
+		#1
+		m=monster(techID = techID,
+				name = 'necromancer',
+				sprite_pos = (4,3),
+				move_border = 2,
+				attribute_prev = (0,1,2,2,1),
+				worn_equipment = (0,1,0,1,1),
+				AI_style = 'hostile',
+				corps_style = 'kill_childs',
+				corps_lvl = 0,
+				personal_id = 'None',
+				move_groups = ('soil','low_liquid'), 
+				behavior = 'attack_magic',
+				attack_were = ('Head','Body'),
+				possible_effect = 'hexed', 
+				effect_duration = 30, 
+				effect_probability = 30,
+				message = 'The wisp glows.',
+				spawn_skeleton = 40,
+				num_special = 3)
+		techID+=1
+		self.mlist['tomb'].append(m)
+		
+		for count in range(0,3):
+			self.mlist['tomb'].append(self.mlist['desert'][0])#desert snake
+			self.mlist['tomb'].append(self.mlist['desert'][2])#scarab
+			self.mlist['tomb'].append(self.mlist['desert'][3])#lizard
+			self.mlist['tomb'].append(self.mlist['cave'][2])#orc warlord
+			self.mlist['tomb'].append(self.mlist['lava_cave'][3])#fire bat
