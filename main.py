@@ -293,6 +293,7 @@ class g_screen():
 	
 		num = 0
 		
+		master_loop = True
 		run = True
 		
 		while run:
@@ -391,8 +392,11 @@ class g_screen():
 				elif num == 2:
 					screen.render_credits()
 				elif num == 3:
-					exit(0)
-	
+					master_loop = False
+					run = False
+		
+		return master_loop
+		
 	def choose_save_path(self):
 		
 		global save_path
@@ -2034,8 +2038,8 @@ class g_screen():
 					run = False
 					
 				if num == 1:
-					#if player.on_map != 'dungeon_0_0':
-					screen.render_map(player.pos[2])
+					if player.on_map != 'dungeon_0_0':
+						screen.render_map(player.pos[2])
 					
 				if num == 2:
 					message.render_history()
@@ -8956,6 +8960,7 @@ def main():
 	global exitgame
 	global playing
 	global sfx
+	global master_loop
 	
 	screen = g_screen()
 	gra_files = g_files()
@@ -8967,7 +8972,7 @@ def main():
 	while master_loop:
 		bgm = bgM()
 		bgm.check_for_song(True)
-		screen.render_main_menu()
+		master_loop = screen.render_main_menu()
 		if playing == True:
 			exitgame = False
 			world = world_class(tl)
