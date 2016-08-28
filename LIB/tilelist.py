@@ -742,9 +742,9 @@ class tilelist():
 					damage = 0, 
 					move_message = 'There is a scrub with red berries here.', 
 					damage_message = None,
-					tile_pos = (6,1),
+					tile_pos = (3,10),
 					conected_items = (il.ilist['food'][0]),
-					conected_tiles = [('local',5),('local',6)])
+					conected_tiles = [('local',5),('local',6),('local',1)])
 		self.tlist['local'].append(t)
 		techID+=1
 		#3
@@ -962,7 +962,7 @@ class tilelist():
 					damage_message = None,
 					tile_pos = (1,5),
 					conected_items = (il.ilist['food'][27]),
-					conected_tiles = [('local',5),('local',6)])
+					conected_tiles = [('local',5),('local',6),('local',1)])
 		self.tlist['local'].append(t)
 		techID+=1
 		#18
@@ -977,7 +977,7 @@ class tilelist():
 					damage_message = None,
 					tile_pos = (4,4),
 					conected_items = (il.ilist['food'][28]),
-					conected_tiles = [('local',5),('local',6)])
+					conected_tiles = [('local',5),('local',6),('local',1)])
 		self.tlist['local'].append(t)
 		techID+=1
 

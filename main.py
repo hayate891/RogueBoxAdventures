@@ -5579,8 +5579,8 @@ class mob():
 			if test_loot == True:
 				string = 'You take ' + item_name + '.'
 				message.add(string)
-				cat = world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]][self.pos[0]].conected_tiles[1][0]
-				num = world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]][self.pos[0]].conected_tiles[1][1]
+				cat = world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]][self.pos[0]].conected_tiles[2][0]
+				num = world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]][self.pos[0]].conected_tiles[2][1]
 				replace = world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]][self.pos[0]].replace
 				world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]][self.pos[0]] = tl.tlist[cat][num]
 				world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]][self.pos[0]].replace = replace
@@ -7296,7 +7296,8 @@ class player_class(mob):
 							test = world.maplist[self.pos[2]][self.on_map].monster_die(x,y)	
 						
 					if self.inventory.wearing['Hold(L)'] != self.inventory.nothing:
-						self.inventory.wearing['Hold(L)'].take_damage() 
+						self.inventory.wearing['Hold(L)'].take_damage()
+						self.inventory.wearing['Hold(L)'].set_name()
 					 
 				else:
 					sfx.play('hit')
@@ -7321,6 +7322,7 @@ class player_class(mob):
 					
 					if self.inventory.wearing['Hold(L)'] != self.inventory.nothing:
 						self.inventory.wearing['Hold(L)'].take_damage()
+						self.inventory.wearing['Hold(L)'].set_name()
 			else:
 				sfx.play('miss')
 				message_string = 'You miss the ' + world.maplist[self.pos[2]][self.on_map].npcs[y][x].name + '.'
@@ -7375,7 +7377,8 @@ class player_class(mob):
 							test = world.maplist[self.pos[2]][self.on_map].monster_die(x,y)	
 					 
 					if self.inventory.wearing['Hold(R)'] != self.inventory.nothing:
-						self.inventory.wearing['Hold(R)'].take_damage() 
+						self.inventory.wearing['Hold(R)'].take_damage()
+						self.inventory.wearing['Hold(R)'].set_name() 
 					 
 				else:
 					sfx.play('hit')
@@ -7401,6 +7404,7 @@ class player_class(mob):
 					
 					if self.inventory.wearing['Hold(R)'] != self.inventory.nothing:
 						self.inventory.wearing['Hold(R)'].take_damage()
+						self.inventory.wearing['Hold(R)'].set_name()
 			
 			else:
 				sfx.play('miss')
@@ -7619,7 +7623,7 @@ class inventory():
 	def __init__(self, equipment=7, food=7, misc=7):
 		
 		self.nothing = item_wear('Nothing',21,0,0)
-		self.wearing = {'Head' : self.nothing, 'Body' : self.nothing, 'Legs' : self.nothing, 'Feet' : self.nothing, 'Hand' : self.nothing, 'Neck' : self.nothing, 'Hold(R)' : self.nothing, 'Hold(L)' : self.nothing}
+		self.wearing = {'Head' : self.nothing, 'Body' : self.nothing, 'Legs' : self.nothing, 'Feet' : self.nothing, 'Hand' : self.nothing, 'Neck' : self.nothing, 'Hold(R)' : self.nothing, 'Hold(L)' : self.nothing, 'Background' : self.nothing, 'Clothing' : self.nothing, 'Hat' : self.nothing}
 		self.item_change = self.nothing
 		self.equipment = []
 		self.food = []
@@ -7657,7 +7661,7 @@ class inventory():
 		
 	def unwear(self, slot):
 		
-		worn = list(self.wearing.keys())
+		worn = ['Hold(R)','Hold(L)','Head','Body','Legs','Feet','Hand','Neck','Background','Clothing','Hat']
 		
 		if self.wearing[worn[slot]].cursed != 0: #this is no cursed item
 		
@@ -7883,16 +7887,24 @@ class inventory():
 				message.add('You open the bag.')
 				if self.materials.wood < self.materials.wood_max:
 					wood_num = random.randint(1,9)
+				else:
+					wood_num = 0
 				if self.materials.stone < self.materials.stone_max:
 					stone_num = random.randint(1,9)
+				else:
+					stone_num = 0
 				if self.materials.ore < self.materials.ore_max:
 					ore_num = random.randint(-3,3)
 					if ore_num < 0:
 						ore_num = 0
+				else:
+					ore_num = 0
 				if self.materials.gem < self.materials.gem_max:
 					gem_num = random.randint(-6,2)
 					if gem_num < 0:
 						gem_num = 0
+				else:
+					ore_num = 0
 				
 				string = 'It contains: ' + str(wood_num) + ' wood, ' +str(stone_num) + ' stone'
 				
@@ -8225,16 +8237,20 @@ class inventory():
 			
 		s.blit(gra_files.gdic['display'][3],(category*50,25))#blit used tab
 		
-		tab_names = ('Body','Equi.','Food','Misc', 'Reso.')
+		tab_names = ('Body','Equi.','Food','Misc', 'Reso.', 'Deco.')
 		
-		for d in range (0,5):
+		for d in range (0,6):
 			
 			text_image = screen.font.render(tab_names[d],1,(0,0,0))
 			s.blit(text_image,(d*50+5,27))#blit tb names
 			
-		if category == 0:
-			h = list(self.wearing.keys())
+		if category == 0 or category == 5:
 			
+			if category == 0:
+				h = ['Hold(R)','Hold(L)','Head','Body','Legs','Feet','Hand','Neck']
+			else:
+				h = ['Background','Clothing','Hat']
+				
 			s.blit(gra_files.gdic['display'][4],(0,marker_y+slot*23))#blit marker
 			 
 			for i in h:
@@ -8387,13 +8403,13 @@ class inventory():
 			if ui == 'd':	
 				slot = 0
 				category += 1
-				if category > 4: ######change######
+				if category > 5: ######change######
 					category = 0
 			elif ui == 'a':
 				slot = 0
 				category -= 1
 				if category < 0: ######change######
-					category = 4
+					category = 5
 			elif ui == 'x':
 				run = False
 				break
@@ -8401,7 +8417,7 @@ class inventory():
 				slot -= 1
 				if category == 0:
 					if slot < 0:
-						slot = len(self.wearing)-1
+						slot = len(self.wearing)-4
 				elif category == 1:
 					if slot < 0:
 						slot = len(self.equipment)-1
@@ -8411,10 +8427,14 @@ class inventory():
 				elif category == 3:
 					if slot < 0:
 						slot = len(self.misc)-1
+				elif category == 5:
+					if slot < 0:
+						slot  = 2
+						
 			elif ui == 's':
 				slot += 1
 				if category == 0:
-					if slot == len(self.wearing):
+					if slot == len(self.wearing)-3:
 						slot = 0
 				elif category == 1:
 					if slot == len(self.equipment):
@@ -8425,6 +8445,10 @@ class inventory():
 				elif category == 3:
 					if slot == len(self.misc):
 						slot = 0
+				elif category == 5:
+					if slot > 2:
+						slot = 0
+						
 			elif ui == 'e':
 				
 				worn = list(self.wearing.keys())
@@ -8439,6 +8463,9 @@ class inventory():
 					test = self.use(slot)
 					if test == True:
 						run = False
+				elif category == 5 and self.wearing[worn[slot+8]] != self.nothing:
+					self.unwear(slot+8)
+					
 						
 			elif ui == 'b':
 				
@@ -8458,9 +8485,16 @@ class inventory():
 						drop_test = False
 				elif category == 4:
 					drop_test = False
+				elif category == 5:
+					if self.wearing[worn[slot+8]] == self.nothing:
+						drop_test = False
+				
 					
 				if drop_test == True:
-					self.drop(category,slot)
+					if category != 5:
+						self.drop(category,slot)
+					else:
+						self.drop(category,slot+8)
 		
 class container():
 	
