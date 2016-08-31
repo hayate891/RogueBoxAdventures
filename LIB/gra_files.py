@@ -63,6 +63,29 @@ class g_files():
 				i.set_colorkey((255,0,255),pygame.RLEACCEL)
 				i = i.convert_alpha()
 				self.gdic['char'][key_string] = i
+		
+		clothe_path = char_path + os.sep + 'CLOTHES' + os.sep + 'clothes.png'
+		clothe_object = pygame.image.load(clothe_path)
+		
+		clothemap = []
+		
+		for i in range (0,11):
+			clothemap.append([])
+			for j in range (0,11):
+				clothemap[i].append(0)
+		
+		for x in range (0,11):
+			for y in range (0,11):
+				
+				r = pygame.Rect((0,0),(x*32,y*32))
+				i = pygame.transform.chop(clothe_object,r)
+				j = pygame.Surface((32,32))
+				j.blit(i,(0,0))
+				j.set_colorkey((255,0,255),pygame.RLEACCEL)
+				j = j.convert_alpha()
+				clothemap[x][y] = j
+		
+		self.gdic['clothe'] = clothemap
 				
 #############################################################################
 

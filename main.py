@@ -145,6 +145,11 @@ class g_screen():
 	
 	def __init__(self, mode = game_options.screenmode, show_logo = True):
 		
+		string = 'RogueBoxAdventures ' + version
+		pygame.display.set_caption(string)
+		icon = pygame.image.load('icon_small.png')
+		pygame.display.set_icon(icon)
+		
 		global monitor
 		
 		self.fire_mode = 0 #0: normal, 1: fire
@@ -178,6 +183,8 @@ class g_screen():
 		
 		if self.win_mode == 1:  
 			self.screen = pygame.display.set_mode((self.displayx,self.displayy),winstyle)
+			pygame.mouse.set_visible(game_options.mousepad)
+				
 		else:
 			self.screen = pygame.display.set_mode((640,360))
 			self.displayx = 640
@@ -188,8 +195,6 @@ class g_screen():
 			pygame.mouse.set_visible(False)
 			self.displayx = 320
 			self.displayy = 240
-		
-		pygame.display.set_caption('RogueBox Adventures')
 		
 		font_path = basic_path + os.sep + 'FONT' + os.sep + 'PressStart2P.ttf'
 		self.font = pygame.font.Font(font_path,8)
@@ -632,33 +637,51 @@ class g_screen():
 											s.blit(gra_files.gdic['monster'][pos[1]][pos[0]],(start_pos_x+((view_x-player.pos[0])*32),start_pos_y+((view_y-player.pos[1])*32)))
 								
 										if view_x == player.pos[0] and view_y == player.pos[1]:
-						
+											if player.inventory.wearing['Background'] != player.inventory.nothing:
+												s.blit(gra_files.gdic['clothe'][player.inventory.wearing['Background'].gra_pos[player.gender][0]][player.inventory.wearing['Background'].gra_pos[player.gender][1]],(start_pos_x+((view_x-player.pos[0])*32),start_pos_y+((view_y-player.pos[1])*32)))
+												
 											skinstring = 'SKIN_' + player.gender + '_' + str(player.style +1)
 											s.blit(gra_files.gdic['char'][skinstring],(start_pos_x+((view_x-player.pos[0])*32),start_pos_y+((view_y-player.pos[1])*32)))
-						
-											if player.inventory.wearing['Head'] == player.inventory.nothing:
+											
+											try:
+												render_hair = (player.inventory.wearing['Hat'].override_hair == False)
+											except:
+												render_hair = True
+											
+											if player.inventory.wearing['Head'] == player.inventory.nothing and render_hair:  
 												hairstring = 'HAIR_' + player.gender + '_' + str(player.style +1)
 												s.blit(gra_files.gdic['char'][hairstring],(start_pos_x+((view_x-player.pos[0])*32),start_pos_y+((view_y-player.pos[1])*32)))
+												if player.inventory.wearing['Hat'] != player.inventory.nothing:
+													s.blit(gra_files.gdic['clothe'][player.inventory.wearing['Hat'].gra_pos[player.gender][0]][player.inventory.wearing['Hat'].gra_pos[player.gender][1]],(start_pos_x+((view_x-player.pos[0])*32),start_pos_y+((view_y-player.pos[1])*32)))
+												
 											else:
-												helmetstring = player.gender + '_' + player.inventory.wearing['Head'].material + '_' + player.inventory.wearing['Head'].classe
-												s.blit(gra_files.gdic['char'][helmetstring],(start_pos_x+((view_x-player.pos[0])*32),start_pos_y+((view_y-player.pos[1])*32)))
-							
-											if player.inventory.wearing['Body'] != player.inventory.nothing:
-												armorstring = player.gender + '_' + player.inventory.wearing['Body'].material + '_' + player.inventory.wearing['Body'].classe
-												s.blit(gra_files.gdic['char'][armorstring],(start_pos_x+((view_x-player.pos[0])*32),start_pos_y+((view_y-player.pos[1])*32)))
+												if player.inventory.wearing['Hat'] == player.inventory.nothing:
+													helmetstring = player.gender + '_' + player.inventory.wearing['Head'].material + '_' + player.inventory.wearing['Head'].classe
+													s.blit(gra_files.gdic['char'][helmetstring],(start_pos_x+((view_x-player.pos[0])*32),start_pos_y+((view_y-player.pos[1])*32)))
+												else:
+													s.blit(gra_files.gdic['clothe'][player.inventory.wearing['Hat'].gra_pos[player.gender][0]][player.inventory.wearing['Hat'].gra_pos[player.gender][1]],(start_pos_x+((view_x-player.pos[0])*32),start_pos_y+((view_y-player.pos[1])*32)))
+														
+											if player.inventory.wearing['Clothing'] == player.inventory.nothing:
+												if player.inventory.wearing['Body'] != player.inventory.nothing:
+													armorstring = player.gender + '_' + player.inventory.wearing['Body'].material + '_' + player.inventory.wearing['Body'].classe
+													s.blit(gra_files.gdic['char'][armorstring],(start_pos_x+((view_x-player.pos[0])*32),start_pos_y+((view_y-player.pos[1])*32)))
 									
-											if player.inventory.wearing['Legs'] != player.inventory.nothing:
-												cuissestring = player.gender + '_' + player.inventory.wearing['Legs'].material + '_' + player.inventory.wearing['Legs'].classe
-												s.blit(gra_files.gdic['char'][cuissestring],(start_pos_x+((view_x-player.pos[0])*32),start_pos_y+((view_y-player.pos[1])*32)))
+												if player.inventory.wearing['Legs'] != player.inventory.nothing:
+													cuissestring = player.gender + '_' + player.inventory.wearing['Legs'].material + '_' + player.inventory.wearing['Legs'].classe
+													s.blit(gra_files.gdic['char'][cuissestring],(start_pos_x+((view_x-player.pos[0])*32),start_pos_y+((view_y-player.pos[1])*32)))
 								
-											if player.inventory.wearing['Feet'] != player.inventory.nothing:
-												shoestring = player.gender + '_' + player.inventory.wearing['Feet'].material + '_' + player.inventory.wearing['Feet'].classe
-												s.blit(gra_files.gdic['char'][shoestring],(start_pos_x+((view_x-player.pos[0])*32),start_pos_y+((view_y-player.pos[1])*32)))
+												if player.inventory.wearing['Feet'] != player.inventory.nothing:
+													shoestring = player.gender + '_' + player.inventory.wearing['Feet'].material + '_' + player.inventory.wearing['Feet'].classe
+													s.blit(gra_files.gdic['char'][shoestring],(start_pos_x+((view_x-player.pos[0])*32),start_pos_y+((view_y-player.pos[1])*32)))
+
+											else:
+												s.blit(gra_files.gdic['clothe'][player.inventory.wearing['Clothing'].gra_pos[player.gender][0]][player.inventory.wearing['Clothing'].gra_pos[player.gender][1]],(start_pos_x+((view_x-player.pos[0])*32),start_pos_y+((view_y-player.pos[1])*32)))
 						
 											if player.inventory.wearing['Hold(R)'] != player.inventory.nothing:
 												weaponstring = 'WEAPONS_' + player.inventory.wearing['Hold(R)'].material + '_' + player.inventory.wearing['Hold(R)'].classe
 												s.blit(gra_files.gdic['char'][weaponstring],(start_pos_x+((view_x-player.pos[0])*32),start_pos_y+((view_y-player.pos[1])*32)))
-										
+											
+											
 											if player.inventory.wearing['Hold(L)'] != player.inventory.nothing:
 												weaponstring = 'WEAPONS_' + player.inventory.wearing['Hold(L)'].material + '_' + player.inventory.wearing['Hold(L)'].classe
 												s.blit(gra_files.gdic['char'][weaponstring],(start_pos_x+((view_x-player.pos[0])*32),start_pos_y+((view_y-player.pos[1])*32)))					
@@ -682,39 +705,55 @@ class g_screen():
 											pos = world.maplist[player.pos[2]][player.on_map].npcs[y][x].sprite_pos
 											s.blit(gra_files.gdic['monster'][pos[1]][pos[0]],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)))
 								
-								if x == player.pos[0] and y == player.pos[1]:#problems here
-									skinstring = 'SKIN_' + player.gender + '_' + str(player.style +1)
-									s.blit(gra_files.gdic['char'][skinstring],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)))
-						
-									if player.inventory.wearing['Head'] == player.inventory.nothing:
-										hairstring = 'HAIR_' + player.gender + '_' + str(player.style +1)
-										s.blit(gra_files.gdic['char'][hairstring],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)))
-									else:
-										helmetstring = player.gender + '_' + player.inventory.wearing['Head'].material + '_' + player.inventory.wearing['Head'].classe
-										s.blit(gra_files.gdic['char'][helmetstring],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)))
-							
-									if player.inventory.wearing['Body'] != player.inventory.nothing:
-										armorstring = player.gender + '_' + player.inventory.wearing['Body'].material + '_' + player.inventory.wearing['Body'].classe
-										s.blit(gra_files.gdic['char'][armorstring],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)))
+								if x == player.pos[0] and y == player.pos[1]:
+											if player.inventory.wearing['Background'] != player.inventory.nothing:
+												s.blit(gra_files.gdic['clothe'][player.inventory.wearing['Background'].gra_pos[player.gender][0]][player.inventory.wearing['Background'].gra_pos[player.gender][1]],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)))
+												
+											skinstring = 'SKIN_' + player.gender + '_' + str(player.style +1)
+											s.blit(gra_files.gdic['char'][skinstring],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)))
+											
+											try:
+												render_hair = (player.inventory.wearing['Hat'].override_hair == False)
+											except:
+												render_hair = True
+											
+											if player.inventory.wearing['Head'] == player.inventory.nothing and render_hair:  
+												hairstring = 'HAIR_' + player.gender + '_' + str(player.style +1)
+												s.blit(gra_files.gdic['char'][hairstring],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)))
+												if player.inventory.wearing['Hat'] != player.inventory.nothing:
+													s.blit(gra_files.gdic['clothe'][player.inventory.wearing['Hat'].gra_pos[player.gender][0]][player.inventory.wearing['Hat'].gra_pos[player.gender][1]],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)))
+												
+											else:
+												if player.inventory.wearing['Hat'] == player.inventory.nothing:
+													helmetstring = player.gender + '_' + player.inventory.wearing['Head'].material + '_' + player.inventory.wearing['Head'].classe
+													s.blit(gra_files.gdic['char'][helmetstring],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)))
+												else:
+													s.blit(gra_files.gdic['clothe'][player.inventory.wearing['Hat'].gra_pos[player.gender][0]][player.inventory.wearing['Hat'].gra_pos[player.gender][1]],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)))
+														
+											if player.inventory.wearing['Clothing'] == player.inventory.nothing:
+												if player.inventory.wearing['Body'] != player.inventory.nothing:
+													armorstring = player.gender + '_' + player.inventory.wearing['Body'].material + '_' + player.inventory.wearing['Body'].classe
+													s.blit(gra_files.gdic['char'][armorstring],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)))
 									
-									if player.inventory.wearing['Legs'] != player.inventory.nothing:
-										cuissestring = player.gender + '_' + player.inventory.wearing['Legs'].material + '_' + player.inventory.wearing['Legs'].classe
-										s.blit(gra_files.gdic['char'][cuissestring],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)))
+												if player.inventory.wearing['Legs'] != player.inventory.nothing:
+													cuissestring = player.gender + '_' + player.inventory.wearing['Legs'].material + '_' + player.inventory.wearing['Legs'].classe
+													s.blit(gra_files.gdic['char'][cuissestring],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)))
 								
-									if player.inventory.wearing['Feet'] != player.inventory.nothing:
-										shoestring = player.gender + '_' + player.inventory.wearing['Feet'].material + '_' + player.inventory.wearing['Feet'].classe
-										s.blit(gra_files.gdic['char'][shoestring],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)))
+												if player.inventory.wearing['Feet'] != player.inventory.nothing:
+													shoestring = player.gender + '_' + player.inventory.wearing['Feet'].material + '_' + player.inventory.wearing['Feet'].classe
+													s.blit(gra_files.gdic['char'][shoestring],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)))
+
+											else:
+												s.blit(gra_files.gdic['clothe'][player.inventory.wearing['Clothing'].gra_pos[player.gender][0]][player.inventory.wearing['Clothing'].gra_pos[player.gender][1]],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)))
 						
-									if player.inventory.wearing['Hold(R)'] != player.inventory.nothing:
-										weaponstring = 'WEAPONS_' + player.inventory.wearing['Hold(R)'].material + '_' + player.inventory.wearing['Hold(R)'].classe
-										s.blit(gra_files.gdic['char'][weaponstring],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)))
-										
-									if player.inventory.wearing['Hold(L)'] != player.inventory.nothing:
-										weaponstring = 'WEAPONS_' + player.inventory.wearing['Hold(L)'].material + '_' + player.inventory.wearing['Hold(L)'].classe
-										s.blit(gra_files.gdic['char'][weaponstring],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)))					
-										
-							
-							#----------------->go on here
+											if player.inventory.wearing['Hold(R)'] != player.inventory.nothing:
+												weaponstring = 'WEAPONS_' + player.inventory.wearing['Hold(R)'].material + '_' + player.inventory.wearing['Hold(R)'].classe
+												s.blit(gra_files.gdic['char'][weaponstring],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)))
+											
+											
+											if player.inventory.wearing['Hold(L)'] != player.inventory.nothing:
+												weaponstring = 'WEAPONS_' + player.inventory.wearing['Hold(L)'].material + '_' + player.inventory.wearing['Hold(L)'].classe
+												s.blit(gra_files.gdic['char'][weaponstring],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)))
 						
 					elif t_known == 0:
 						s.blit(gra_files.gdic['tile32'][0][3],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)))
@@ -1938,6 +1977,8 @@ class g_screen():
 					else:
 						game_options.mousepad = 1
 						
+					pygame.mouse.set_visible(game_options.mousepad)
+						
 					game_options.save()
 				
 				if num == 5:
@@ -3104,7 +3145,7 @@ class map():
 		
 		die_mess = 'The ' + self.npcs[y][x].name + ' vanishes!'
 		
-		if self.tilemap[y][x].replace == None: #only on empty fields corps can be spawned
+		if self.tilemap[y][x].replace == None and self.tilemap[y][x].drops_here: #only on empty fields corps can be spawned
 			
 			if self.npcs[y][x].corps_style == 'dryade' and self.tilemap[y][x].techID != tl.tlist['misc'][0].techID: #dryades can leave behind a seppling when they are killed(corpse_lvl dosn't matter)/low water isn't allowed
 				
@@ -3897,8 +3938,10 @@ class map():
 		pick = item_wear('pickaxe', material_pick,0)
 		axe = item_wear('axe',material_axe,0)
 		amo = item_wear(amo_class,material_amo,0)
+		ran_tunica = random.randint(0,2)
 		
-		self.add_container([pick,axe,amo,il.ilist['misc'][3],il.ilist['misc'][2],il.ilist['misc'][44],il.ilist['misc'][51]],startx,starty-1)
+		self.add_container([pick,axe,amo,il.ilist['misc'][3],il.ilist['misc'][2],il.ilist['misc'][44],il.ilist['misc'][51],il.ilist['clothe'][ran_tunica]],startx,starty-1)
+		#self.add_container([il.ilist['clothe'][0],il.ilist['clothe'][1],il.ilist['clothe'][2],il.ilist['clothe'][3],il.ilist['clothe'][4],il.ilist['clothe'][5],il.ilist['clothe'][6],il.ilist['clothe'][7]],startx,starty-1)
 		
 		self.tilemap[starty+1][startx] = deepcopy(tl.tlist['functional'][1])#stair down
 		self.tilemap[starty+1][startx].damage = -1
@@ -4020,6 +4063,8 @@ class world_class():
 		
 	def grot_generator(self,layer):
 		
+		screen.render_load(15,1)
+		
 		cave_name = 'dungeon_0_0'
 		m = self.default_map_generator(cave_name,'global_caves', tilelist)
 		m.map_type = 'grot'
@@ -4033,6 +4078,8 @@ class world_class():
 		
 		chance_ore = layer*5
 		chance_gem = layer*3
+		
+		screen.render_load(15,10)
 			
 		for y in range (0,max_map_size):
 			for x in range (0,max_map_size):
@@ -4051,6 +4098,8 @@ class world_class():
 						m.tilemap[y][x] = tl.tlist['misc'][5]#set gem here
 						m.tilemap[y][x].replace = replace
 		
+		screen.render_load(15,40)
+		
 		for y in range (0,max_map_size):
 				for x in range (0,max_map_size):
 					
@@ -4066,6 +4115,8 @@ class world_class():
 							
 							m.containers[y][x] = container([deepcopy(il.ilist['food'][1])])
 		
+		screen.render_load(15,75)
+		
 		num_lilys = ((max_map_size*max_map_size)/100)*3
 		
 		for i in range (0,num_lilys):
@@ -4080,12 +4131,16 @@ class world_class():
 			except:
 				None
 		
+		screen.render_load(15,90)
+		
 		pos = m.find_any(tl.tlist['misc'][0])#find any low water tile
 		m.tilemap[pos[1]][pos[0]] = tl.tlist['dungeon'][15]#set stair up
 		
 		m.make_shops()
 		
 		m.spawn_monsters(3)
+		
+		screen.render_load(15,99)
 							
 		self.maplist[layer][cave_name] = m
 		
@@ -4378,16 +4433,26 @@ class world_class():
 		
 	def mine_generator(self,layer):
 		
+		screen.render_load(17,1)
+		
 		cave_name = 'dungeon_0_0'
 		m = self.default_map_generator(cave_name,'global_caves', tilelist)
 		m.map_type = 'orcish_mines'
 		m.build_type = 'None'
 		
+		screen.render_load(17,10)
+		
 		m.fill(tl.tlist['mine'][1])#fill with mine wall
+		screen.render_load(17,30)
 		m.drunken_walker(int(max_map_size/2),int(max_map_size/2),tl.tlist['mine'][0],((max_map_size**2/100)*45))
+		screen.render_load(17,50)
 		m.set_round_frame(tl.tlist['mine'][1],(int(max_map_size/2)-3))
 		
+		screen.render_load(17,60)
+		
 		m.exchange_when_surrounded(tl.tlist['mine'][1],tl.tlist['global_caves'][3],8) #only the outer tiles become mine wall
+		
+		screen.render_load(17,70)
 		
 		for y in range (0, max_map_size):
 			for x in range(0,max_map_size):
@@ -4402,6 +4467,8 @@ class world_class():
 					
 					elif ran < 10:
 						m.tilemap[y][x] = tl.tlist['misc'][5]#set gem
+		
+		screen.render_load(17,80)
 		
 		m.set_frame(tl.tlist['functional'][0])
 		
@@ -4418,10 +4485,14 @@ class world_class():
 			except:
 				None
 		
+		screen.render_load(17,90)
+		
 		pos = m.find_any(tl.tlist['mine'][0])#find any low water tile
 		m.tilemap[pos[1]][pos[0]] = tl.tlist['dungeon'][17]#set stair up
 		
 		m.spawn_monsters(9)
+		
+		screen.render_load(17,99)
 							
 		self.maplist[layer][cave_name] = m
 		
@@ -4813,6 +4884,16 @@ class world_class():
 				m.tilemap[stair_down_pos[1]][stair_down_pos[0]] = tl.tlist['dungeon'][18]
 			else:
 				m.tilemap[stair_down_pos[1]][stair_down_pos[0]] = tl.tlist['dungeon'][7]
+		else: #make a chest whit a reward on the last lvl
+			chest_pos = m.find_any(tl.tlist['dungeon'][0])
+			m.tilemap[chest_pos[1]][chest_pos[0]] = tl.tlist['dungeon'][20]#grand chest
+			m.tilemap[chest_pos[1]][chest_pos[0]].replace = tl.tlist['dungeon'][0]
+			
+			if style == 'Tomb':
+				m.add_container([il.ilist['clothe'][3],il.ilist['misc'][33],il.ilist['misc'][40]],chest_pos[0],chest_pos[1])
+			else:
+				m.add_container([il.ilist['clothe'][4],il.ilist['misc'][33],il.ilist['misc'][41]],chest_pos[0],chest_pos[1])
+			
 		
 		screen.render_load(19,80)
 		
@@ -6254,7 +6335,6 @@ class mob():
 			if choose == 1:
 				player.on_map = player.last_map
 				player.pos[2] = player.last_z
-				print player.last_z
 				
 				pos = world.maplist[player.pos[2]][player.on_map].find_first(tl.tlist['dungeon'][14])
 				player.pos[0] = pos[0]
@@ -6781,6 +6861,8 @@ class player_class(mob):
 			player.stand_check()
 			
 	def lvl_up(self):
+		
+		sfx.play('lvl_up')
 		
 		self.lvl += 1
 		self.xp -= 100
@@ -7661,7 +7743,7 @@ class inventory():
 		
 	def unwear(self, slot):
 		
-		worn = ['Hold(R)','Hold(L)','Head','Body','Legs','Feet','Hand','Neck','Background','Clothing','Hat']
+		worn = ['Hold(R)','Hold(L)','Head','Body','Legs','Feet','Hand','Neck','Background','Clothing','Hat']	
 		
 		if self.wearing[worn[slot]].cursed != 0: #this is no cursed item
 		
@@ -7690,7 +7772,8 @@ class inventory():
 			
 	def drop(self,category, slot):
 		
-		worn = list(self.wearing.keys())
+		worn = ['Hold(R)','Hold(L)','Head','Body','Legs','Feet','Hand','Neck','Background','Clothing','Hat']
+		
 		try:
 			field_full = False
 			sacrifice = False
@@ -7934,6 +8017,8 @@ class inventory():
 					
 				message.add(string)
 				
+				self.misc[slot] = self.nothing
+				
 				return True
 			
 			elif self.misc[slot].use_name == 'read':#this is a scroll or a spellbook
@@ -8009,6 +8094,7 @@ class inventory():
 						player.pos[0] = world.startx
 						player.pos[1] = world.starty
 						player.pos[2] = 0
+						player.on_map = 'local_0_0'
 						message.add('You returne home.')
 					else:
 						message.add('Nothing seems to happen.')
@@ -8451,7 +8537,7 @@ class inventory():
 						
 			elif ui == 'e':
 				
-				worn = list(self.wearing.keys())
+				worn = ['Hold(R)','Hold(L)','Head','Body','Legs','Feet','Hand','Neck','Background','Clothing','Hat']
 				
 				if category == 0 and self.wearing[worn[slot]] != self.nothing:
 					self.unwear(slot)
@@ -8469,7 +8555,7 @@ class inventory():
 						
 			elif ui == 'b':
 				
-				worn = list(self.wearing.keys())
+				worn = ['Hold(R)','Hold(L)','Head','Body','Legs','Feet','Hand','Neck','Background','Clothing','Hat']
 				drop_test =  True
 				if category == 0:
 					if self.wearing[worn[slot]] == self.nothing:
@@ -8494,7 +8580,7 @@ class inventory():
 					if category != 5:
 						self.drop(category,slot)
 					else:
-						self.drop(category,slot+8)
+						self.drop(0,slot+8)
 		
 class container():
 	
@@ -8929,7 +9015,8 @@ class sfX():
 						'fire': pygame.mixer.Sound(sfx_path + 'fire.ogg'),
 						'boom': pygame.mixer.Sound(sfx_path + 'boom.ogg'),
 						'chop': pygame.mixer.Sound(sfx_path + 'chop.ogg'),
-						'brake': pygame.mixer.Sound(sfx_path + 'brake.ogg')}
+						'brake': pygame.mixer.Sound(sfx_path + 'brake.ogg'),
+						'lvl_up': pygame.mixer.Sound(sfx_path + 'lvl_up.ogg')}
 						
 	def play(self,sfx_name):
 		

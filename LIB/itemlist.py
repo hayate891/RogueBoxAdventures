@@ -1,11 +1,11 @@
 import pickle as p
-from item import item_food, item_misc
+from item import item_food, item_misc, decorative_clothing
 
 class itemlist():
 	
 	def __init__(self):
 		
-		self.ilist = {'misc' : [], 'food' : []}
+		self.ilist = {'misc' : [], 'food' : [], 'clothe' : []}
 		techID = 0
 		
 		t=item_misc(techID, 'Fontain', 'place', 'functional', 7)#0
@@ -265,4 +265,31 @@ class itemlist():
 		techID += 1
 		t=item_food(techID, 'Yellow Jelly', 800,100, 0, 0, 0, 0, 0, 0, False, 0, 'You eat some tasty yellow jelly.')#31
 		self.ilist['food'].append(t)
+		techID += 1
+
+		#clothing items
+		
+		t=decorative_clothing(techID,'Red Tunica','Clothing',(2,0),(2,1))#0
+		self.ilist['clothe'].append(t)
+		techID += 1
+		t=decorative_clothing(techID,'Blue Tunica','Clothing',(0,0),(0,1))#1
+		self.ilist['clothe'].append(t)
+		techID += 1
+		t=decorative_clothing(techID,'Green Tunica','Clothing',(1,0),(1,1))#2
+		self.ilist['clothe'].append(t)
+		techID += 1
+		t=decorative_clothing(techID,'Dark Wings','Background',(2,2),(2,2))#3
+		self.ilist['clothe'].append(t)
+		techID += 1
+		t=decorative_clothing(techID,'Light Wings','Background',(1,2),(1,2))#4
+		self.ilist['clothe'].append(t)
+		techID += 1
+		t=decorative_clothing(techID,'Neko Ears','Background',(0,2),(0,2))#5
+		self.ilist['clothe'].append(t)
+		techID += 1
+		t=decorative_clothing(techID,'Simple Hat','Hat',(0,3),(0,4))#6
+		self.ilist['clothe'].append(t)
+		techID += 1
+		t=decorative_clothing(techID,'Orcish Helmet','Hat',(0,5),(0,5),override_hair=True)#7
+		self.ilist['clothe'].append(t)
 		techID += 1

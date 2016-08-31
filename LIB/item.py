@@ -229,7 +229,19 @@ class item_misc(item):
 		self.place_cat = place_cat
 		self.place_num = place_num
 		self.effect = effect
+
+class decorative_clothing(item_wear):
+	
+	def __init__(self,techID,name,worn_at,gra_pos_male,gra_pos_female,override_hair=False):
 		
+		item_wear.__init__(self,'foo', 0, 0, state=100, cursed = 1, known = True, inv_slot = 'equipment')
+		
+		self.techID = techID
+		self.name = '[D]' + name
+		self.worn_at = worn_at
+		self.gra_pos = {'MALE' : gra_pos_male, 'FEMALE' : gra_pos_female}
+		self.override_hair = override_hair
+
 class materials():
 	
 	def __init__(self):

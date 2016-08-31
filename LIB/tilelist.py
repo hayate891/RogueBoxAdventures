@@ -2043,7 +2043,8 @@ class tilelist():
 					damage_message = None,
 					build_here = False,
 					can_grown = False,
-					tile_pos = (3,4))
+					tile_pos = (3,4),
+					drops_here = False)
 		self.tlist['dungeon'].append(t)
 		techID+=1
 		#8
@@ -2058,7 +2059,8 @@ class tilelist():
 					damage_message = None,
 					build_here = False,
 					can_grown = False,
-					tile_pos = (3,3))
+					tile_pos = (3,3),
+					drops_here = False)
 		self.tlist['dungeon'].append(t)
 		techID+=1
 		#9
@@ -2149,7 +2151,8 @@ class tilelist():
 					damage_message = None,
 					build_here = False,
 					can_grown = False,
-					tile_pos = (3,4))
+					tile_pos = (3,4),
+					drops_here = False)
 		self.tlist['dungeon'].append(t)
 		techID+=1
 		#15
@@ -2164,7 +2167,8 @@ class tilelist():
 					damage_message = None,
 					build_here = False,
 					can_grown = False,
-					tile_pos = (3,3))
+					tile_pos = (3,3),
+					drops_here = False)
 		self.tlist['dungeon'].append(t)
 		techID+=1
 		#16
@@ -2179,7 +2183,8 @@ class tilelist():
 					damage_message = None,
 					build_here = False,
 					can_grown = False,
-					tile_pos = (3,4))
+					tile_pos = (3,4),
+					drops_here = False)
 		self.tlist['dungeon'].append(t)
 		techID+=1
 		#17
@@ -2194,7 +2199,8 @@ class tilelist():
 					damage_message = None,
 					build_here = False,
 					can_grown = False,
-					tile_pos = (3,3))
+					tile_pos = (3,3),
+					drops_here = False)
 		self.tlist['dungeon'].append(t)
 		techID+=1
 		#18
@@ -2209,7 +2215,8 @@ class tilelist():
 					damage_message = None,
 					build_here = False,
 					can_grown = False,
-					tile_pos = (3,4))
+					tile_pos = (3,4),
+					drops_here = False)
 		self.tlist['dungeon'].append(t)
 		techID+=1
 		#19
@@ -2224,6 +2231,23 @@ class tilelist():
 					damage_message = None,
 					build_here = False,
 					can_grown = False,
-					tile_pos = (3,3))
+					tile_pos = (3,3),
+					drops_here = False)
+		self.tlist['dungeon'].append(t)
+		techID+=1
+		#20
+		t=tile(techID = techID,
+					name = 'Grand Chest',
+					tile_color = 'light_purple',
+					use_group = 'None',
+					move_group = 'holy',
+					grow_group = 'None',
+					damage = 0, 
+					move_message = 'You see a grand chest here.', 
+					damage_message = None,
+					civilisation = False,
+					build_here = False,
+					tile_pos = (6,8),
+					drops_here = False)
 		self.tlist['dungeon'].append(t)
 		techID+=1
