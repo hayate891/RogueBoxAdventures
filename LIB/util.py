@@ -1,10 +1,11 @@
 import pickle as p
 from version import release_number
+import os
 
 try:
 	from urllib import urlopen
 except:
-	import urllib.request.urlopen as urlopen
+	from urllib.request import urlopen as urlopen
 
 def save(world,player,time,gods,path,sep):
 	#this function is called if the game is closed
@@ -12,27 +13,66 @@ def save(world,player,time,gods,path,sep):
 	
 	name1 = path + sep + 'world.data'
 	
-	f = file(name1, 'w+')
-	p.dump(world,f)
+	f = open(name1, 'wb')
+	p.dump(world,f,0)
 	f.close()
 	
 	name2 = path + sep + 'player.data'
 	
-	f = file(name2, 'w+')
-	p.dump(player,f)
+	f = open(name2, 'wb')
+	p.dump(player,f,0)
 	f.close()
 	
 	name3 = path + sep + 'time.data'
 	
-	f = file(name3, 'w+')
-	p.dump(time,f)
+	f = open(name3, 'wb')
+	p.dump(time,f,0)
 	f.close()
 	
 	name4 = path + sep + 'gods.data'
 	
-	f = file(name4, 'w+')
-	p.dump(gods,f)
+	f = open(name4, 'wb')
+	p.dump(gods,f,0)
 	f.close()
+
+def save_options(options,path,sep):
+	
+	name2 = path + sep + 'options.data'
+	
+	f = open(name2, 'wb')
+	p.dump(options,f,0)
+	f.close()
+
+class game_options():
+	
+	def __init__(self,basic_path,home_save):
+		
+		if home_save == False:
+			name = basic_path + os.sep + 'SAVE' + os.sep + 'options.data'
+		else:
+			name = os.path.expanduser('~') + os.sep + '.config' + os.sep + 'RogueBox-Adventures' + os.sep + 'SAVE' + os.sep + 'options.data'
+		
+		try:
+			f = open(name, 'rb')
+			temp = p.load(f)
+			self.screenmode = temp.screenmode
+			self.bgmmode = temp.bgmmode
+			self.sfxmode = temp.sfxmode
+			self.turnmode = temp.turnmode
+			self.mousepad = temp.mousepad
+			self.check_version = temp.check_version
+		
+		except:
+			self.screenmode = 1 #0:windowed,1:fullscreen
+			self.bgmmode = 1 #0:bgm off, 1:bgm on
+			self.sfxmode = 1 #0:sfx off, 1:sfx on
+			self.turnmode = 1 #0:classic, 1:Semi-Real-Time
+			self.mousepad = 0 #0:mouse off, 1:mouse on
+			self.check_version = 0 #0:check off 1:check on
+			replace_string = os.sep + 'options.data'
+			save_path = name.replace(replace_string,'')
+			save_options(self,save_path,os.sep)
+
 
 def check_version():
 	#this function compares the release_number from version.py whit a number that from the https://themightyglider.github.io/version.htm

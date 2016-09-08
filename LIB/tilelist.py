@@ -1,4 +1,4 @@
-import cPickle as p
+import pickle as p
 from tile import tile
 from itemlist import itemlist
 

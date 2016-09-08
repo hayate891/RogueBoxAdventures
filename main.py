@@ -69,10 +69,11 @@ sys.path.append(lib_path)
 max_map_size = 52
 monitor = [0,0]
 
+import pickle as p
 try:
-	import cPickle as p
+	p.DEFAULT_PROTOCOL=0
 except:
-	import pickle as p
+	p.HIGHEST_PROTOCOL=0
 
 import random
 if gcwz_input == True:
@@ -94,47 +95,7 @@ from tilelist import *
 from monsterlist import *
 from version import *
 
-class game_options():
-	
-	def __init__(self):
-		
-		if home_save == False:
-			name = basic_path + os.sep + 'SAVE' + os.sep + 'options.data'
-		else:
-			name = os.path.expanduser('~') + os.sep + '.config' + os.sep + 'RogueBox-Adventures' + os.sep + 'SAVE' + os.sep + 'options.data'
-		
-		try:
-			f = file(name, 'r')
-			temp = p.load(f)
-			self.screenmode = temp.screenmode
-			self.bgmmode = temp.bgmmode
-			self.sfxmode = temp.sfxmode
-			self.turnmode = temp.turnmode
-			self.mousepad = temp.mousepad
-			self.check_version = temp.check_version
-		
-		except:
-			self.screenmode = 1 #0:windowed,1:fullscreen
-			self.bgmmode = 1 #0:bgm off, 1:bgm on
-			self.sfxmode = 1 #0:sfx off, 1:sfx on
-			self.turnmode = 1 #0:classic, 1:Semi-Real-Time
-			self.mousepad = 0 #0:mouse off, 1:mouse on
-			self.check_version = 0 #0:check off 1:check on
-			self.save()
-			
-	def save(self):
-		
-		if home_save == False:
-			name = basic_path + os.sep + 'SAVE' + os.sep + 'options.data'
-		else:
-			name = os.path.expanduser('~') + os.sep + '.config' + os.sep + 'RogueBox-Adventures' + os.sep + 'SAVE' + os.sep + 'options.data'
-			
-		f = file(name, 'w')
-		p.dump(self,f)
-		f.close()
-		
-
-game_options = game_options()
+game_options = game_options(basic_path,home_save)
 
 if game_options.check_version == 1:
 	ver_string = check_version()
@@ -172,12 +133,13 @@ class g_screen():
 		self.displayx = monitor[0]
 		self.displayy = monitor[1]
 		
+		
 		#check if the screenmode is 16:9
 		
 		if float(self.displayx/self.displayy) < float(16/9):
-			self.displayx = (self.displayx*9)/16
+			self.displayx = int((self.displayy*9)/16)
 		elif float(self.displayx/self.displayy) > float(16/9):
-			self.displayy = (self.displayy*16)/9
+			self.displayy = int((self.displayx*9)/16)
 		
 		winstyle = pygame.FULLSCREEN
 		
@@ -515,12 +477,14 @@ class g_screen():
 	
 	def re_init(self): # For changing screenmode
 		
+		options_path = basic_path + os.sep + 'SAVE'
+		
 		if self.win_mode == 0:
 			mode = 1
 		else:
 			mode = 0
 		game_options.screenmode = mode
-		game_options.save()
+		save_options(game_options,options_path,os.sep)
 		
 		self.__init__(game_options.screenmode,False)
 		
@@ -1830,6 +1794,7 @@ class g_screen():
 		
 		run = True
 		num = 0
+		options_path = basic_path + os.sep + 'SAVE'
 		
 		while run:
 			
@@ -1942,7 +1907,7 @@ class g_screen():
 				if num == 0 and low_res == False:
 					screen.re_init()
 					pygame.display.flip()
-					game_options.save()
+					save_options(game_options,options_path,os.sep)
 					
 				if num == 1:
 					if game_options.bgmmode == 1:
@@ -1953,7 +1918,7 @@ class g_screen():
 						pygame.mixer.music.unpause()
 						bgm.check_for_song()
 						
-					game_options.save()
+					save_options(game_options,options_path,os.sep)
 						
 				if num == 2:
 					if game_options.sfxmode == 1:
@@ -1961,7 +1926,7 @@ class g_screen():
 					else:
 						game_options.sfxmode = 1
 						
-					game_options.save()
+					save_options(game_options,options_path,os.sep)
 				
 				if num == 3:
 					if game_options.turnmode == 1:
@@ -1969,7 +1934,7 @@ class g_screen():
 					else:
 						game_options.turnmode = 1
 						
-					game_options.save()
+					save_options(game_options,options_path,os.sep)
 				
 				if num == 4 and low_res == False:
 					if game_options.mousepad == 1:
@@ -1979,7 +1944,7 @@ class g_screen():
 						
 					pygame.mouse.set_visible(game_options.mousepad)
 						
-					game_options.save()
+					save_options(game_options,options_path,os.sep)
 				
 				if num == 5:
 					if game_options.check_version == 1:
@@ -1987,7 +1952,7 @@ class g_screen():
 					else:
 						game_options.check_version = 1
 					
-					game_options.save()
+					save_options(game_options,options_path,os.sep)
 					
 				if num == 6:
 					run = False
@@ -2391,7 +2356,7 @@ class g_screen():
 				run = False
 				exitgame = True
 					
-class map():
+class maP():
 	
 	def __init__(self, name, tilemap, visit=False, map_type='overworld',monster_num=1):
 		
@@ -3147,7 +3112,7 @@ class map():
 		
 		if self.tilemap[y][x].replace == None and self.tilemap[y][x].drops_here: #only on empty fields corps can be spawned
 			
-			if self.npcs[y][x].corps_style == 'dryade' and self.tilemap[y][x].techID != tl.tlist['misc'][0].techID: #dryades can leave behind a seppling when they are killed(corpse_lvl dosn't matter)/low water isn't allowed
+			if self.npcs[y][x].corps_style == 'dryade' and self.tilemap[y][x].techID != tl.tlist['misc'][0].techID and self.tilemap[y][x].can_grown: #dryades can leave behind a seppling when they are killed(corpse_lvl dosn't matter)/low water isn't allowed
 				
 				coin = random.randint(0,99)
 				
@@ -3357,9 +3322,23 @@ class map():
 						
 					item_ran = random.randint(0,99)
 						
-					if item_ran < 50:
+					if item_ran < 25:
 							
 						self.containers[y][x] = container([il.ilist['misc'][43]])#set a heavy bag
+					
+					elif item_ran < 50:
+						
+						clothe_list = [il.ilist['clothe'][0],il.ilist['clothe'][1],il.ilist['clothe'][2]]
+						
+						if self.map_type == 'desert':
+							clothe_list.append(il.ilist['clothe'][5])#add neko ears
+						elif self.map_type == 'orcish_mines':
+							clothe_list.append(il.ilist['clothe'][7])#add orćish helmet
+						else:
+							clothe_list.append(il.ilist['clothe'][6])#add simple hat
+						
+						choose_ran = random.randint(0,len(clothe_list)-1)	
+						self.containers[y][x] = container([clothe_list[choose_ran]])
 							
 					elif item_ran < 95:
 							
@@ -3751,7 +3730,7 @@ class map():
 	
 	def make_special_monsters(self, min_no, max_no, on_tile, depth, monster_type='vase'):
 		
-		size = (max_map_size*max_map_size)/(50*50)
+		size = int((max_map_size*max_map_size)/(50*50))
 		
 		for i in range(0,size):
 			
@@ -3785,7 +3764,7 @@ class map():
 			
 	def make_containers(self, min_no, max_no, on_tile, item_min, item_max, container_type='remains'):
 		
-		size = (max_map_size*max_map_size)/(50*50)
+		size = int((max_map_size*max_map_size)/(50*50))
 		
 		for i in range(0,size):
 		
@@ -3967,7 +3946,7 @@ class world_class():
 		
 		try:
 			
-			f = file(name, 'r')
+			f = open(name, 'rb')
 			temp = p.load(f)
 			screen.render_load(1)
 			self.maplist = temp.maplist
@@ -3987,7 +3966,7 @@ class world_class():
 				
 			screen.render_load(3)
 		
-			pos = self.grassland_generator(0,0,30,80,5,(max_map_size*max_map_size)/20)
+			pos = self.grassland_generator(0,0,30,80,5,int((max_map_size*max_map_size)/20))
 			
 			self.startx = pos[0]
 			self.starty = pos[1]
@@ -4047,7 +4026,7 @@ class world_class():
 					ran_num = random.randint(0,len(tl.tlist[tiles])-1)
 					tilemap[a].append(tl.tlist[tiles][ran_num])
 					
-		m = map(name ,tilemap)
+		m = maP(name ,tilemap)
 		
 		return m
 		
@@ -4274,9 +4253,9 @@ class world_class():
 					m.tilemap[y][x].replace = tl.tlist['elfish'][0]
 					m.tilemap[y][x].civilisation = False
 			
-			m.tilemap[pos[1]+(size[1]/2)][pos[0]+(size[0]/2)] = deepcopy(tl.tlist['functional'][15])#set a altar
-			m.tilemap[pos[1]+(size[1]/2)][pos[0]+(size[0]/2)].replace = tl.tlist['elfish'][0]
-			m.tilemap[pos[1]+(size[1]/2)][pos[0]+(size[0]/2)].civilisation = False
+			m.tilemap[pos[1]+int(size[1]/2)][pos[0]+int(size[0]/2)] = deepcopy(tl.tlist['functional'][15])#set a altar
+			m.tilemap[pos[1]+int(size[1]/2)][pos[0]+int(size[0]/2)].replace = tl.tlist['elfish'][0]
+			m.tilemap[pos[1]+int(size[1]/2)][pos[0]+int(size[0]/2)].civilisation = False
 			
 			m.exchange(tl.tlist['elfish'][4],tl.tlist['elfish'][5])
 		
@@ -4336,8 +4315,8 @@ class world_class():
 			pos_original = pos
 			size = m.get_quarter_size(pos[0],pos[1])
 			
-			num_beds = (size[0]*size[1])/9
-			num_furniture = (size[0]*size[1])/25
+			num_beds = int((size[0]*size[1])/9)
+			num_furniture = int((size[0]*size[1])/25)
 			
 			for y in range(pos[1],pos[1]+size[1]):
 				for x in range(pos[0],pos[0]+size[0]):
@@ -4518,7 +4497,7 @@ class world_class():
 				m.exchange(tl.tlist['global_caves'][4],tl.tlist['misc'][2])#exchange lava against hot cave ground
 				if d > 4:
 					m.exchange_when_surrounded(tl.tlist['misc'][2],tl.tlist['global_caves'][4],8)#make lava spots between hot cave ground
-					num = (max_map_size*max_map_size)/(50*50)
+					num = int((max_map_size*max_map_size)/(50*50))
 					for i in range(0,num):
 						ran = random.randint(0,1)
 						if ran > 0:
@@ -4579,7 +4558,7 @@ class world_class():
 			m.set_frame(tl.tlist['functional'][0])
 			
 			if d == 1:#set stair up on lvl 1
-				pos = (max_map_size/2,max_map_size/2)
+				pos = (int(max_map_size/2),int(max_map_size/2))
 				m.tilemap[pos[1]+1][pos[0]] = deepcopy(tl.tlist['functional'][2])#stair down
 				m.tilemap[pos[1]+1][pos[0]].damage = -1
 				m.tilemap[pos[1]+1][pos[0]].damage_mes = 'Your wounds are cured.'
@@ -4600,12 +4579,10 @@ class world_class():
 			if d == 1:
 				ran_pos = m.find_any(tl.tlist['global_caves'][0])
 				m.tilemap[ran_pos[1]][ran_pos[0]] = tl.tlist['dungeon'][14]
-				print ('Debug: Grot at',ran_pos)
 			
 			if d == 4:
 				ran_pos = m.find_any(tl.tlist['global_caves'][0])
 				m.tilemap[ran_pos[1]][ran_pos[0]] = tl.tlist['dungeon'][16]
-				print ('Debug: Mine at',ran_pos)
 			
 			m.make_containers(1,2,tl.tlist['global_caves'][0],2,5,'chest')#set some chests
 			m.make_special_monsters(0,1,tl.tlist['global_caves'][0],d,'mimic')#maybe set some mimics
@@ -4629,7 +4606,7 @@ class world_class():
 			for b in range (0,max_map_size):
 				tilemap[a].append(0)
 	
-		m = map(name,tilemap)
+		m = maP(name,tilemap)
 		m.map_type = 'overworld'
 		
 		screen.render_load(3,2)
@@ -4697,7 +4674,7 @@ class world_class():
 					
 		m.exchange_when_surrounded(tl.tlist['misc'][0],tl.tlist['misc'][3],8) # exchange low wather against deep water
 		
-		pos = (max_map_size/2,max_map_size/2)
+		pos = (int(max_map_size/2),int(max_map_size/2))
 		
 		m.set_sanctuary(pos[0],pos[1])
 		
@@ -4715,7 +4692,6 @@ class world_class():
 		#set dungeon
 		ran_pos = m.find_any(tl.tlist['local'][0])
 		m.tilemap[ran_pos[1]][ran_pos[0]] = tl.tlist['dungeon'][7]
-		print ('Debug: Dungeon at',ran_pos)
 		
 		m.spawn_monsters(0)
 					
@@ -4748,7 +4724,7 @@ class world_class():
 			for b in range (0,max_map_size):
 				tilemap[a].append(0)
 		
-		m = map(name,tilemap)
+		m = maP(name,tilemap)
 		if style == 'Tomb':
 			m.map_type = 'tomb'
 		else:
@@ -4956,7 +4932,7 @@ class world_class():
 			for b in range (0,max_map_size):
 				tilemap[a].append(0)
 	
-		m = map(name,tilemap)
+		m = maP(name,tilemap)
 		m.map_type = 'desert'
 		m.build_type = 'Part'
 		m.thirst_multi_day = 2
@@ -5148,7 +5124,6 @@ class world_class():
 		#set tomb
 		ran_pos = m.find_any(tl.tlist['extra'][0])
 		m.tilemap[ran_pos[1]][ran_pos[0]] = tl.tlist['dungeon'][18]
-		print ('Debug: Tomb at',ran_pos)
 		
 		m.spawn_monsters(0)
 					
@@ -6271,8 +6246,10 @@ class mob():
 			else:
 				world.dungeon_generator(plus+1,False)
 				
+			if player.on_map != 'dungeon_0_0':
+				player.last_z = player.pos[2]
+				
 			player.on_map = 'dungeon_0_0'
-			player.last_z = player.pos[2]
 			player.pos[2] = 1
 			
 			pos = world.maplist[player.pos[2]][player.on_map].find_first(tl.tlist['dungeon'][8])
@@ -6297,9 +6274,11 @@ class mob():
 				world.dungeon_generator(plus+1,stair_down=True,style='Tomb')
 			else:
 				world.dungeon_generator(plus+1,stair_down=False,style='Tomb')
+			
+			if player.on_map != 'dungeon_0_0':
+				player.last_z = player.pos[2]
 				
 			player.on_map = 'dungeon_0_0'
-			player.last_z = player.pos[2]
 			player.pos[2] = 1
 			
 			pos = world.maplist[player.pos[2]][player.on_map].find_first(tl.tlist['dungeon'][19])
@@ -6321,8 +6300,10 @@ class mob():
 		elif world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]][self.pos[0]].use_group == 'grot_down':#this is a grassland dungeon stair down
 			plus = world.grot_generator(1)
 				
+			if player.on_map != 'dungeon_0_0':
+				player.last_z = player.pos[2]
+				
 			player.on_map = 'dungeon_0_0'
-			player.last_z = player.pos[2]
 			player.pos[2] = 1
 			
 			pos = world.maplist[player.pos[2]][player.on_map].find_first(tl.tlist['dungeon'][15])
@@ -6344,8 +6325,10 @@ class mob():
 		elif world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]][self.pos[0]].use_group == 'mine_down':#this is a grassland dungeon stair down
 			plus = world.mine_generator(1)
 				
+			if player.on_map != 'dungeon_0_0':
+				player.last_z = player.pos[2]
+				
 			player.on_map = 'dungeon_0_0'
-			player.last_z = player.pos[2]
 			player.pos[2] = 1
 			
 			pos = world.maplist[player.pos[2]][player.on_map].find_first(tl.tlist['dungeon'][17])
@@ -6377,7 +6360,7 @@ class player_class(mob):
 			
 			mob.__init__(self, name, on_map, attribute, pos)
 			
-			f = file(lname, 'r')
+			f = open(lname, 'rb')
 			screen.render_load(7)
 			temp = p.load(f)
 			
@@ -8775,7 +8758,7 @@ class time_class():
 		
 		try:
 			
-			f = file(name, 'r')
+			f = open(name, 'rb')
 			screen.render_load(6)
 			temp = p.load(f)
 			self.minute = temp.minute
@@ -8985,7 +8968,7 @@ class gods_class():
 		
 		try:
 			
-			f = file(name, 'r')
+			f = open(name, 'rb')
 			screen.render_load(14)
 			temp = p.load(f)
 			self.mood = temp.mood
@@ -9082,6 +9065,7 @@ def main():
 	global playing
 	global sfx
 	global master_loop
+	global game_options
 	
 	screen = g_screen()
 	gra_files = g_files()
