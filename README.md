@@ -37,7 +37,7 @@ RBA is definatly a game about changing the gameworld by interacting with it. So 
 ...Or you simply can call it a RogueBox-game.
 
 ## Were can I get the game? On witch platforms does it run?
-You can download a build of RBA at: [https://github.com/themightyglider/RogueBox-Adventures/releases](https://github.com/themightyglider/RogueBox-Adventures/releases)
+You can download a build of RBA at: [https://themightyglider.itch.io/roguebox-adventures](https://themightyglider.itch.io/roguebox-adventures)
 
 It is distributed in three ways:
 
@@ -69,7 +69,7 @@ The keybindings are:
 
 ## I've found a bug. I want to make a suggestion. I want to constribute something.
 
-You can report bugs on GitHub at: [https://github.com/themightyglider/RogueBox-Adventures](https://github.com/themightyglider/RogueBox-Adventures)
+You can report bugs on GitHub at: [https://gitgud.io/themightyglider/RogueBoxAdventures](https://gitgud.io/themightyglider/RogueBoxAdventures)
 
 Or you can mail me at: themightyglider@gmx.de (love- or hate-mail is welcome as well)
 
