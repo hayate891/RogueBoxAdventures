@@ -1,3 +1,18 @@
+#This file is part of RogueBox Adventures.
+#
+#    RogueBox Adventures is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    RogueBox Adventures is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with RogueBox Adventures.  If not, see <http://www.gnu.org/licenses/>.
+
 class attribute():
 
 	def __init__(self, p_strange, p_defense, m_strange, m_defense, luck, max_lp, max_mp, hunger_max = 3600, thirst_max = 2160, tiredness_max = 5040, pickaxe_power = 1):
