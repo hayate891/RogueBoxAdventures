@@ -2,7 +2,7 @@
 
 ## First things first...
 
-RogueBox Adventures is Free (like in Freedome) Software and distributets under the terms of GPL3.
+RogueBox Adventures is Free (like in Freedome) Software and distributets under the terms of GPL3(or later).
 
 This guareantees you the right to:
 
