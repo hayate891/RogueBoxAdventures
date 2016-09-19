@@ -2440,9 +2440,25 @@ class maP():
 			dir_list = []
 			for n in range(-1,2):
 				if x+n < max_map_size-2 and x+n > 2:
-					dir_list.append([x+n,y])
+					if x+n < max_map_size-7 and x+n > 7:
+						count = 5
+					else:
+						count = min((max_map_size-2)-(x+n),(x+n),3)
+						
+					count = max(count,1)#only to be sure count < 1	
+						
+					for c in range(0,count):
+						dir_list.append([x+n,y])
 				if y+n < max_map_size-2 and y+n > 2:
-					dir_list.append([x,y+n])
+					if y+n < max_map_size-7 and y+n > 7:
+						count = 5
+					else:
+						count = min((max_map_size-2)-(y+n),(y+n),3)
+					
+					count = max(count,1)#only to be sure count < 1	
+						
+					for c in range(0,count):
+						dir_list.append([x,y+n])
 					
 			#step 1: set tile new tile
 			ran = random.randint(0,len(dir_list)-1)
@@ -3390,7 +3406,7 @@ class maP():
 	
 	def make_shops(self):
 		
-		num = (max_map_size*max_map_size) / (50*50)
+		num = int((max_map_size*max_map_size) / (50*50))
 		
 		for i in range (0,num):
 			
@@ -4074,7 +4090,6 @@ class world_class():
 		
 		m.fill(tl.tlist['global_caves'][3])#fill with hard rock
 		m.drunken_walker(int(max_map_size/2),int(max_map_size/2),tl.tlist['misc'][0],(((max_map_size*max_map_size)/100)*40))#set low water
-		m.set_round_frame(tl.tlist['global_caves'][3],int(max_map_size/2)-3)
 		
 		m.set_frame(tl.tlist['functional'][0])
 		
@@ -4119,7 +4134,7 @@ class world_class():
 		
 		screen.render_load(15,75)
 		
-		num_lilys = ((max_map_size*max_map_size)/100)*3
+		num_lilys = int(((max_map_size*max_map_size)/100)*3)
 		
 		for i in range (0,num_lilys):
 			pos = m.find_any(tl.tlist['misc'][0])#find low wather
@@ -4448,7 +4463,6 @@ class world_class():
 		screen.render_load(17,30)
 		m.drunken_walker(int(max_map_size/2),int(max_map_size/2),tl.tlist['mine'][0],((max_map_size**2/100)*45))
 		screen.render_load(17,50)
-		m.set_round_frame(tl.tlist['mine'][1],(int(max_map_size/2)-3))
 		
 		screen.render_load(17,60)
 		
@@ -4478,7 +4492,7 @@ class world_class():
 		
 		m.make_containers(15,30,tl.tlist['mine'][0],1,4,'remains')
 		
-		num_moss = ((max_map_size*max_map_size)/100)*3
+		num_moss = int(((max_map_size*max_map_size)/100)*3)
 		
 		for i in range (0,num_moss):
 			pos = m.find_any(tl.tlist['mine'][0])#find mine floor
