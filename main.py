@@ -158,14 +158,18 @@ class g_screen():
 		
 		winstyle = pygame.FULLSCREEN
 		
-		if self.win_mode == 1:  
+		if self.win_mode == 2:  
 			self.screen = pygame.display.set_mode((self.displayx,self.displayy),winstyle)
 			pygame.mouse.set_visible(game_options.mousepad)
 				
-		else:
+		elif self.win_mode == 0:
 			self.screen = pygame.display.set_mode((640,360))
 			self.displayx = 640
 			self.displayy = 360
+		else:
+			self.screen = pygame.display.set_mode((1280,720))
+			self.displayx = 1280
+			self.displayy = 720
 		
 		if low_res == True:
 			self.screen = pygame.display.set_mode((320,240))
@@ -494,8 +498,10 @@ class g_screen():
 		
 		options_path = basic_path + os.sep + 'SAVE'
 		
-		if self.win_mode == 0:
-			mode = 1
+		mode = game_options.screenmode
+		
+		if self.win_mode < 2:
+			mode += 1
 		else:
 			mode = 0
 		game_options.screenmode = mode
@@ -1814,10 +1820,12 @@ class g_screen():
 		while run:
 			
 			if low_res == False:
-				if game_options.screenmode == 1:
+				if game_options.screenmode == 2:
 					winm = 'Screenmode: Fullscreen'
+				elif game_options.screenmode == 1:
+					winm = 'Screenmode: Windowed(1280X720)'
 				else:
-					winm = 'Screenmode: Windowed'
+					winm = 'Screenmode: Windowed(640X360)'
 			else:
 				winm = '----------'
 				
