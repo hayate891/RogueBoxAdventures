@@ -90,10 +90,10 @@ class game_options():
 
 
 def check_version():
-	#this function compares the release_number from version.py whit a number that from the https://themightyglider.github.io/version.htm
+	#this function compares the release_number from version.py whit a number that from the https://notabug.org/themightyglider/themightyglider.notabug.org/raw/master/index.html
 	#and returns: 'This version is up to date', 'Old version!!! Please update.', 'Can't reach server!'
 	try:
-		f = urlopen('https://themightyglider.github.io/version.htm')
+		f = urlopen('https://notabug.org/themightyglider/rba-version/raw/master/version.htm')
 		vers_test = int(f.read())
 		
 		if release_number ==  vers_test:

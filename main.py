@@ -1053,7 +1053,7 @@ class g_screen():
 		
 			# render wood needed
 		
-			wood_need = price/3 
+			wood_need = int(price/3) 
 			if wood_need == 0:
 				wood_need = 1
 			wood_string = 'Wood: ' + str(wood_need) + '(' + str(player.inventory.materials.wood) + ')' 
@@ -1070,7 +1070,7 @@ class g_screen():
 		
 			# render stone needed
 		
-			stone_need = price/2
+			stone_need = int(price/2)
 			if stone_need == 0:
 				stone_need = 1
 			stone_string = 'Stone: ' + str(stone_need) + '(' + str(player.inventory.materials.stone) + ')' 
@@ -1149,7 +1149,7 @@ class g_screen():
 			
 			# render wood needed
 		
-			wood_need = price/2 
+			wood_need = int(price/2) 
 			if wood_need == 0:
 				wood_need = 1
 			wood_string = 'Wood: ' + str(wood_need) + '(' + str(player.inventory.materials.wood) + ')' 
@@ -1166,7 +1166,7 @@ class g_screen():
 		
 			# render stone needed
 		
-			stone_need = price/3
+			stone_need = int(price/3)
 		
 			stone_string = 'Stone: ' + str(stone_need) + '(' + str(player.inventory.materials.stone) + ')' 
 		
@@ -1987,6 +1987,7 @@ class g_screen():
 		num = 0
 		global exitgame
 		global playing
+		global player
 		
 		while run:
 			
@@ -2078,6 +2079,7 @@ class g_screen():
 					screen.render_load(5)
 					save(world,player,time,gods,save_path,os.sep)
 					screen.save_tmp_png()
+					del player
 					playing = False
 					run = False
 					
@@ -3958,8 +3960,15 @@ class maP():
 		amo = item_wear(amo_class,material_amo,0)
 		ran_tunica = random.randint(0,2)
 		
+		#original
 		self.add_container([pick,axe,amo,il.ilist['misc'][3],il.ilist['misc'][2],il.ilist['misc'][44],il.ilist['misc'][51],il.ilist['clothe'][ran_tunica]],startx,starty-1)
-		#self.add_container([il.ilist['clothe'][0],il.ilist['clothe'][1],il.ilist['clothe'][2],il.ilist['clothe'][3],il.ilist['clothe'][4],il.ilist['clothe'][5],il.ilist['clothe'][6],il.ilist['clothe'][7]],startx,starty-1)
+		#/original
+		
+		# build demo: self.add_container([pick,axe,amo,il.ilist['misc'][3],il.ilist['misc'][16],il.ilist['misc'][22],il.ilist['misc'][23],il.ilist['clothe'][ran_tunica]],startx,starty-1)
+		
+		# cloth demo: self.add_container([il.ilist['clothe'][0],il.ilist['clothe'][1],il.ilist['clothe'][2],il.ilist['clothe'][3],il.ilist['clothe'][4],il.ilist['clothe'][5],il.ilist['clothe'][6],il.ilist['clothe'][7]],startx,starty-1)
+		
+		# magic demo: self.add_container([pick,axe,amo,il.ilist['misc'][3],il.ilist['misc'][35],il.ilist['misc'][24],il.ilist['misc'][29],il.ilist['clothe'][ran_tunica]],startx,starty-1)
 		
 		self.tilemap[starty+1][startx] = deepcopy(tl.tlist['functional'][1])#stair down
 		self.tilemap[starty+1][startx].damage = -1
@@ -7106,7 +7115,7 @@ class player_class(mob):
 								
 							world.maplist[player.pos[2]][player.on_map].containers[player.pos[1]+ymin][player.pos[0]+xmin] = 0 #first of all erase all items that are at this pos
 									
-							world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]+ymin][player.pos[0]+xmin] = tl.tlist['building'][3] #set door here
+							world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]+ymin][player.pos[0]+xmin] = deepcopy(tl.tlist['building'][3]) #set door here
 				
 				elif style == 'Stair up':
 					
@@ -9057,10 +9066,15 @@ class bgM():
 		
 		music_path = basic_path + os.sep + 'AUDIO' + os.sep + 'BGM' + os.sep
 		
+		try:
+			if play_menu_sound == False:
+				test = self.song_played_now = world.maplist[player.pos[2]][player.on_map].map_type
+		except:
+			play_menu_sound = True
+		
 		if game_options.bgmmode == 1 and play_menu_sound == False:
 			self.song_played_now = world.maplist[player.pos[2]][player.on_map].map_type
 		else:
-			
 			pygame.mixer.music.stop()
 		
 		if self.song_played_now != self.last_song and play_menu_sound == False:
@@ -9127,6 +9141,7 @@ def main():
 			mes = 'Welcome to Roguebox Adventures[' + version +']'
 			message.add(mes)
 			player.stand_check()
+			bgm.check_for_song()
 		
 			running = True
 	
