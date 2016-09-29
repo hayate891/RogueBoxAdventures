@@ -15,4 +15,4 @@
 #    You should have received a copy of the GNU General Public License
 #    along with RogueBox Adventures.  If not, see <http://www.gnu.org/licenses/>.
 
-python ./main.py -l -g -h -s
+python ./main.py -l -g -h -s 2>&1 ~/.config/debug.txt

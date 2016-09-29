@@ -160,17 +160,16 @@ class g_screen():
 		
 		if self.win_mode == 2:  
 			self.screen = pygame.display.set_mode((self.displayx,self.displayy),winstyle)
-			pygame.mouse.set_visible(game_options.mousepad)
-				
-		elif self.win_mode == 0:
+			pygame.mouse.set_visible(game_options.mousepad)		
+		elif self.win_mode == 0 and lowres == False:
 			self.screen = pygame.display.set_mode((640,360))
 			self.displayx = 640
 			self.displayy = 360
-		else:
+		elif self.win_mode == 1 and low_res == False:
 			self.screen = pygame.display.set_mode((1280,720))
 			self.displayx = 1280
 			self.displayy = 720
-		
+		 
 		if low_res == True:
 			self.screen = pygame.display.set_mode((320,240))
 			pygame.mouse.set_visible(False)
