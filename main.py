@@ -78,7 +78,7 @@ data_path = basic_path + os.sep + 'DATA'
 if home_save == False:
 	save_path = basic_path + os.sep + 'SAVE' + os.sep + 'World0'
 else:
-	save_path = os.path.expanduser(basic_path) + os.sep + 'SAVE' + os.sep + 'World0'
+	save_path = os.path.expanduser('~') + os.sep + '.config' + os.sep + 'RogueBox-Adventures' + os.sep + 'SAVE' + os.sep + 'World0'
 playing = False
 sys.path.append(lib_path)
 max_map_size = 52
@@ -495,7 +495,7 @@ class g_screen():
 	
 	def re_init(self): # For changing screenmode
 		
-		options_path = basic_path + os.sep + 'SAVE'
+		options_path = save_path.replace(os.sep + 'World0','')
 		
 		mode = game_options.screenmode
 		
@@ -1814,7 +1814,7 @@ class g_screen():
 		
 		run = True
 		num = 0
-		options_path = basic_path + os.sep + 'SAVE'
+		options_path = save_path.replace(os.sep + 'World0','')
 		
 		while run:
 			
@@ -2251,7 +2251,7 @@ class g_screen():
 				s_help.fill((48,48,48))
 				s.blit(s_help,(480,0))
 			
-			text = '['+key_name['e']+'] - Add Char ['+key_name['b']+'] - Done ['+key_name['x']+'] - Reset'
+			text = '['+key_name['e']+'] - Add Char ['+key_name['x']+'] - Del Char ['+key_name['b']+'] - Done'
 			text_image = screen.font.render(text,1,(255,255,255))
 			
 			if low_res == False:
@@ -2307,8 +2307,9 @@ class g_screen():
 				run = False
 				
 			if ui == 'x':
-				pos = 0
-				string = ''
+				if pos > 0:
+					pos -= 1
+					string = string[:pos]
 					
 		return string
 		
