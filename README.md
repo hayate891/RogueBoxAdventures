@@ -27,13 +27,13 @@ But RBA dosn't cover all of this points.
 
 * It definitely features procedural generated levels. The whole gameworld is generated randomly for every new game.
 * It's gameplay is turnebased but the player has only a limited time to make the next turn (2sec) otherwise the game will go on
-* It uses tile-based graphics (but no ASCII graphics like clasic Roguelikes)
+* It uses tile-based graphics (but no ASCII graphics like classic Roguelikes)
 * It is possible to play with permanent death but it isn't necessary
 * THere are monsters like orcs and dryades and items like magic scrolls and weapons inside RBA. So yes, it has got some kind of high fantasy setting
 
 Sandbox games on the other hand are a special kind of open-world-game which is about the interaction between the player and the game-world. Everything is about changing the gameworld.
 
-RBA is definatly a game about changing the gameworld by interacting with it. So you can call it a sandbox game with some rogue-like elements...
+RBA is definitely a game about changing the gameworld by interacting with it. So you can call it a sandbox game with some rogue-like elements...
 ...Or you simply can call it a RogueBox-game.
 
 ## Were can I get the game? On witch platforms does it run?
@@ -77,7 +77,7 @@ Constributors please push your changes to the development branch of the git repo
 
 ## Have Fun!
 
-Thank you for beeing interested in my little game. I hope it will bring you some hours of joy.
+Thank you for being interested in my little game. I hope it will bring you some hours of joy.
 
 	Copyright (C) 2015  Marian Luck
 	

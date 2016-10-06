@@ -2089,7 +2089,7 @@ class g_screen():
 	
 	def get_choice(self,headline,choices,allow_chancel,style='Default'): 
 		
-		#this function allows the player to make a coice. The choices-variable is a tulpel with strings. The function returns the number of the choosen string inside the tulpel
+		#this function allows the player to make a coice. The choices-variable is a tulpel with strings. The function returns the number of the chosen string inside the tulpel
 		
 		run = True
 		num = 0
@@ -2697,7 +2697,7 @@ class maP():
 			
 			if self.npcs[spawnpoints[i][1]][spawnpoints[i][0]] != 0: #there is a monster here
 				spawnpoints[i] = 'del'
-				monster_count += 1#count the monsters that are allready on the map
+				monster_count += 1#count the monsters that are already on the map
 			
 		newlist = []
 		
@@ -2719,7 +2719,7 @@ class maP():
 			ran3 = random.randint(0,len(ml.mlist['civilian'])-1)
 				
 			if self.tilemap[spawnpoints[ran2][1]][spawnpoints[ran2][0]].civilisation == False:#spawn a wild monster
-				self.npcs[spawnpoints[ran2][1]][spawnpoints[ran2][0]] = deepcopy(ml.mlist[self.map_type][ran])#deepcopy is used that every monster on the map is saved seperate
+				self.npcs[spawnpoints[ran2][1]][spawnpoints[ran2][0]] = deepcopy(ml.mlist[self.map_type][ran])#deepcopy is used that every monster on the map is saved separate
 				self.set_monster_strange(spawnpoints[ran2][0],spawnpoints[ran2][1],depth)
 				try:
 					if player.difficulty == 4:
@@ -2861,7 +2861,7 @@ class maP():
 						except:
 							print('Debug:Error')
 					
-						#II. Find out wich possible move leads to wich distance between monster and player
+						#II. Find out which possible move leads to which distance between monster and player
 					distances = []
 					
 					for j in range (0,len(moves)):
@@ -3200,7 +3200,7 @@ class maP():
 							classes = ('spear','sword','axe','hammer','shoes','cuisse','helmet','armor','wand','rune','rune staff','artefact','ring','amulet','necklace','talisman','pickaxe')
 							kind = classes[random.randint(0,len(classes)-1)]#all classes of objects are allowed
 							plus = random.randint(-2,+2)# a plus between -2 and +2 is possible
-							state = random.randint(10,85)#the state of this used objects will allways be between 10% and 80%
+							state = random.randint(10,85)#the state of this used objects will always be between 10% and 80%
 							curse = random.randint(0,2)#all curse-states are allowed from cursed to blessed
  							
 							item = item_wear(kind,material,plus,state,curse)
@@ -3401,7 +3401,7 @@ class maP():
 			if player.difficulty == 4:
 				self.npcs[y][x].AI_style = 'ignore'
 		else:
-			self.npcs[y][x] = 0 #allways del the monster if it is no mimic
+			self.npcs[y][x] = 0 #always del the monster if it is no mimic
 		self.make_monsters_angry(x,y,'kill')
 		message.add(die_mess)
 		return True
@@ -3422,7 +3422,7 @@ class maP():
 			for yy in range(y-2,y+3):
 				for xx in range(x-2,x+3):
 					
-					self.npcs[yy][xx] = 0 #allways del the monsters
+					self.npcs[yy][xx] = 0 #always del the monsters
 					
 					if xx == x-2 or xx == x+2 or yy == y-2 or yy == y+2:
 						self.tilemap[yy][xx] = deepcopy(tl.tlist['shop'][1])
@@ -3457,7 +3457,7 @@ class maP():
 					None
 	
 	def time_pass(self):
-		#This function refresches the map for every day that past since players last visit... make plants growing ect.
+		#This function refresches the map for every day that past since players last visit... make plants growing etc.
 		
 		if self.last_visit != time.day_total:
 			
@@ -3682,7 +3682,7 @@ class maP():
 								self.tilemap[y][x] = self.tilemap[y][x].replace
 								self.containers[y][x] = 0
 							
-						#########add other events for growing plants ect here########
+						#########add other events for growing plants etc here########
 			
 				self.last_visit = time.day_total #change the day of last visit to today to prevent the map of changed a second time for this day
 			
@@ -5386,7 +5386,7 @@ class mob():
 					except:
 						None
 					
-					world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x] = deepcopy(world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].replace) #let the tree dissappear
+					world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x] = deepcopy(world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].replace) #let the tree disappear
 					
 					player.inventory.wearing['Hold(R)'].take_damage()
 					
@@ -5721,7 +5721,7 @@ class mob():
 						if player.inventory.materials.wood >= 10:
 							gc = screen.get_choice('What do you want to produce?', ('Carpenter\'s Workbench', 'Carver\'s Workbench', 'Stonecuter\'s Workbench', 'Forger\'s Workbench', 'Alchemist\'s Workshop', 'Furniture'),True)
 							
-							if gc < 5:# give the choosen workbench to the player
+							if gc < 5:# give the chosen workbench to the player
 								items = (il.ilist['misc'][3],il.ilist['misc'][4],il.ilist['misc'][5],il.ilist['misc'][6],il.ilist['misc'][7])
 								choose = gc
 							elif gc == 5:
@@ -7612,7 +7612,7 @@ class messager():
 		self.more_messages = False
 		
 	def add(self, new_message, check_if_new = False):
-		# check_if_new is only needed by the (mob)player.stand_check function to proove there is only shown a new message about the ground when the player enters a new kind of ground
+		# check_if_new is only needed by the (mob)player.stand_check function to prove there is only shown a new message about the ground when the player enters a new kind of ground
 		if check_if_new == False:
 			self.mes_list.append(new_message)
 			self.mes_history[self.history_page].append(new_message)
@@ -7814,7 +7814,7 @@ class inventory():
 				string = 'Not here!'
 				
 			if world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]].techID == tl.tlist['functional'][3].techID or world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]].techID == tl.tlist['functional'][4].techID or world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]].techID == tl.tlist['functional'][5].techID:
-				if 	world.maplist[player.pos[2]][player.on_map].containers[player.pos[1]][player.pos[0]] != 0: #there are allready things here
+				if 	world.maplist[player.pos[2]][player.on_map].containers[player.pos[1]][player.pos[0]] != 0: #there are already things here
 					if len(world.maplist[player.pos[2]][player.on_map].containers[player.pos[1]][player.pos[0]].items) > 6:
 						field_full = True
 						string = 'There are already too many items at this place!'
@@ -7865,7 +7865,7 @@ class inventory():
 						self.inv_mes = 'You drop a %s.' %(self.misc[slot].name)
 					self.misc[slot] = self.nothing
 				
-				for i in range (0, len(world.maplist[player.pos[2]][player.on_map].containers[player.pos[1]][player.pos[0]].items)): #check for empty slots and errase them if nessecary ---------- unsure because the -1
+				for i in range (0, len(world.maplist[player.pos[2]][player.on_map].containers[player.pos[1]][player.pos[0]].items)): #check for empty slots and errase them if necessary ---------- unsure because the -1
 					try:#try-except is needed because the length of the list can change
 						if world.maplist[player.pos[2]][player.on_map].containers[player.pos[1]][player.pos[0]].items[i] == self.nothing:
 							del world.maplist[player.pos[2]][player.on_map].containers[player.pos[1]][player.pos[0]].items[i]
@@ -8098,7 +8098,7 @@ class inventory():
 					
 					if player.lp < player.attribute.max_lp:
 						player.lp = player.attribute.max_lp
-						message.add('Your wounds heal immediatly.')
+						message.add('Your wounds heal immediately.')
 					else:
 						message.add('Nothing seems to happen.')
 						
@@ -8969,7 +8969,7 @@ class time_class():
 							
 						self.year +=1
 						self.month = 1
-						self.day_total = 0 #eventualy will cause a little bug when the year is changing but prevent the number of total days of become endless big
+						self.day_total = 0 #eventually will cause a little bug when the year is changing but prevent the number of total days of become endless big
 						
 						if self.year > 9999:
 							self.year = 0 #just to be save ;-)
