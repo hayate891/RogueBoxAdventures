@@ -2266,3 +2266,37 @@ class tilelist():
 					drops_here = False)
 		self.tlist['dungeon'].append(t)
 		techID+=1
+		
+		self.tlist['tutorial'] = []
+		#0
+		t=tile(techID = techID,
+					name = 'Tutorial Floor',
+					tile_color = 'light_red',
+					use_group = 'None',
+					move_group = 'holy',
+					grow_group = 'None',
+					damage = 0, 
+					move_message = 'You walk over wooden floor.', 
+					damage_message = None,
+					build_here = False,
+					can_grown = False,
+					tile_pos = (7,5))
+					
+		self.tlist['tutorial'].append(t)
+		techID+=1
+		#1
+		t=tile(techID = techID,
+					name = 'Tutorial Wall',
+					tile_color = 'light_red',
+					use_group = 'None',
+					move_group = 'solide',
+					grow_group = 'None',
+					damage = 0, 
+					move_message = 'Wall', 
+					damage_message = None,
+					build_here = False,
+					can_grown = False,
+					transparency = False,
+					tile_pos = (2,6))
+		self.tlist['tutorial'].append(t)
+		techID+=1

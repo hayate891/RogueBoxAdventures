@@ -13,7 +13,11 @@
 #    You should have received a copy of the GNU General Public License
 #    along with RogueBox Adventures.  If not, see <http://www.gnu.org/licenses/>.
 
-import pickle as p
+try:
+ 	import cPickle as p
+except:
+ 	import pickle as p
+	
 from version import release_number
 import os
 

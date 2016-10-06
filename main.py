@@ -64,27 +64,30 @@ for t in sys.argv:
 	if t == '-h':
 		home_save = True
 		
-		p = os.path.expanduser('~')
-		path = p + os.sep + '.config' + os.sep + 'RogueBox-Adventures'
-		if os.path.exists(path) == False:
-			for c in range(0,5):
-				ph = path + os.sep + 'SAVE' + os.sep + 'World' + str(c)
-				os.makedirs(ph)
-		del p
-		del path
-		
 lib_path = basic_path + os.sep + 'LIB'
 data_path = basic_path + os.sep + 'DATA'
 if home_save == False:
 	save_path = basic_path + os.sep + 'SAVE' + os.sep + 'World0'
 else:
 	save_path = os.path.expanduser('~') + os.sep + '.config' + os.sep + 'RogueBox-Adventures' + os.sep + 'SAVE' + os.sep + 'World0'
+ 
+path = save_path.replace(os.sep+'World0','')
+if os.path.exists(path) == False:
+	for c in range(0,5):
+		ph = path +  os.sep + 'World' + str(c)
+		os.makedirs(ph)
+del path
+
 playing = False
 sys.path.append(lib_path)
 max_map_size = 52
 monitor = [0,0]
 
-import pickle as p
+try:
+	import cPickle as p
+except:
+	import pickle as p
+	
 try:
 	p.DEFAULT_PROTOCOL=0
 except:
@@ -108,6 +111,7 @@ from buffs import buffs
 from itemlist import *
 from tilelist import *
 from monsterlist import *
+from text import texts
 from version import *
 
 game_options = game_options(basic_path,home_save)
@@ -1808,8 +1812,63 @@ class g_screen():
 			
 			if ui == 'x':
 				run = False
+
+	def render_text(self,text,replace_keys=True):
+ 		
+		run = True
+ 		
+		while run:
+ 			
+			if low_res == False:
+				s = pygame.Surface((640,360))
+			else:
+				s = pygame.Surface((320,240))
+				
+			bg = pygame.Surface((480,360))
+			bg.blit(gra_files.gdic['display'][1],(0,0)) #render background
 			
-					  
+			if low_res == True:
+				bg = pygame.transform.scale(bg,(320,240))
+
+			s.blit(bg,(0,0))
+			
+			if game_options.mousepad == 1 and low_res == False:
+				s.blit(gra_files.gdic['display'][8],(480,0)) #render mouse pad
+			else:
+				s_help = pygame.Surface((160,360))
+				s_help.fill((48,48,48))
+				s.blit(s_help,(480,0))
+			
+			top_text = '[Press ['+key_name['e']+']]'
+			text_image = screen.font.render(top_text,1,(255,255,255))
+			s.blit(text_image,(5,2))#menue title
+							
+			for i in range (0,len(text)):
+			
+				text_image = screen.font.render(text[i],1,(0,0,0))
+				if low_res == False:
+					s.blit(text_image,(60,80+i*25))#blit credit_items
+				else:
+					s.blit(text_image,(21,36+i*20))#blit credit_items
+			
+			if game_options.mousepad == 0 and low_res == False:
+				s_help = pygame.Surface((640,360))
+				s_help.fill((48,48,48))
+				s_help.blit(s,(80,0))
+				s = s_help
+			
+			if low_res == False:
+				s = pygame.transform.scale(s,(self.displayx,self.displayy))
+			
+			self.screen.blit(s,(0,0))
+			
+			pygame.display.flip()
+			
+			ui = getch(screen.displayx,screen.displayy,game_options.sfxmode,game_options.turnmode,mouse=game_options.mousepad)
+			
+			if ui == 'e':
+				run = False
+							  
 	def render_options(self):
 		
 		run = True
@@ -4746,6 +4805,45 @@ class world_class():
 		screen.render_load(3,9)
 		
 		return pos
+	
+	def tutorial_generator(self):
+ 		
+ 		#0: Basic initializing
+ 		
+ 		screen.render_load(19,0)
+ 		
+ 		name = 'dungeon_0_0'
+ 		
+ 		tilemap = []
+ 		for a in range (0,max_map_size):
+ 			tilemap.append([])
+ 			for b in range (0,max_map_size):
+ 				tilemap[a].append(0)
+ 		
+ 		m = maP(name,tilemap)
+ 		m.map_type = 'dungeon'
+ 		m.build_type = 'None'
+ 		m.monster_plus = 0
+ 		m.monster_num = 0
+ 		
+ 		m.fill(tl.tlist['tutorial'][1])
+ 		
+ 		screen.render_load(19,10)
+ 		
+ 		#1: Room one
+ 		for y in range(5,10):
+ 			for x in range(5,10):
+ 				m.tilemap[y][x] = tl.tlist['tutorial'][0]
+ 				
+ 		for y in range(10,13):
+ 			m.tilemap[y][7] = tl.tlist['tutorial'][0]
+ 			
+ 		for y in range(13,18):
+ 			for x in range(5,10):
+ 				m.tilemap[y][x] = tl.tlist['tutorial'][0]
+ 				
+ 		m.countdowns.append(countdown('init_tutorial',0,0,0))
+ 		self.maplist[0][name] = m
 	
 	def dungeon_generator(self,monster_plus,stair_down=True,num_traps=10,style='Dungeon'):#possible other style = 'Tomb'
 		
@@ -8894,7 +8992,12 @@ class time_class():
 								message.add('The magic word fades.')
 							world.maplist[player.pos[2]][player.on_map].tilemap[world.maplist[player.pos[2]][player.on_map].countdowns[i].y][world.maplist[player.pos[2]][player.on_map].countdowns[i].x] = world.maplist[player.pos[2]][player.on_map].tilemap[world.maplist[player.pos[2]][player.on_map].countdowns[i].y][world.maplist[player.pos[2]][player.on_map].countdowns[i].x].replace
 							world.maplist[player.pos[2]][player.on_map].countdowns[i] = 'del'		
-		
+						
+						elif  world.maplist[player.pos[2]][player.on_map].countdowns[i].kind == 'init_tutorial':
+							screen.render_text(texts['tutorial_1.1'])
+							screen.render_text(texts['tutorial_1.2'])
+							world.maplist[player.pos[2]][player.on_map].countdowns[i] = 'del'
+							
 		newcountdown = []
 		
 		for k in world.maplist[player.pos[2]][player.on_map].countdowns:
@@ -9142,6 +9245,7 @@ def main():
 			message.add(mes)
 			player.stand_check()
 			bgm.check_for_song()
+			time.tick()
 		
 			running = True
 	

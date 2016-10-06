@@ -163,8 +163,9 @@ class item_wear(item):
 			
 	def identification(self):
 		
-		self.known = True
-		self.set_name()
+		if self.known == False:
+			self.known = True
+			self.set_name()
 	
 	def take_damage(self):
 		

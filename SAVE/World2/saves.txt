@@ -1,1 +1,0 @@
-All savefiles are stored here.
