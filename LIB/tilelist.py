@@ -499,7 +499,7 @@ class tilelist():
 					move_group = 'soil',
 					grow_group = 'None',
 					damage = 0, 
-					move_message = 'You stand in front of a confortable bed.', 
+					move_message = 'You stand in front of a comfortable bed.', 
 					damage_message = None,
 					civilisation = True,
 					tile_pos = (8,6))
@@ -625,7 +625,7 @@ class tilelist():
 					move_group = 'soil',
 					grow_group = 'None',
 					damage = 0, 
-					move_message = 'Here is a confortable looking wooden seat.', 
+					move_message = 'Here is a comfortable looking wooden seat.', 
 					damage_message = None,
 					civilisation = True,
 					tile_pos = (3,6))
@@ -639,7 +639,7 @@ class tilelist():
 					move_group = 'soil',
 					grow_group = 'None',
 					damage = 0, 
-					move_message = 'Here is a confortable looking stone seat.', 
+					move_message = 'Here is a comfortable looking stone seat.', 
 					damage_message = None,
 					civilisation = True,
 					tile_pos = (3,7))
