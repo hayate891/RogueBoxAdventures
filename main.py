@@ -5897,7 +5897,8 @@ class mob():
 							elif gc == 3:#make some jewlry
 								items = (item_wear('ring',0,0),  item_wear('amulet',0,0),  item_wear('necklace',0,0), item_wear('talisman',0,0))
 							
-							if final_choice == 'Foo':	
+							if final_choice == 'Foo':
+								items = (item_wear('ring',0,0),  item_wear('amulet',0,0),  item_wear('necklace',0,0), item_wear('talisman',0,0))
 								choose = random.randint(0, len(items)-1)
 							else:
 								choose = final_choice
@@ -6009,8 +6010,8 @@ class mob():
 				
 				if world.maplist[self.pos[2]][self.on_map].containers[self.pos[1]][self.pos[0]] != 0:
 					if len(world.maplist[self.pos[2]][self.on_map].containers[self.pos[1]][self.pos[0]].items) < 7:
-						string = '['+key_name['e']+'] - produce something (-' + str(price) + ' Ore)', '['+key_name['b']+'] - take a produced item', '['+key_name['x']+'] - leave'
-						screen.render_request(string)
+						string = ('['+key_name['e']+'] - produce something (-' + str(price) + ' Ore)', '['+key_name['b']+'] - take a produced item', '['+key_name['x']+'] - leave')
+						screen.render_request(string[0],string[1],string[2])
 					else:
 						screen.render_request('['+key_name['e']+'] -     XXXXXXXXXXXX            ', '['+key_name['b']+'] - take a produced item', '['+key_name['x']+'] - leave')
 				else:
@@ -6375,7 +6376,7 @@ class mob():
 					world.maplist[self.pos[2]][self.on_map].containers[self.pos[1]][self.pos[0]] = 0#del the container to be sure
 					if test == True:
 						player.inventory.materials.gem -= prices[choice]
-						message.add('The shopkeeper tanks you for your purchacing.')
+						message.add('The shopkeeper thanks you for your purchacing.')
 					else:
 						message.add('Your bags are to full to buy this item.')
 				else:
