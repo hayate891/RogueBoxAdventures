@@ -418,7 +418,7 @@ class g_screen():
 			menu_items.append('~~BACK~~')
 				
 			choice = screen.get_choice('Choose a saved game',menu_items,False)
-				
+			
 			if choice < 5:
 				save_path = path + os.sep + 'SAVE' + os.sep + 'World' + str(choice)
 				playing = True
@@ -2437,6 +2437,14 @@ class g_screen():
 				player.respawn()
 				if player.difficulty != 3:
 					save(world,player,time,gods,save_path,os.sep)
+				else:
+					files_to_remove = ('gods.data','player.data','world.data','time.data')
+					for i in files_to_remove:
+						del_file = save_path + os.sep + i
+						try:
+							os.remove(del_file)
+						except:
+							None
 				run = False
 				exitgame = True
 					
@@ -8072,7 +8080,7 @@ class inventory():
 			elif self.misc[slot].name == 'Mysterious Blue Crystal':
 				if player.attribute.max_mp > 5:
 					message.add('Your magic talents seem to grow.')
-					player.attribute.max_lp -= 2
+					player.attribute.max_mp -= 2
 					if player.mp > player.attribute.max_mp:
 						player.mp == player.attribute.max_mp
 				else:
@@ -8115,7 +8123,7 @@ class inventory():
 					if gem_num < 0:
 						gem_num = 0
 				else:
-					ore_num = 0
+					gem_num = 0
 				
 				string = 'It contains: ' + str(wood_num) + ' wood, ' +str(stone_num) + ' stone'
 				
@@ -9286,6 +9294,7 @@ def main():
 				
 				if exitgame == True:
 					running = False
+					playing = False
 				
 if __name__ == '__main__':
 	
