@@ -225,6 +225,8 @@ class g_screen():
 		#		5:critical
 		#		6:heal
 		#		7:teleport
+		#		8:minus_gem
+		#		9:plus_gem
 				
 		xx = x - player.pos[0] + 7
 		yy = y - player.pos[1] + 6
@@ -266,6 +268,10 @@ class g_screen():
 					s.blit(gra_files.gdic['display'][23],(((x-start)*32)+plusx,(y-start)*32+plusy))
 				elif self.hit_matrix[y][x] == 7:
 					s.blit(gra_files.gdic['display'][24],(((x-start)*32)+plusx,(y-start)*32+plusy))
+				elif self.hit_matrix[y][x] == 8:
+					s.blit(gra_files.gdic['display'][26],(((x-start)*32)+plusx,(y-start)*32+plusy))
+				elif self.hit_matrix[y][x] == 9:
+					s.blit(gra_files.gdic['display'][27],(((x-start)*32)+plusx,(y-start)*32+plusy))
 
 		s.set_colorkey((255,0,255),pygame.RLEACCEL)	
 		s = s.convert_alpha()
@@ -647,6 +653,9 @@ class g_screen():
 													helmetstring = player.gender + '_' + player.inventory.wearing['Head'].material + '_' + player.inventory.wearing['Head'].classe
 													s.blit(gra_files.gdic['char'][helmetstring],(start_pos_x+((view_x-player.pos[0])*32),start_pos_y+((view_y-player.pos[1])*32)))
 												else:
+													if render_hair == True:
+														hairstring = 'HAIR_' + player.gender + '_' + str(player.style +1)
+														s.blit(gra_files.gdic['char'][hairstring],(start_pos_x+((view_x-player.pos[0])*32),start_pos_y+((view_y-player.pos[1])*32)))
 													s.blit(gra_files.gdic['clothe'][player.inventory.wearing['Hat'].gra_pos[player.gender][0]][player.inventory.wearing['Hat'].gra_pos[player.gender][1]],(start_pos_x+((view_x-player.pos[0])*32),start_pos_y+((view_y-player.pos[1])*32)))
 														
 											if player.inventory.wearing['Clothing'] == player.inventory.nothing:
@@ -716,6 +725,9 @@ class g_screen():
 													helmetstring = player.gender + '_' + player.inventory.wearing['Head'].material + '_' + player.inventory.wearing['Head'].classe
 													s.blit(gra_files.gdic['char'][helmetstring],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)))
 												else:
+													if render_hair == True:
+														hairstring = 'HAIR_' + player.gender + '_' + str(player.style +1)
+														s.blit(gra_files.gdic['char'][hairstring],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)))
 													s.blit(gra_files.gdic['clothe'][player.inventory.wearing['Hat'].gra_pos[player.gender][0]][player.inventory.wearing['Hat'].gra_pos[player.gender][1]],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)))
 														
 											if player.inventory.wearing['Clothing'] == player.inventory.nothing:
@@ -753,8 +765,11 @@ class g_screen():
 		
 		s.blit(self.render_hits(),(0,0))
 		
-		if self.fire_mode == 0:			 
-			s.blit(gra_files.gdic['display'][0],(0,0)) #render gui
+		if self.fire_mode == 0:
+			if (player.lp*100)/player.attribute.max_lp>20 and (player.attribute.hunger*100)/player.attribute.hunger_max>10 and (player.attribute.thirst*100)/player.attribute.thirst_max>10 and (player.attribute.tiredness*100)/player.attribute.tiredness_max>10:
+				s.blit(gra_files.gdic['display'][0],(0,0)) #render gui
+			else:
+				s.blit(gra_files.gdic['display'][25],(0,0)) #render gui_warning
 		else:
 			s.blit(gra_files.gdic['display'][10],(0,0))
 		
@@ -854,8 +869,10 @@ class g_screen():
 		
 		posx = 75
 		posy = 12
-		
-		hunger_image = self.font.render(hunger_string,1,(0,0,0))
+		if hunger_percent < 11:
+			hunger_image = self.font.render(hunger_string,1,(200,0,0))
+		else:
+			hunger_image = self.font.render(hunger_string,1,(0,0,0))
 		s.blit(hunger_image,(posx,posy))
 		
 			#trirst
@@ -867,7 +884,10 @@ class g_screen():
 		posx = 125
 		posy = 12
 		
-		thirst_image = self.font.render(thirst_string,1,(0,0,0))
+		if thirst_percent < 11:
+			thirst_image = self.font.render(thirst_string,1,(200,0,0))
+		else:
+			thirst_image = self.font.render(thirst_string,1,(0,0,0))
 		s.blit(thirst_image,(posx,posy))
 		
 			#tiredness
@@ -878,8 +898,10 @@ class g_screen():
 		
 		posx = 180
 		posy = 12
-		
-		tiredness_image = self.font.render(tiredness_string,1,(0,0,0))
+		if tiredness_percent < 11:
+			tiredness_image = self.font.render(tiredness_string,1,(200,0,0))
+		else:
+			tiredness_image = self.font.render(tiredness_string,1,(0,0,0))
 		s.blit(tiredness_image,(posx,posy))
 		
 		if game_options.mousepad == 0 and low_res == False:
@@ -2375,6 +2397,9 @@ class g_screen():
 	def render_dead(self):
 		
 		global exitgame
+		
+		self.reset_hit_matrix()
+		
 		run = True
 		
 		while run:
@@ -3119,6 +3144,9 @@ class maP():
 										if ran < self.npcs[y][x].close_steal:
 											player.inventory.materials.gem -= 1
 											self.npcs[y][x].corps_lvl += 1
+											screen.write_hit_matrix(player.pos[0],player.pos[1],8)
+											screen.write_hit_matrix(x,y,9)
+											sfx.play('steal')											
 											steal_string = 'A ' + self.npcs[y][x].name + ' steals a gem from you.'
 											message.add(steal_string)
 											self.npcs[y][x].move_done = 1#set the move_done switch on
@@ -9157,7 +9185,8 @@ class sfX():
 						'boom': pygame.mixer.Sound(sfx_path + 'boom.ogg'),
 						'chop': pygame.mixer.Sound(sfx_path + 'chop.ogg'),
 						'brake': pygame.mixer.Sound(sfx_path + 'brake.ogg'),
-						'lvl_up': pygame.mixer.Sound(sfx_path + 'lvl_up.ogg')}
+						'lvl_up': pygame.mixer.Sound(sfx_path + 'lvl_up.ogg'),
+						'steal' : pygame.mixer.Sound(sfx_path + 'steal.ogg')}
 						
 	def play(self,sfx_name):
 		
