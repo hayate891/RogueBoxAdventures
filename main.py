@@ -16,6 +16,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with RogueBox Adventures.  If not, see <http://www.gnu.org/licenses/>.
 
+import datetime
 import time
 import sys
 import os
@@ -391,6 +392,28 @@ class g_screen():
 					run = False
 		
 		return master_loop
+	
+	def render_crash(self):
+		
+		run = True
+		
+		while run:
+			self.screen.fill((48,48,48))
+			string = []
+			string.append('Sorry, something went wrong.')
+			string.append('Check out debug.txt for more informations.')
+			st = []
+			for i in string:
+				st.append(self.font.render(i,1,(255,255,255)))
+			for j in range(0,2): 	
+				self.screen.blit(st[j],(5,25+j*25))
+		
+			pygame.display.flip()
+		
+			ui = getch(screen.displayx,screen.displayy,game_options.sfxmode,game_options.turnmode,mouse=game_options.mousepad)
+		
+			if ui != 'none':
+				run = False
 		
 	def choose_save_path(self):
 		
@@ -9259,6 +9282,7 @@ def main():
 	global master_loop
 	global game_options
 	
+
 	screen = g_screen()
 	gra_files = g_files()
 	tl = tilelist()
@@ -9327,4 +9351,29 @@ def main():
 				
 if __name__ == '__main__':
 	
-	main()
+	everything_fine = True
+	
+	try:
+		main()
+	except Exception as e:
+		everything_fine = False
+		exc_type, exc_obj, exc_tb = sys.exc_info()
+		fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+		error_string = (fname+', '+str(exc_tb.tb_lineno)+', '+str(e))
+		t = datetime.datetime.now()
+		bs = save_path
+		for c in range(0,6):
+			bs = bs.replace('/World'+str(c),'')
+		logfile = bs + os.sep + 'debug.txt'
+		f = open(logfile,'a')
+		f.write('#################################################')
+		f.write('\n')
+		f.write(str(t))
+		f.write('\n')
+		f.write(error_string)
+		f.write('\n')
+		f.close()
+	finally:
+		if everything_fine == False:
+			screen.render_crash()
+		
