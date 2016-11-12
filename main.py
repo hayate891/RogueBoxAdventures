@@ -293,7 +293,7 @@ class g_screen():
 		run = True
 		
 		while run:
-		
+			
 			if low_res == False: 
 				s = pygame.Surface((640,360))
 			else:
@@ -369,6 +369,10 @@ class g_screen():
 			
 			ui = getch(screen.displayx,screen.displayy,game_options.sfxmode,game_options.turnmode,mouse=game_options.mousepad)
 			
+			if ui == 'exit':
+				master_loop = False
+				run = False
+			
 			if ui == 'w':
 				num -= 1
 				if num < 0:
@@ -381,12 +385,20 @@ class g_screen():
 			
 			elif ui == 'e':
 				if num == 0:
-					screen.choose_save_path()
+					test = screen.choose_save_path()
+					if test == 'exit':
+						master_loop = False
 					run = False
 				elif num == 1:
-					screen.render_options()
+					test = screen.render_options()
+					if test == 'exit':
+						master_loop = False
+						run = False
 				elif num == 2:
-					screen.render_credits()
+					test = screen.render_credits()
+					if test == 'exit':
+						master_loop = False
+						run = False
 				elif num == 3:
 					master_loop = False
 					run = False
@@ -419,6 +431,7 @@ class g_screen():
 		
 		global save_path
 		global playing
+		global master_loop
 		
 		if home_save == True:
 			path = os.path.expanduser('~') + os.sep + '.config' + os.sep + 'RogueBox-Adventures'
@@ -447,6 +460,10 @@ class g_screen():
 			menu_items.append('~~BACK~~')
 				
 			choice = screen.get_choice('Choose a saved game',menu_items,False)
+			if choice == 'exit':
+				master_loop = False
+				run = False
+				return('exit')
 			
 			if choice < 5:
 				save_path = path + os.sep + 'SAVE' + os.sep + 'World' + str(choice)
@@ -1649,7 +1666,6 @@ class g_screen():
 		
 		pygame.display.flip()
 		
-		
 		return (wood_need,stone_need)
 		
 	def render_request(self,line1,line2,line3):
@@ -1786,7 +1802,20 @@ class g_screen():
 			
 			pygame.display.flip()
 			
-			ui = getch(screen.displayx,screen.displayy,game_options.sfxmode,game_options.turnmode,mouse=game_options.mousepad)
+			ui = getch(screen.displayx,screen.displayy,game_options.sfxmode,game_options.turnmode,mouse=game_options.mousepad)	
+			
+			if ui == 'exit':
+				global master_loop
+				global playing
+				global exitgame
+				exitgame = True
+				screen.render_load(5)
+				save(world,player,time,gods,save_path,os.sep)
+				screen.save_tmp_png()
+				master_loop = False
+				playing = False
+				run = False
+				return('exit')
 			
 			if ui == 's':
 				if level < len(world.maplist)-1:
@@ -1798,6 +1827,8 @@ class g_screen():
 				run = False
 	
 	def render_credits(self):
+		
+		global master_loop
 		
 		run = True
 		
@@ -1855,6 +1886,11 @@ class g_screen():
 			
 			ui = getch(screen.displayx,screen.displayy,game_options.sfxmode,game_options.turnmode,mouse=game_options.mousepad)
 			
+			if ui == 'exit':
+				master_loop = False
+				run = False
+				return('exit')
+			
 			if ui == 'x':
 				run = False
 
@@ -1910,6 +1946,19 @@ class g_screen():
 			pygame.display.flip()
 			
 			ui = getch(screen.displayx,screen.displayy,game_options.sfxmode,game_options.turnmode,mouse=game_options.mousepad)
+			
+			if ui == 'exit':
+					global master_loop
+					global playing
+					global exitgame
+					exitgame = True
+					screen.render_load(5)
+					save(world,player,time,gods,save_path,os.sep)
+					screen.save_tmp_png()
+					master_loop = False
+					playing = False
+					run = False
+					return('exit')
 			
 			if ui == 'e':
 				run = False
@@ -2014,7 +2063,25 @@ class g_screen():
 			pygame.display.flip()
 			
 			ui = getch(screen.displayx,screen.displayy,game_options.sfxmode,game_options.turnmode,mouse=game_options.mousepad)
-		
+			
+			if ui == 'exit':
+				global master_loop
+				global playing
+				global exitgame
+				global player
+				exitgame = True
+				try:
+					screen.render_load(5)
+					save(world,player,time,gods,save_path,os.sep)
+					screen.save_tmp_png()
+					del player
+				except:
+					None
+				master_loop = False
+				playing = False
+				run = False
+				return('exit')
+			
 			if ui == 'w':
 				num -= 1
 				if num < 0:
@@ -2151,7 +2218,20 @@ class g_screen():
 			pygame.display.flip()
 		
 			ui = getch(screen.displayx,screen.displayy,game_options.sfxmode,game_options.turnmode,mouse=game_options.mousepad)
-		
+			
+			if ui == 'exit':
+					global master_loop
+					global playing
+					global exitgame
+					exitgame = True
+					screen.render_load(5)
+					save(world,player,time,gods,save_path,os.sep)
+					screen.save_tmp_png()
+					master_loop = False
+					playing = False
+					run = False
+					return('exit')
+			
 			if ui == 'w':
 				num -= 1
 				if num < 0:
@@ -2172,10 +2252,14 @@ class g_screen():
 					
 				if num == 1:
 					if player.on_map != 'dungeon_0_0':
-						screen.render_map(player.pos[2])
+						do = screen.render_map(player.pos[2])
+						if do == 'exit':
+							run = False 
 					
 				if num == 2:
-					message.render_history()
+					do = message.render_history()
+					if do == 'exit':
+						run = False
 					
 				if num == 3:
 					exitgame = True
@@ -2187,7 +2271,9 @@ class g_screen():
 					run = False
 					
 				if num == 4:
-					screen.render_options()
+					do = screen.render_options()
+					if do == 'exit':
+						run = False
 											
 		return exitgame
 	
@@ -2283,7 +2369,24 @@ class g_screen():
 			pygame.display.flip()
 		
 			ui = getch(screen.displayx,screen.displayy,game_options.sfxmode,game_options.turnmode,mouse=game_options.mousepad)
-		
+			
+			if ui == 'exit':
+					global master_loop
+					global playing
+					global exitgame
+					global player
+					exitgame = True
+					try:
+						screen.render_load(5)
+						save(world,player,time,gods,save_path,os.sep)
+						screen.save_tmp_png()
+					except:
+						None
+					master_loop = False
+					playing = False
+					run = False
+					return('exit')
+			
 			if ui == 'w':
 				num -= 1
 				if num < 0:
@@ -2476,7 +2579,29 @@ class g_screen():
 			pygame.display.flip()
 		
 			ui = getch(screen.displayx,screen.displayy,game_options.sfxmode,game_options.turnmode,mouse=game_options.mousepad)
-		
+			
+			if ui == 'exit':
+					global master_loop
+					global playing
+					global exitgame
+					exitgame = True
+					if player.difficulty !=3:
+						screen.render_load(5)
+						save(world,player,time,gods,save_path,os.sep)
+						screen.save_tmp_png()
+					else:
+						files_to_remove = ('gods.data','player.data','world.data','time.data')
+						for i in files_to_remove:
+							del_file = save_path + os.sep + i
+						try:
+							os.remove(del_file)
+						except:
+							None
+					master_loop = False
+					playing = False
+					run = False
+					return('exit')
+			
 			if ui == 'e' and player.difficulty != 3:
 				player.respawn()
 				save(world,player,time,gods,save_path,os.sep)
@@ -2484,7 +2609,9 @@ class g_screen():
 			elif ui == 'x':
 				player.respawn()
 				if player.difficulty != 3:
+					screen.render_load(5)
 					save(world,player,time,gods,save_path,os.sep)
+					screen.save_tmp_png()
 				else:
 					files_to_remove = ('gods.data','player.data','world.data','time.data')
 					for i in files_to_remove:
@@ -5787,6 +5914,7 @@ class mob():
 		elif world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]][self.pos[0]].use_group == 'sleep':#this is a bed
 			#sleep a bit
 			sleep = True
+			lp = player.lp
 			
 			while sleep:
 				screen.render_load(12)
@@ -5794,26 +5922,36 @@ class mob():
 				player.attribute.tiredness += 5
 				if player.buffs.adrenalised_max > 0:
 					player.buffs.adrenalised_max -= 5
-				elif player.buffs.adrenalised_max < 0:
+				
+				if player.buffs.adrenalised_max < 0:
 					player.buffs.adrenalised_max = 0
+				
+				if player.lp < lp:
+					message.add('You were hurt!')
+					sleep = False
 				
 				if player.attribute.tiredness >= player.attribute.tiredness_max:#wake up because you've slept enough
 					player.attribute.tiredness = player.attribute.tiredness_max +1 #the +1 is because the player will lose one point at the same round so you would get just 99%
 					message.add('You feel refreshed.')
 					sleep = False
 					
+				if int((player.attribute.hunger_max*100)/player.attribute.hunger) < 11:
+					message.add('You feel hungry.')
+					sleep = False
+					
+				if int((player.attribute.thirst_max*100)/player.attribute.thirst) < 11:
+					message.add('You feel thirsty.')
+					sleep = False
+					
 				monster_test = False
 					
-				for y in range (player.pos[1]-1, player.pos[1]+1):#check for a monster
-					for x in range (player.pos[0]-1, player.pos[0]+1):
+				for y in range (player.pos[1]-1, player.pos[1]+2):#check for a monster
+					for x in range (player.pos[0]-1, player.pos[0]+2):
 						
 						try:
-							
 							if world.maplist[self.pos[2]][self.on_map].npcs[self.pos[1]][self.pos[0]] != 0:#<-------change this so that friendly npcs are ignored 
-								monster_test = True
-								
+								monster_test = True	
 						except:
-							
 							None
 						
 				if monster_test == True:#wake up because a monster borders the players sleep
@@ -5862,6 +6000,19 @@ class mob():
 					screen.render_request('['+key_name['e']+'] - produce something (-10 Wood)', '['+key_name['b']+'] -      XXXXXXXXXXXX   ', '['+key_name['x']+'] - leave')
 					
 				ui = getch(screen.displayx,screen.displayy,game_options.sfxmode,game_options.turnmode,mouse=game_options.mousepad)
+				
+				if ui == 'exit':
+					global master_loop
+					global playing
+					global exitgame
+					exitgame = True
+					screen.render_load(5)
+					save(world,player,time,gods,save_path,os.sep)
+					screen.save_tmp_png()
+					master_loop = False
+					playing = False
+					run = False
+					return('exit')
 				
 				if ui == 'e':
 					test = False
@@ -5929,6 +6080,19 @@ class mob():
 					
 				ui = getch(screen.displayx,screen.displayy,game_options.sfxmode,game_options.turnmode,mouse=game_options.mousepad)
 				
+				if ui == 'exit':
+					global master_loop
+					global playing
+					global exitgame
+					exitgame = True
+					screen.render_load(5)
+					save(world,player,time,gods,save_path,os.sep)
+					screen.save_tmp_png()
+					master_loop = False
+					playing = False
+					run = False
+					return('exit')
+				
 				if ui == 'e':
 					test = False
 					
@@ -5949,12 +6113,18 @@ class mob():
 								items = (il.ilist['misc'][14], il.ilist['misc'][44], item_wear('axe',0,0), item_wear('pickaxe',0,0))
 								final_choice = screen.get_choice('What do you want to prodcuce exactly?', ('Fishing rod','Torch','Axe','Pickaxe'),True)
 							elif gc == 1: #make a weapon
-								items = (item_wear('spear',0,0), item_wear('sword',0,0), item_wear('hammer',0,0), item_wear('wand',0,0), item_wear('rune',0,0), item_wear('rune staff',0,0), item_wear('artefact',0,0))
+								items = (item_wear('spear',0,0), item_wear('sword',0,0), item_wear('hammer',0,0), item_wear('rune',0,0), item_wear('wand',0,0), item_wear('rune staff',0,0), item_wear('artefact',0,0))
+								class_choice = screen.get_choice('What do you want to prodcuce?', ('Melee Weapon','Magic Weapon'), True)
+								if class_choice == 0:
+									final_choice = random.randint(0,2)
+								else:
+									final_choice = random.randint(3,6)
 							elif gc == 2: #make some armor
 								items = (item_wear('shoes',0,0), item_wear('cuisse',0,0), item_wear('helmet',0,0), item_wear('armor',0,0))
 								final_choice = screen.get_choice('What do you want to prodcuce?', ('Shoes','Cuisse','Helmet','Armor'), True)
 							elif gc == 3:#make some jewlry
 								items = (item_wear('ring',0,0),  item_wear('amulet',0,0),  item_wear('necklace',0,0), item_wear('talisman',0,0))
+								final_choice = screen.get_choice('What do you want to prodcuce?', ('Ring','Amulet','Necklace','Talisman'), True)
 							
 							if final_choice == 'Foo':
 								items = (item_wear('ring',0,0),  item_wear('amulet',0,0),  item_wear('necklace',0,0), item_wear('talisman',0,0))
@@ -6005,6 +6175,19 @@ class mob():
 					screen.render_request('['+key_name['e']+'] - produce something (-10 Stone)', '['+key_name['b']+'] -      XXXXXXXXXXXX   ', '['+key_name['x']+'] - leave')
 					
 				ui = getch(screen.displayx,screen.displayy,game_options.sfxmode,game_options.turnmode,mouse=game_options.mousepad)
+				
+				if ui == 'exit':
+					global master_loop
+					global playing
+					global exitgame
+					exitgame = True
+					screen.render_load(5)
+					save(world,player,time,gods,save_path,os.sep)
+					screen.save_tmp_png()
+					master_loop = False
+					playing = False
+					run = False
+					return('exit')
 				
 				if ui == 'e':
 					test = False
@@ -6079,6 +6262,19 @@ class mob():
 					
 				ui = getch(screen.displayx,screen.displayy,game_options.sfxmode,game_options.turnmode,mouse=game_options.mousepad)
 				
+				if ui == 'exit':
+					global master_loop
+					global playing
+					global exitgame
+					exitgame = True
+					screen.render_load(5)
+					save(world,player,time,gods,save_path,os.sep)
+					screen.save_tmp_png()
+					master_loop = False
+					playing = False
+					run = False
+					return('exit')
+				
 				if ui == 'e':
 					test = False
 					
@@ -6104,11 +6300,17 @@ class mob():
 								items = (item_wear('axe',material,0), item_wear('pickaxe',material,0)) 
 							elif gc == 1: #make a weapon
 								items = (item_wear('spear',material,0), item_wear('sword',material,0), item_wear('hammer',material,0), item_wear('wand',material,0), item_wear('rune',material,0), item_wear('rune staff',material,0), item_wear('artefact',material,0))
+								class_choice = screen.get_choice('What do you want to prodcuce?', ('Melee Weapon','Magic Weapon'), True)
+								if class_choice == 0:
+									final_choice = random.randint(0,2)
+								else:
+									final_choice = random.randint(3,6)
 							elif gc == 2: #make some armor
 								final_choice = screen.get_choice('What do you want to procuce exactly?', ('Shoes', 'Cuisse', 'Helmet', 'Armor'), True)
 								items = (item_wear('shoes',material,0), item_wear('cuisse',material,0), item_wear('helmet',material,0), item_wear('armor',material,0))
 							elif gc == 3:#make some  jewelry
 								items = (item_wear('ring',material,0),  item_wear('amulet',material,0),  item_wear('necklace',material,0), item_wear('talisman',material,0))
+								final_choice = screen.get_choice('What do you want to prodcuce?', ('Ring','Amulet','Necklace','Talisman'), True)
 							
 							if final_choice == 'Foo':	
 								choose = random.randint(0, len(items)-1)
@@ -6155,6 +6357,19 @@ class mob():
 						screen.render_request('['+key_name['e']+'] -     XXXXXXXXXXXX            ', '['+key_name['b']+'] - take a potion', '['+key_name['x']+'] - leave')
 				else:
 					screen.render_request('['+key_name['e']+'] - brew a potion (-5 Herbs)', '['+key_name['b']+'] -      XXXXXXXXXXXX   ', '['+key_name['x']+'] - leave')
+				
+				if ui == 'exit':
+					global master_loop
+					global playing
+					global exitgame
+					exitgame = True
+					screen.render_load(5)
+					save(world,player,time,gods,save_path,os.sep)
+					screen.save_tmp_png()
+					master_loop = False
+					playing = False
+					run = False
+					return('exit')
 					
 				ui = getch(screen.displayx,screen.displayy,game_options.sfxmode,game_options.turnmode,mouse=game_options.mousepad)
 				
@@ -6223,6 +6438,19 @@ class mob():
 					
 				ui = getch(screen.displayx,screen.displayy,game_options.sfxmode,game_options.turnmode,mouse=game_options.mousepad)
 				
+				if ui == 'exit':
+					global master_loop
+					global playing
+					global exitgame
+					exitgame = True
+					screen.render_load(5)
+					save(world,player,time,gods,save_path,os.sep)
+					screen.save_tmp_png()
+					master_loop = False
+					playing = False
+					run = False
+					return('exit')
+				
 				if ui == 'e':
 					
 					if player.inventory.materials. wood >= 10:
@@ -6282,6 +6510,19 @@ class mob():
 				screen.render_request('['+key_name['e']+'] - pray', '['+key_name['b']+'] - identify ', '['+key_name['x']+'] - leave')
 					
 				ui = getch(screen.displayx,screen.displayy,game_options.sfxmode,game_options.turnmode,mouse=game_options.mousepad)
+				
+				if ui == 'exit':
+					global master_loop
+					global playing
+					global exitgame
+					exitgame = True
+					screen.render_load(5)
+					save(world,player,time,gods,save_path,os.sep)
+					screen.save_tmp_png()
+					master_loop = False
+					playing = False
+					run = False
+					return('exit')
 				
 				if ui == 'e':
 					
@@ -6971,6 +7212,19 @@ class player_class(mob):
 		
 		ui = getch(screen.displayx,screen.displayy,0,game_options.turnmode,mouse=game_options.mousepad)
 		
+		if ui == 'exit':
+					global master_loop
+					global playing
+					global exitgame
+					exitgame = True
+					screen.render_load(5)
+					save(world,player,time,gods,save_path,os.sep)
+					screen.save_tmp_png()
+					master_loop = False
+					playing = False
+					run = False
+					return('exit')
+		
 		if immobilized == True:
 			if ui != 'x':
 				ui = 'none'
@@ -7104,6 +7358,19 @@ class player_class(mob):
 			res_need = screen.render_built(xmin,xmax,ymin,ymax,style)
 			
 			ui = getch(screen.displayx,screen.displayy,game_options.sfxmode,game_options.turnmode,mouse=game_options.mousepad)
+			
+			if ui == 'exit':
+					global master_loop
+					global playing
+					global exitgame
+					exitgame = True
+					screen.render_load(5)
+					save(world,player,time,gods,save_path,os.sep)
+					screen.save_tmp_png()
+					master_loop = False
+					playing = False
+					run = False
+					return('exit')
 			
 			if ui == 'w':
 				
@@ -7857,6 +8124,19 @@ class messager():
 			pygame.display.flip()
 			
 			ui = getch(screen.displayx,screen.displayy,game_options.sfxmode,game_options.turnmode,mouse=game_options.mousepad)
+			
+			if ui == 'exit':
+					global master_loop
+					global playing
+					global exitgame
+					exitgame = True
+					screen.render_load(5)
+					save(world,player,time,gods,save_path,os.sep)
+					screen.save_tmp_png()
+					master_loop = False
+					playing = False
+					run = False
+					return('exit')
 			
 			if ui == 'w' or ui == 'a':
 				page -= 1
@@ -8673,6 +8953,19 @@ class inventory():
 			
 			ui = getch(screen.displayx,screen.displayy,game_options.sfxmode,game_options.turnmode,mouse=game_options.mousepad)
 			
+			if ui == 'exit':
+					global master_loop
+					global playing
+					global exitgame
+					exitgame = True
+					screen.render_load(5)
+					save(world,player,time,gods,save_path,os.sep)
+					screen.save_tmp_png()
+					master_loop = False
+					playing = False
+					run = False
+					return('exit')
+			
 			if ui == 'd':	
 				slot = 0
 				category += 1
@@ -8911,7 +9204,21 @@ class container():
 				pygame.display.flip()
 			
 				ui = getch(screen.displayx,screen.displayy,game_options.sfxmode,game_options.turnmode,mouse=game_options.mousepad)
-			
+				
+				if ui == 'exit':
+					global master_loop
+					global playing
+					global exitgame
+					global player
+					exitgame = True
+					screen.render_load(5)
+					save(world,player,time,gods,save_path,os.sep)
+					screen.save_tmp_png()
+					master_loop = False
+					playing = False
+					run = False
+					return('exit')
+				
 				if ui == 'x':
 					running = False
 					run = False
@@ -9293,7 +9600,7 @@ def main():
 	while master_loop:
 		bgm = bgM()
 		bgm.check_for_song(True)
-		master_loop = screen.render_main_menu()
+		master_loop = screen.render_main_menu()	
 		if playing == True:
 			exitgame = False
 			world = world_class(tl)

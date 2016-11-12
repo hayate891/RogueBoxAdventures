@@ -76,6 +76,8 @@ def getch(x=640,y=360,sfx=0,mode=0,mouse=1):#x and y are the resolution of the s
 			except:
 				None	
 				
+			if event.type == pygame.QUIT:
+				g = 'exit'
 							
 			if event.type == pygame.KEYDOWN:
 
