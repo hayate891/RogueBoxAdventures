@@ -669,6 +669,16 @@ class g_screen():
 										if world.maplist[player.pos[2]][player.on_map].npcs[view_y][view_x] != 0:#render monsters
 											pos = world.maplist[player.pos[2]][player.on_map].npcs[view_y][view_x].sprite_pos
 											s.blit(gra_files.gdic['monster'][pos[1]][pos[0]],(start_pos_x+((view_x-player.pos[0])*32),start_pos_y+((view_y-player.pos[1])*32)))
+											if world.maplist[player.pos[2]][player.on_map].npcs[view_y][view_x].move_border > 9:
+												None
+											elif world.maplist[player.pos[2]][player.on_map].npcs[view_y][view_x].AI_style == 'ignore':
+												s.blit(gra_files.gdic['display'][28],(start_pos_x+((view_x-player.pos[0])*32),start_pos_y+((view_y-player.pos[1])*32)))
+											elif world.maplist[player.pos[2]][player.on_map].npcs[view_y][view_x].AI_style == 'flee':
+												s.blit(gra_files.gdic['display'][29],(start_pos_x+((view_x-player.pos[0])*32),start_pos_y+((view_y-player.pos[1])*32)))
+											elif world.maplist[player.pos[2]][player.on_map].npcs[view_y][view_x].AI_style == 'hostile':
+												s.blit(gra_files.gdic['display'][30],(start_pos_x+((view_x-player.pos[0])*32),start_pos_y+((view_y-player.pos[1])*32)))
+											else:
+												None
 								
 										if view_x == player.pos[0] and view_y == player.pos[1]:
 											if player.inventory.wearing['Background'] != player.inventory.nothing:
@@ -7668,6 +7678,9 @@ class player_class(mob):
 				if chance < world.maplist[self.pos[2]][self.on_map].npcs[y][x].basic_attribute.luck:
 					attack_success = True
 					
+			if world.maplist[self.pos[2]][self.on_map].npcs[y][x].move_border >= 9:
+				attack_success = True
+					
 			if attack_success == True:
 				
 				chance = random.randint(0,25)
@@ -7725,6 +7738,9 @@ class player_class(mob):
 				chance = random.randint(0,25)
 				if chance < world.maplist[self.pos[2]][self.on_map].npcs[y][x].basic_attribute.luck:
 					attack_success = True
+					
+			if world.maplist[self.pos[2]][self.on_map].npcs[y][x].move_border >= 9:
+				attack_success = True
 					
 			if attack_success == True:
 				
