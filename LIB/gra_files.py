@@ -20,7 +20,7 @@ class g_files():
 	
 	def __init__(self):
 		
-		self.gdic = { 'tile1' : {} , 'char' : {} , 'display' : [] , 'built' : [], 'monster' : {}}
+		self.gdic = { 'tile1' : {} , 'char' : {} , 'display' : [] , 'built' : [], 'monster' : {} , 'num' : {}}
 		
 		b_path = os.path.dirname(os.path.realpath('gra_files.py'))
 		basic_path = b_path.replace('/LIB','')
@@ -31,6 +31,7 @@ class g_files():
 		display_path = basic_path +os.sep + 'GRAPHIC' + os.sep + 'DISPLAY' + os.sep
 		built_path = basic_path +os.sep + 'GRAPHIC' + os.sep + 'BUILT' + os.sep
 		monster_path = basic_path +os.sep + 'GRAPHIC' + os.sep + 'MONSTER' + os.sep
+		num_path = basic_path +os.sep + 'GRAPHIC' + os.sep + 'NUM' + os.sep
 		
 		#chars
 		
@@ -114,6 +115,16 @@ class g_files():
 			i.set_colorkey((255,0,255),pygame.RLEACCEL)
 			i = i.convert_alpha()
 			self.gdic['display'].append(i)
+
+#############################################################################
+
+		#numbers
+		
+		num_names = {'0','1','2','3','4','5','6','7','8','9','+'}
+		for c in num_names:
+			n_name = num_path + 'num' + c + '.png'
+			n = i = pygame.image.load(n_name)
+			self.gdic['num'][c] = n 
 		
 #############################################################################
 

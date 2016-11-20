@@ -183,6 +183,7 @@ class g_screen():
 		
 		font_path = basic_path + os.sep + 'FONT' + os.sep + 'PressStart2P.ttf'
 		self.font = pygame.font.Font(font_path,8)
+		self.small_font = pygame.font.Font(None,12)
 		
 		if low_res == True:
 			str_ext = '_low_res'
@@ -673,10 +674,31 @@ class g_screen():
 												None
 											elif world.maplist[player.pos[2]][player.on_map].npcs[view_y][view_x].AI_style == 'ignore':
 												s.blit(gra_files.gdic['display'][28],(start_pos_x+((view_x-player.pos[0])*32),start_pos_y+((view_y-player.pos[1])*32)))
+												lvl = str(world.maplist[player.pos[2]][player.on_map].npcs[view_y][view_x].lvl)
+												if len(lvl) == 1:
+													lvl = '0'+lvl
+												elif len(lvl) > 2:
+													lvl = lvl[0]+'+'
+												s.blit(gra_files.gdic['num'][lvl[0]],(start_pos_x+((view_x-player.pos[0])*32),start_pos_y+((view_y-player.pos[1])*32)+6))	
+												s.blit(gra_files.gdic['num'][lvl[1]],(start_pos_x+((view_x-player.pos[0])*32),start_pos_y+((view_y-player.pos[1])*32)+14))
 											elif world.maplist[player.pos[2]][player.on_map].npcs[view_y][view_x].AI_style == 'flee':
 												s.blit(gra_files.gdic['display'][29],(start_pos_x+((view_x-player.pos[0])*32),start_pos_y+((view_y-player.pos[1])*32)))
+												lvl = str(world.maplist[player.pos[2]][player.on_map].npcs[view_y][view_x].lvl)
+												if len(lvl) == 1:
+													lvl = '0'+lvl
+												elif len(lvl) > 2:
+													lvl = lvl[0]+'+'
+												s.blit(gra_files.gdic['num'][lvl[0]],(start_pos_x+((view_x-player.pos[0])*32),start_pos_y+((view_y-player.pos[1])*32)+6))	
+												s.blit(gra_files.gdic['num'][lvl[1]],(start_pos_x+((view_x-player.pos[0])*32),start_pos_y+((view_y-player.pos[1])*32)+14))
 											elif world.maplist[player.pos[2]][player.on_map].npcs[view_y][view_x].AI_style == 'hostile':
 												s.blit(gra_files.gdic['display'][30],(start_pos_x+((view_x-player.pos[0])*32),start_pos_y+((view_y-player.pos[1])*32)))
+												lvl = str(world.maplist[player.pos[2]][player.on_map].npcs[view_y][view_x].lvl)
+												if len(lvl) == 1:
+													lvl = '0'+lvl
+												elif len(lvl) > 2:
+													lvl = lvl[0]+'+'
+												s.blit(gra_files.gdic['num'][lvl[0]],(start_pos_x+((view_x-player.pos[0])*32),start_pos_y+((view_y-player.pos[1])*32)+6))	
+												s.blit(gra_files.gdic['num'][lvl[1]],(start_pos_x+((view_x-player.pos[0])*32),start_pos_y+((view_y-player.pos[1])*32)+14))
 											else:
 												None
 								
@@ -2987,14 +3009,17 @@ class maP():
 			
 			self.npcs[spawnpoints[ran2][1]][spawnpoints[ran2][0]].personal_id = str(self.npcs[spawnpoints[ran2][1]][spawnpoints[ran2][0]].techID)+'_'+str(spawnpoints[ran2][0])+'_'+str(spawnpoints[ran2][1])+'_'+str(random.randint(0,9999))
 			
-	def set_monster_strange(self,x,y,z):
+	def set_monster_strange(self,x,y,z,preset_lvl=None ):
 		
 		if self.npcs[y][x] != 0:
 			
 			ran = random.randint(1,3)
 		
 			monster_lvl = z + ran + self.monster_plus
-			self.npcs[y][x].lvl = monster_lvl
+			if preset_lvl != None:
+				self.npcs[y][x].lvl = preset_lvl
+			else:
+				self.npcs[y][x].lvl = monster_lvl
 			
 			attribute_list =[] 
 		
@@ -3704,8 +3729,9 @@ class maP():
 				try:
 					if self.npcs[yy][xx] != 0:
 						if self.npcs[yy][xx].anger == style:
+							lvl = self.npcs[yy][xx].lvl
 							self.npcs[yy][xx] = deepcopy(ml.mlist['angry_monster'][self.npcs[yy][xx].anger_monster])
-							self.set_monster_strange(xx,yy,player.pos[2])
+							self.set_monster_strange(xx,yy,player.pos[2],lvl)
 							if player.difficulty == 4:
 								self.npcs[yy][xx].AI_style = 'ignore'		
 				except:
@@ -6012,9 +6038,6 @@ class mob():
 				ui = getch(screen.displayx,screen.displayy,game_options.sfxmode,game_options.turnmode,mouse=game_options.mousepad)
 				
 				if ui == 'exit':
-					global master_loop
-					global playing
-					global exitgame
 					exitgame = True
 					screen.render_load(5)
 					save(world,player,time,gods,save_path,os.sep)
@@ -6091,9 +6114,6 @@ class mob():
 				ui = getch(screen.displayx,screen.displayy,game_options.sfxmode,game_options.turnmode,mouse=game_options.mousepad)
 				
 				if ui == 'exit':
-					global master_loop
-					global playing
-					global exitgame
 					exitgame = True
 					screen.render_load(5)
 					save(world,player,time,gods,save_path,os.sep)
@@ -6187,9 +6207,6 @@ class mob():
 				ui = getch(screen.displayx,screen.displayy,game_options.sfxmode,game_options.turnmode,mouse=game_options.mousepad)
 				
 				if ui == 'exit':
-					global master_loop
-					global playing
-					global exitgame
 					exitgame = True
 					screen.render_load(5)
 					save(world,player,time,gods,save_path,os.sep)
@@ -6273,9 +6290,6 @@ class mob():
 				ui = getch(screen.displayx,screen.displayy,game_options.sfxmode,game_options.turnmode,mouse=game_options.mousepad)
 				
 				if ui == 'exit':
-					global master_loop
-					global playing
-					global exitgame
 					exitgame = True
 					screen.render_load(5)
 					save(world,player,time,gods,save_path,os.sep)
@@ -6369,9 +6383,6 @@ class mob():
 					screen.render_request('['+key_name['e']+'] - brew a potion (-5 Herbs)', '['+key_name['b']+'] -      XXXXXXXXXXXX   ', '['+key_name['x']+'] - leave')
 				
 				if ui == 'exit':
-					global master_loop
-					global playing
-					global exitgame
 					exitgame = True
 					screen.render_load(5)
 					save(world,player,time,gods,save_path,os.sep)
@@ -6449,9 +6460,6 @@ class mob():
 				ui = getch(screen.displayx,screen.displayy,game_options.sfxmode,game_options.turnmode,mouse=game_options.mousepad)
 				
 				if ui == 'exit':
-					global master_loop
-					global playing
-					global exitgame
 					exitgame = True
 					screen.render_load(5)
 					save(world,player,time,gods,save_path,os.sep)
@@ -6522,9 +6530,6 @@ class mob():
 				ui = getch(screen.displayx,screen.displayy,game_options.sfxmode,game_options.turnmode,mouse=game_options.mousepad)
 				
 				if ui == 'exit':
-					global master_loop
-					global playing
-					global exitgame
 					exitgame = True
 					screen.render_load(5)
 					save(world,player,time,gods,save_path,os.sep)
