@@ -1115,7 +1115,8 @@ class tilelist():
 					damage_message = None,
 					civilisation = True,
 					tile_pos = (8,10),
-					conected_items = (il.ilist['food'][6]))
+					conected_items = (il.ilist['food'][6]),
+					replace = self.tlist['building'][4])
 		self.tlist['building'].append(t)
 		techID+=1
 		#8
@@ -1130,7 +1131,8 @@ class tilelist():
 					damage_message = None,
 					civilisation = True,
 					tile_pos = (8,9),
-					conected_items = (il.ilist['food'][11]))
+					conected_items = (il.ilist['food'][11]),
+					replace = self.tlist['building'][4])
 		self.tlist['building'].append(t)
 		techID+=1
 		#9
