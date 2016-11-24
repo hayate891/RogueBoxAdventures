@@ -703,6 +703,7 @@ class g_screen():
 												None
 								
 										if view_x == player.pos[0] and view_y == player.pos[1]:
+											player_pos_help = (view_x,view_y)
 											if player.inventory.wearing['Background'] != player.inventory.nothing:
 												s.blit(gra_files.gdic['clothe'][player.inventory.wearing['Background'].gra_pos[player.gender][0]][player.inventory.wearing['Background'].gra_pos[player.gender][1]],(start_pos_x+((view_x-player.pos[0])*32),start_pos_y+((view_y-player.pos[1])*32)))
 												
@@ -773,8 +774,40 @@ class g_screen():
 								if world.maplist[player.pos[2]][player.on_map].npcs[y][x] != 0:#render monsters
 											pos = world.maplist[player.pos[2]][player.on_map].npcs[y][x].sprite_pos
 											s.blit(gra_files.gdic['monster'][pos[1]][pos[0]],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)))
-								
+											if world.maplist[player.pos[2]][player.on_map].npcs[y][x].move_border > 9:
+												None
+											elif world.maplist[player.pos[2]][player.on_map].npcs[y][x].AI_style == 'ignore':
+												s.blit(gra_files.gdic['display'][28],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)))
+												lvl = str(world.maplist[player.pos[2]][player.on_map].npcs[y][x].lvl)
+												if len(lvl) == 1:
+													lvl = '0'+lvl
+												elif len(lvl) > 2:
+													lvl = lvl[0]+'+'
+												s.blit(gra_files.gdic['num'][lvl[0]],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)+6))	
+												s.blit(gra_files.gdic['num'][lvl[1]],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)+14))
+											elif world.maplist[player.pos[2]][player.on_map].npcs[view_y][view_x].AI_style == 'flee':
+												s.blit(gra_files.gdic['display'][29],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)))
+												lvl = str(world.maplist[player.pos[2]][player.on_map].npcs[y][x].lvl)
+												if len(lvl) == 1:
+													lvl = '0'+lvl
+												elif len(lvl) > 2:
+													lvl = lvl[0]+'+'
+												s.blit(gra_files.gdic['num'][lvl[0]],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)+6))	
+												s.blit(gra_files.gdic['num'][lvl[1]],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)+14))
+											elif world.maplist[player.pos[2]][player.on_map].npcs[y][x].AI_style == 'hostile':
+												s.blit(gra_files.gdic['display'][30],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)))
+												lvl = str(world.maplist[player.pos[2]][player.on_map].npcs[y][x].lvl)
+												if len(lvl) == 1:
+													lvl = '0'+lvl
+												elif len(lvl) > 2:
+													lvl = lvl[0]+'+'
+												s.blit(gra_files.gdic['num'][lvl[0]],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)+6))	
+												s.blit(gra_files.gdic['num'][lvl[1]],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)+14))
+											else:
+												None
+												
 								if x == player.pos[0] and y == player.pos[1]:
+											player_pos_help = (x,y)
 											if player.inventory.wearing['Background'] != player.inventory.nothing:
 												s.blit(gra_files.gdic['clothe'][player.inventory.wearing['Background'].gra_pos[player.gender][0]][player.inventory.wearing['Background'].gra_pos[player.gender][1]],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)))
 												
@@ -844,6 +877,79 @@ class g_screen():
 				s.blit(gra_files.gdic['display'][25],(0,0)) #render gui_warning
 		else:
 			s.blit(gra_files.gdic['display'][10],(0,0))
+			s.blit(gra_files.gdic['display'][41],(start_pos_x+((player_pos_help[0]-player.pos[0])*32)-32,start_pos_y+((player_pos_help[1]-player.pos[1])*32)-32))
+		
+		#render icons
+			#1. Use
+		if world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]].use_group == 'None' and world.maplist[player.pos[2]][player.on_map].containers[player.pos[1]][player.pos[0]] == 0:
+			s.blit(gra_files.gdic['display'][32],(0,161))
+			s.blit(gra_files.gdic['display'][34],(0,161))
+		else:
+			s.blit(gra_files.gdic['display'][31],(0,161))
+			s.blit(gra_files.gdic['display'][33],(0,161))
+			use_string = '['+key_name['e']+']action'
+			use_image1 = self.font.render(use_string,1,(0,0,0))
+			use_image2 = self.font.render(use_string,1,(255,255,255))
+			s.blit(use_image1,(36,173))
+			s.blit(use_image2,(34,173))
+			
+			#2. Fire
+		if player.inventory.wearing['Hold(L)'] == player.inventory.nothing:
+			s.blit(gra_files.gdic['display'][32],(0,129))
+			s.blit(gra_files.gdic['display'][36],(0,129))
+		else:
+			s.blit(gra_files.gdic['display'][31],(0,129))
+			s.blit(gra_files.gdic['display'][35],(0,129))
+			fire_string = '['+key_name['f']+']fire'
+			fire_image1 = self.font.render(fire_string,1,(0,0,0))
+			fire_image2 = self.font.render(fire_string,1,(255,255,255))
+			s.blit(fire_image1,(36,141))
+			s.blit(fire_image2,(34,141))
+		
+			#3.Inventory
+		inventory_broken = False
+		for t in player.inventory.wearing:
+			if player.inventory.wearing[t].state < 11 and player.inventory.wearing[t] != player.inventory.nothing:
+				inventory_broken = True
+		
+		if inventory_broken == False:
+			s.blit(gra_files.gdic['display'][32],(0,97))
+			s.blit(gra_files.gdic['display'][40],(0,97))
+			inventory_string = '['+key_name['i']+']inventory'
+			inventory_image1 = self.font.render(inventory_string,1,(0,0,0))
+			inventory_image2 = self.font.render(inventory_string,1,(255,255,255))
+		else:
+			s.blit(gra_files.gdic['display'][31],(0,97))
+			s.blit(gra_files.gdic['display'][39],(0,97))
+			inventory_string = '['+key_name['i']+']inventory!'
+			inventory_image1 = self.font.render(inventory_string,1,(0,0,0))
+			inventory_image2 = self.font.render(inventory_string,1,(255,0,0))
+		
+		s.blit(inventory_image1,(36,109))
+		s.blit(inventory_image2,(34,109))
+		
+			#4.Focus
+		s.blit(gra_files.gdic['display'][32],(0,65))
+		try:
+			focus_state = (32*player.mp/player.attribute.max_mp)
+		except:
+			focus_state = 1
+		
+		help_sur = pygame.Surface((focus_state,32))
+		help_sur.blit(gra_files.gdic['display'][31],(0,0))
+		s.blit(help_sur,(0,65))
+		
+		if player.mp < player.attribute.max_mp:
+			s.blit(gra_files.gdic['display'][38],(0,65))
+			focus_string = 'unfocused'
+		else:
+			s.blit(gra_files.gdic['display'][37],(0,65))
+			focus_string = 'focused'
+			
+		focus_image1 = self.font.render(focus_string,1,(0,0,0))
+		focus_image2 = self.font.render(focus_string,1,(255,255,255))
+		s.blit(focus_image1,(36,77))
+		s.blit(focus_image2,(34,77))
 		
 		# render messages
 		
@@ -1705,7 +1811,11 @@ class g_screen():
 		
 		self.render(0, True)
 		
-		s = pygame.Surface((640,360))
+		if low_res == False:
+			s = pygame.Surface((640,360))
+		else:
+			s = pygame.Surface((320,240))
+		
 		s.fill((255,0,255))
 		
 		s.blit(gra_files.gdic['display'][5],(0,0)) #render gui_transparent over gui
@@ -1734,7 +1844,7 @@ class g_screen():
 		
 		s.blit(line3_image,(posx,posy))
 		
-		if game_options.mousepad == 0:
+		if game_options.mousepad == 0 and low_res == False:
 			s_help = pygame.Surface((640,360))
 			s_help.fill((255,0,255))
 			s_help.blit(s,(80,0))
@@ -4242,14 +4352,14 @@ class maP():
 		ran_tunica = random.randint(0,2)
 		
 		#original
-		self.add_container([pick,axe,amo,il.ilist['misc'][3],il.ilist['misc'][2],il.ilist['misc'][44],il.ilist['misc'][51],il.ilist['clothe'][ran_tunica]],startx,starty-1)
+		self.add_container([pick,axe,amo,il.ilist['misc'][3],il.ilist['misc'][2],il.ilist['misc'][51],il.ilist['clothe'][ran_tunica]],startx,starty-1)
 		#/original
 		
 		# build demo: self.add_container([pick,axe,amo,il.ilist['misc'][3],il.ilist['misc'][16],il.ilist['misc'][22],il.ilist['misc'][23],il.ilist['clothe'][ran_tunica]],startx,starty-1)
 		
 		# cloth demo: self.add_container([il.ilist['clothe'][0],il.ilist['clothe'][1],il.ilist['clothe'][2],il.ilist['clothe'][3],il.ilist['clothe'][4],il.ilist['clothe'][5],il.ilist['clothe'][6],il.ilist['clothe'][7]],startx,starty-1)
 		
-		# magic demo: self.add_container([pick,axe,amo,il.ilist['misc'][3],il.ilist['misc'][35],il.ilist['misc'][24],il.ilist['misc'][29],il.ilist['clothe'][ran_tunica]],startx,starty-1)
+		# magic demo: self.add_container([pick,axe,amo,il.ilist['misc'][3],il.ilist['misc'][36],il.ilist['misc'][24],il.ilist['misc'][29],il.ilist['clothe'][ran_tunica]],startx,starty-1)
 		
 		self.tilemap[starty+1][startx] = deepcopy(tl.tlist['functional'][1])#stair down
 		self.tilemap[starty+1][startx].damage = -1
@@ -6656,7 +6766,7 @@ class mob():
 			
 			world.maplist[self.pos[2]][self.on_map].containers[self.pos[1]][self.pos[0]].inventory()
 		
-		elif world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]][self.pos[0]].techID == tl.tlist['shop'][0].techID:#this is shop floor
+		elif world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]][self.pos[0]].use_group == 'shop' or world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]][self.pos[0]].techID == tl.tlist['shop'][0].techID:#this is shop floor
 			
 			if world.maplist[self.pos[2]][self.on_map].map_type == 'grot':
 				list_items = ('Scroll of Return(1 Gem)','Enchanted Enhancement Powder(5 Gem)','Copper Pickaxe(3 Gem)','Copper Axe(3 Gem)', 'Grilled Fish(1 Gem)', 'Torch(1 Gem)')
@@ -7302,15 +7412,14 @@ class player_class(mob):
 				if player.inventory.wearing['Hold(L)'] != player.inventory.nothing:
 					screen.fire_mode = 1
 					message.add('You channelise your magic powers.')
-					time.tick()
 				else:
 					message.add('You need a magic weapon.')
-			else:
-				screen.fire_mode = 0
-				time.tick()
 			
 		if ui == 'x':
-			screen.render_brake()
+			if screen.fire_mode == 0:
+				screen.render_brake()
+			else:
+				screen.fire_mode = 0
 			
 		if ui == 'none':
 			time.tick()
@@ -8829,15 +8938,26 @@ class inventory():
 			 
 			for i in h:
 				
+				color = (0,0,0)
+				
+				if self.wearing[i] != self.nothing: 
+					if self.wearing[i].known == True:
+						if self.wearing[i].cursed < 1:#cursed item
+							color = (130,0,190)
+						elif self.wearing[i].cursed > 1:#holy item
+							color = (100,115,0)
+					if self.wearing[i].state < 11:
+						color = (200,0,0)
+				
 				if slot == num and self.wearing[h[slot]] != self.nothing:
 					string = i + ' : ' + self.wearing[i].name + '>(['+key_name['e']+']unwear, ['+key_name['b']+']drop)'
-					text_image = screen.font.render(string,1,(0,0,0))
+					text_image = screen.font.render(string,1,color)
 					s.blit(text_image,(21,text_y+num*23))#blit item names
 				
 				else:
 					
 					string = i + ' : ' + self.wearing[i].name
-					text_image = screen.font.render(string,1,(0,0,0))
+					text_image = screen.font.render(string,1,color)
 					s.blit(text_image,(21,text_y+num*23))#blit item names
 				
 				num += 1
@@ -8845,7 +8965,18 @@ class inventory():
 		elif category == 1:
 			
 			for i in self.equipment:
-			
+				
+				color = (0,0,0)
+				
+				if i != self.nothing: 
+					if i.known == True:
+						if i.cursed < 1:#cursed item
+							color = (130,0,190)
+						elif i.cursed > 1:#holy item
+							color = (100,115,0)
+					if i.state < 11:
+						color = (200,0,0)
+				
 				if slot == num:
 					
 					s.blit(gra_files.gdic['display'][4],(0,marker_y+num*25))#blit marker
@@ -8853,13 +8984,13 @@ class inventory():
 						string = i.name + '>(['+key_name['e']+']wear, ['+key_name['b']+']drop)'
 					else:
 						string = i.name
-					text_image = screen.font.render(string,1,(0,0,0))
+					text_image = screen.font.render(string,1,color)
 					s.blit(text_image,(21,text_y+num*25))#blit item names
 				
 				else:
 					
 					string = i.name
-					text_image = screen.font.render(string,1,(0,0,0))
+					text_image = screen.font.render(string,1,color)
 					s.blit(text_image,(21,text_y+num*25))#blit item names
 			
 				num += 1
@@ -8867,6 +8998,12 @@ class inventory():
 		elif category == 2:
 			
 			for i in self.food:
+				
+				color = (0,0,0)
+				
+				if i != self.nothing:
+					if i.rotten == True:
+						color = (200,0,0)
 			
 				if slot == num:
 					
@@ -8875,13 +9012,13 @@ class inventory():
 						string = i.name + '>(['+key_name['e']+']'+i.eat_name+', ['+key_name['b']+']drop)'
 					else:
 						string = i.name
-					text_image = screen.font.render(string,1,(0,0,0))
+					text_image = screen.font.render(string,1,color)
 					s.blit(text_image,(21,text_y+num*25))#blit item names
 				
 				else:
 					
 					string = i.name
-					text_image = screen.font.render(string,1,(0,0,0))
+					text_image = screen.font.render(string,1,color)
 					s.blit(text_image,(21,text_y+num*25))#blit item names
 			
 				num += 1
@@ -9177,6 +9314,20 @@ class container():
 			
 				for i in range (0,len(self.items)):
 					
+					color = (0,0,0)
+					
+					if self.items[i].inv_slot == 'equipment':
+						if self.items[i].known == True:
+							if self.items[i].cursed < 1:#cursed item
+								color = (130,0,190)
+							elif self.items[i].cursed > 1:#holy item
+								color = (100,115,0)
+						if self.items[i].state < 11:
+							color = (200,0,0)
+					elif self.items[i].inv_slot == 'food':
+						if self.items[i].rotten == True:
+							color = (200,0,0)
+					
 					if i == num:
 						
 						if low_res == False:
@@ -9185,14 +9336,14 @@ class container():
 							s.blit(gra_files.gdic['display'][4],(0,38+num*25))#blit marker
 						
 						text_string = self.items[i].name + '>['+key_name['e']+']loot'
-						text_image = screen.font.render(text_string,1,(0,0,0))
+						text_image = screen.font.render(text_string,1,color)
 						if low_res == False:
 							s.blit(text_image,(21,120+i*25))#blit menu_items
 						else:
 							s.blit(text_image,(21,46+i*25))#blit menu_items
 							
 					else:
-						text_image = screen.font.render(self.items[i].name,1,(0,0,0))
+						text_image = screen.font.render(self.items[i].name,1,color)
 						if low_res == False:
 							s.blit(text_image,(21,120+i*25))#blit menu_items
 						else:
