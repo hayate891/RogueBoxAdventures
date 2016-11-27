@@ -1188,7 +1188,7 @@ class g_screen():
 		
 		price = 0
 		
-		self.render(0, True)
+		self.render(0, False)
 		
 		s = pygame.Surface((640,360))
 		s.fill((255,0,255))
@@ -1370,6 +1370,8 @@ class g_screen():
 			# render stone needed
 		
 			stone_need = int(price/3)
+			if stone_need == 0:
+				stone_need = 1
 		
 			stone_string = 'Stone: ' + str(stone_need) + '(' + str(player.inventory.materials.stone) + ')' 
 		
