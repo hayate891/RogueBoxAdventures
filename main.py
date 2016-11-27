@@ -900,7 +900,10 @@ class g_screen():
 		else:
 			s.blit(gra_files.gdic['display'][31],(0,129))
 			s.blit(gra_files.gdic['display'][35],(0,129))
-			fire_string = '['+key_name['f']+']fire'
+			if self.fire_mode == False:
+				fire_string = '['+key_name['f']+']fire'
+			else:
+				fire_string = '['+key_name['x']+']cancel'
 			fire_image1 = self.font.render(fire_string,1,(0,0,0))
 			fire_image2 = self.font.render(fire_string,1,(255,255,255))
 			s.blit(fire_image1,(36,141))
@@ -9793,9 +9796,6 @@ def main():
 			running = True
 	
 			while running:
-				
-				if a == 1:
-					None
 				
 				world.maplist[player.pos[2]][player.on_map].time_pass() #make the changes of passing time every new day 
 				
