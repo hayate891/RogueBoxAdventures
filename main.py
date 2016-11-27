@@ -9794,6 +9794,9 @@ def main():
 	
 			while running:
 				
+				if a == 1:
+					None
+				
 				world.maplist[player.pos[2]][player.on_map].time_pass() #make the changes of passing time every new day 
 				
 				screen.render(0)
@@ -9837,22 +9840,17 @@ if __name__ == '__main__':
 	try:
 		main()
 	except Exception as e:
+		import traceback
 		everything_fine = False
 		exc_type, exc_obj, exc_tb = sys.exc_info()
-		fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-		error_string = (fname+', '+str(exc_tb.tb_lineno)+', '+str(e))
-		t = datetime.datetime.now()
 		bs = save_path
 		for c in range(0,6):
 			bs = bs.replace('/World'+str(c),'')
 		logfile = bs + os.sep + 'debug.txt'
 		f = open(logfile,'a')
-		f.write('#################################################')
+		f.write('###############################################')
 		f.write('\n')
-		f.write(str(t))
-		f.write('\n')
-		f.write(error_string)
-		f.write('\n')
+		traceback.print_exception(exc_type, exc_obj, exc_tb, limit=2, file=f)
 		f.close()
 	finally:
 		if everything_fine == False:
