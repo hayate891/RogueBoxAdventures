@@ -183,7 +183,6 @@ class g_screen():
 		
 		font_path = basic_path + os.sep + 'FONT' + os.sep + 'PressStart2P.ttf'
 		self.font = pygame.font.Font(font_path,8)
-		self.small_font = pygame.font.Font(None,12)
 		
 		if low_res == True:
 			str_ext = '_low_res'
