@@ -414,10 +414,14 @@ class g_screen():
 			string = []
 			string.append('Sorry, something went wrong.')
 			string.append('Check out debug.txt for more informations.')
+			debug_location = '('+save_path+')'
+			for c in range(0,6):
+				debug_location = debug_location.replace('World'+str(c),'debug.txt')
+			string.append(debug_location)
 			st = []
 			for i in string:
 				st.append(self.font.render(i,1,(255,255,255)))
-			for j in range(0,2): 	
+			for j in range(0,len(st)): 	
 				self.screen.blit(st[j],(5,25+j*25))
 		
 			pygame.display.flip()
@@ -3954,7 +3958,7 @@ class maP():
 								self.tilemap[y][x] = deepcopy(tl.tlist[tile.conected_tiles[1][0]][tile.conected_tiles[1][1]])
 								self.tilemap[y][x].replace = replace
 
-							elif rand > 49:
+							elif rand > 69:
 								numbers =(-2,2)
 								
 								for yy in numbers:
@@ -3963,9 +3967,9 @@ class maP():
 											
 											if self.tilemap[y+yy][x+xx].can_grown == True:
 											
-												coin = random.randint(0,1)
+												coin = random.randint(0,3)
 												
-												if coin == 1:
+												if coin == 0:
 													replace = self.tilemap[y+yy][x+xx]
 													self.tilemap[y+yy][x+xx] = deepcopy(tl.tlist[tile.conected_tiles[0][0]][tile.conected_tiles[0][1]])
 													self.tilemap[y+yy][x+xx].replace = replace
@@ -6116,6 +6120,7 @@ class mob():
 				string = '+[' + item_name + ']'
 				message.add(string)
 				world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]][self.pos[0]] = world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]][self.pos[0]].replace
+				world.maplist[self.pos[2]][self.on_map].containers[self.pos[1]][self.pos[0]] = 0
 			else:
 				message.add('Your inventory is full!')
 				
@@ -6496,6 +6501,8 @@ class mob():
 				else:
 					screen.render_request('['+key_name['e']+'] - brew a potion (-5 Herbs)', '['+key_name['b']+'] -      XXXXXXXXXXXX   ', '['+key_name['x']+'] - leave')
 				
+				ui = getch(screen.displayx,screen.displayy,game_options.sfxmode,game_options.turnmode,mouse=game_options.mousepad)
+				
 				if ui == 'exit':
 					exitgame = True
 					screen.render_load(5)
@@ -6505,8 +6512,6 @@ class mob():
 					playing = False
 					run = False
 					return('exit')
-					
-				ui = getch(screen.displayx,screen.displayy,game_options.sfxmode,game_options.turnmode,mouse=game_options.mousepad)
 				
 				if ui == 'e':
 					test = False
@@ -9796,6 +9801,9 @@ def main():
 	
 			while running:
 				
+				if a == True:
+					None
+				
 				world.maplist[player.pos[2]][player.on_map].time_pass() #make the changes of passing time every new day 
 				
 				screen.render(0)
@@ -9849,7 +9857,7 @@ if __name__ == '__main__':
 		f = open(logfile,'a')
 		f.write('###############################################')
 		f.write('\n')
-		traceback.print_exception(exc_type, exc_obj, exc_tb, limit=2, file=f)
+		traceback.print_exception(exc_type, exc_obj, exc_tb, limit=5, file=f)
 		f.close()
 	finally:
 		if everything_fine == False:
