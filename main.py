@@ -7443,7 +7443,7 @@ class player_class(mob):
 		
 		choices = []
 		
-		st_string = 'Strange(' + str(self.attribute.p_strange) + ' -> ' + str(self.attribute.p_strange+3) +')'
+		st_string = 'Strength(' + str(self.attribute.p_strange) + ' -> ' + str(self.attribute.p_strange+3) +')'
 		choices.append(st_string)
 		
 		sk_string = 'Skill(' + str(self.attribute.p_defense) + ' -> ' + str(self.attribute.p_defense+3) +')'
