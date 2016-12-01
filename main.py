@@ -777,37 +777,37 @@ class g_screen():
 								if world.maplist[player.pos[2]][player.on_map].npcs[y][x] != 0:#render monsters
 											pos = world.maplist[player.pos[2]][player.on_map].npcs[y][x].sprite_pos
 											s.blit(gra_files.gdic['monster'][pos[1]][pos[0]],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)))
-											if world.maplist[player.pos[2]][player.on_map].npcs[y][x].move_border > 9:
-												None
-											elif world.maplist[player.pos[2]][player.on_map].npcs[y][x].AI_style == 'ignore':
-												s.blit(gra_files.gdic['display'][28],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)))
-												lvl = str(world.maplist[player.pos[2]][player.on_map].npcs[y][x].lvl)
-												if len(lvl) == 1:
-													lvl = '0'+lvl
-												elif len(lvl) > 2:
-													lvl = lvl[0]+'+'
-												s.blit(gra_files.gdic['num'][lvl[0]],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)+6))	
-												s.blit(gra_files.gdic['num'][lvl[1]],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)+14))
-											elif world.maplist[player.pos[2]][player.on_map].npcs[view_y][view_x].AI_style == 'flee':
-												s.blit(gra_files.gdic['display'][29],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)))
-												lvl = str(world.maplist[player.pos[2]][player.on_map].npcs[y][x].lvl)
-												if len(lvl) == 1:
-													lvl = '0'+lvl
-												elif len(lvl) > 2:
-													lvl = lvl[0]+'+'
-												s.blit(gra_files.gdic['num'][lvl[0]],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)+6))	
-												s.blit(gra_files.gdic['num'][lvl[1]],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)+14))
-											elif world.maplist[player.pos[2]][player.on_map].npcs[y][x].AI_style == 'hostile':
-												s.blit(gra_files.gdic['display'][30],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)))
-												lvl = str(world.maplist[player.pos[2]][player.on_map].npcs[y][x].lvl)
-												if len(lvl) == 1:
-													lvl = '0'+lvl
-												elif len(lvl) > 2:
-													lvl = lvl[0]+'+'
-												s.blit(gra_files.gdic['num'][lvl[0]],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)+6))	
-												s.blit(gra_files.gdic['num'][lvl[1]],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)+14))
-											else:
-												None
+											#if world.maplist[player.pos[2]][player.on_map].npcs[y][x].move_border > 9:
+											#	None
+											#elif world.maplist[player.pos[2]][player.on_map].npcs[y][x].AI_style == 'ignore':
+											#	s.blit(gra_files.gdic['display'][28],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)))
+											#	lvl = str(world.maplist[player.pos[2]][player.on_map].npcs[y][x].lvl)
+											#	if len(lvl) == 1:
+											#		lvl = '0'+lvl
+											#	elif len(lvl) > 2:
+											#		lvl = lvl[0]+'+'
+											#	s.blit(gra_files.gdic['num'][lvl[0]],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)+6))	
+											#	s.blit(gra_files.gdic['num'][lvl[1]],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)+14))
+											#elif world.maplist[player.pos[2]][player.on_map].npcs[view_y][view_x].AI_style == 'flee':
+											#	s.blit(gra_files.gdic['display'][29],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)))
+											#	lvl = str(world.maplist[player.pos[2]][player.on_map].npcs[y][x].lvl)
+											#	if len(lvl) == 1:
+											#		lvl = '0'+lvl
+											#	elif len(lvl) > 2:
+											#		lvl = lvl[0]+'+'
+											#	s.blit(gra_files.gdic['num'][lvl[0]],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)+6))	
+											#	s.blit(gra_files.gdic['num'][lvl[1]],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)+14))
+											#elif world.maplist[player.pos[2]][player.on_map].npcs[y][x].AI_style == 'hostile':
+											#	s.blit(gra_files.gdic['display'][30],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)))
+											#	lvl = str(world.maplist[player.pos[2]][player.on_map].npcs[y][x].lvl)
+											#	if len(lvl) == 1:
+											#		lvl = '0'+lvl
+											#	elif len(lvl) > 2:
+											#		lvl = lvl[0]+'+'
+											#	s.blit(gra_files.gdic['num'][lvl[0]],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)+6))	
+											#	s.blit(gra_files.gdic['num'][lvl[1]],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)+14))
+											#else:
+											#	None
 												
 								if x == player.pos[0] and y == player.pos[1]:
 											player_pos_help = (x,y)
@@ -9800,9 +9800,6 @@ def main():
 			running = True
 	
 			while running:
-				
-				if a == True:
-					None
 				
 				world.maplist[player.pos[2]][player.on_map].time_pass() #make the changes of passing time every new day 
 				
