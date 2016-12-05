@@ -5189,222 +5189,223 @@ class world_class():
 		
 		#0: Basic initializing
 		
-		screen.render_load(19,0)
+		screen.render_load(19,0)#Render progress bar 0%
 		
-		if style == 'Tomb':
-			tl.tlist['dungeon'][1].tile_pos = (4,6)
-			tl.tlist['dungeon'][6].tile_pos = (4,7)
-			tl.tlist['dungeon'][9].tile_pos = (4,7)
-		else:
-			tl.tlist['dungeon'][1].tile_pos = (10,6)
-			tl.tlist['dungeon'][6].tile_pos = (2,6)
-			tl.tlist['dungeon'][9].tile_pos = (2,6)
+		if style == 'Tomb':								#Set the graphics
+			tl.tlist['dungeon'][1].tile_pos = (4,6)		#
+			tl.tlist['dungeon'][6].tile_pos = (4,7)		#Sandstone walls,hidden doors and corridors for the acient tomb
+			tl.tlist['dungeon'][9].tile_pos = (4,7)		#
+		else:											#
+			tl.tlist['dungeon'][1].tile_pos = (10,6)	#
+			tl.tlist['dungeon'][6].tile_pos = (2,6)		#Default walls,hidden doors and corridors for the default dungeon
+			tl.tlist['dungeon'][9].tile_pos = (2,6)		#
 		
-		name = 'dungeon_0_0'
+		name = 'dungeon_0_0'#map name
 		
-		tilemap = []
-		for a in range (0,max_map_size):
-			tilemap.append([])
-			for b in range (0,max_map_size):
-				tilemap[a].append(0)
+		tilemap = []							#Initializing a empty tilemap
+		for a in range (0,max_map_size):		#
+			tilemap.append([])					#
+			for b in range (0,max_map_size):	#
+				tilemap[a].append(0)			#
 		
-		m = maP(name,tilemap)
-		if style == 'Tomb':
-			m.map_type = 'tomb'
-		else:
-			m.map_type = 'dungeon'
-		m.build_type = 'None'
-		m.monster_plus = monster_plus
-		m.monster_num = 0.3
+		m = maP(name,tilemap)					#Generate a Map-object
+		if style == 'Tomb':						#
+			m.map_type = 'tomb'					#
+		else:									#
+			m.map_type = 'dungeon'				#and set a few constants for the new map
+		m.build_type = 'None'					#
+		m.monster_plus = monster_plus			#
+		m.monster_num = 0.3						#
 		
-		m.fill(tl.tlist['dungeon'][9])
+		m.fill(tl.tlist['dungeon'][9])#fill the map with dungeon wall tiles
 		
-		screen.render_load(19,10)
+		screen.render_load(19,10)#Render progress bar 10%
 		
 		#1: Set rooms
-		test_build = True
-		while test_build:
-			parts_with_rooms = []
+			#Important fact: No matter how big the mapsize is set, 
+			#dundeons only use the 52x52 tiles in the upper left connor.
+			#Thats as big as a small map.
+		test_build = True								#Seperate the dungeon in a 3x3 grit.
+		while test_build:								#Every part of the grit has a 66% chance to be a room
+			parts_with_rooms = []						#
+														#
+			for part_y in range(0,3):					#
+				for part_x in range(0,3):				#
+					ran = random.randint(0,9)			#
+					if ran > 3:							#
+						pick = (part_x,part_y)			#
+						parts_with_rooms.append(pick)	#
 			
-			for part_y in range(0,3):
-				for part_x in range(0,3):
-					ran = random.randint(0,9)
-					if ran > 3:
-						pick = (part_x,part_y)
-						parts_with_rooms.append(pick)
+			if len(parts_with_rooms) > 5:	#every dungeon level needs at least 5 rooms
+				test_build = False			#
 			
-			if len(parts_with_rooms) > 5:
-				test_build = False
-			
-		coord_x = []
-		coord_y = []
+		coord_x = []						#transform the coordinates from the 3x3 grit into
+		coord_y = []						#real coordinates on the tilemap(center of the rooms)
+											#
+		for c in parts_with_rooms:			#
+			x_offset = random.randint(0,5)	#
+			y_offset = random.randint(0,5)	#
+											#
+			real_x = 9+(15*c[0])+x_offset	#
+			real_y = 9+(15*c[1])+y_offset	#
+											#
+			coord_x.append(real_x)			#
+			coord_y.append(real_y)			#
 		
-		for c in parts_with_rooms:
-			x_offset = random.randint(0,5)
-			y_offset = random.randint(0,5)
+		m.imp_connect(coord_x,coord_y,tl.tlist['dungeon'][1],tl.tlist['dungeon'][0],tl.tlist['dungeon'][0])#connect the room cooardinathe with corridor
 			
-			real_x = 9+(15*c[0])+x_offset
-			real_y = 9+(15*c[1])+y_offset
-			
-			
-			coord_x.append(real_x)
-			coord_y.append(real_y)			
-		
-		m.imp_connect(coord_x,coord_y,tl.tlist['dungeon'][1],tl.tlist['dungeon'][0],tl.tlist['dungeon'][0])
-			
-		for i in range(0,len(coord_x)-1):
-			x_minus = random.randint(2,4)
-			x_plus = random.randint(3,5)
-			y_minus = random.randint(2,4)
-			y_plus = random.randint(3,5)
+		for i in range(0,len(coord_x)-1):#set variable roome size for all rooms
+			x_minus = random.randint(2,4)#
+			x_plus = random.randint(3,5) #
+			y_minus = random.randint(2,4)#
+			y_plus = random.randint(3,5) #
 				
-			for yy in range(coord_y[i]-y_minus-1,coord_y[i]+y_plus+1):
-				for xx in range(coord_x[i]-x_minus-1,coord_x[i]+x_plus+1):
-					m.tilemap[yy][xx] = tl.tlist['dungeon'][9]
-			
-			for yy in range(coord_y[i]-y_minus,coord_y[i]+y_plus):
-				for xx in range(coord_x[i]-x_minus,coord_x[i]+x_plus):
-					m.tilemap[yy][xx] = tl.tlist['dungeon'][0]
+			for yy in range(coord_y[i]-y_minus-1,coord_y[i]+y_plus+1):			#draw walls around the rooms
+				for xx in range(coord_x[i]-x_minus-1,coord_x[i]+x_plus+1):		#
+					m.tilemap[yy][xx] = tl.tlist['dungeon'][9]					#
+																				
+			for yy in range(coord_y[i]-y_minus,coord_y[i]+y_plus):				#draw the room floor
+				for xx in range(coord_x[i]-x_minus,coord_x[i]+x_plus):			#
+					m.tilemap[yy][xx] = tl.tlist['dungeon'][0]					#
 		
-		screen.render_load(19,25)
+		screen.render_load(19,25) #progress bar 25%
 			
 		#2: Set doors			
 						
 		for yyy in range(0,52):
 			for xxx in range(0,52):			#the 52 is hard scripted to safe performance
 					
-				if m.tilemap[yyy][xxx].techID == tl.tlist['dungeon'][9].techID:
-					if m.tilemap[yyy-1][xxx].move_group == 'soil' and m.tilemap[yyy+1][xxx].move_group == 'soil':
-						m.tilemap[yyy][xxx] = tl.tlist['dungeon'][3]
-					elif m.tilemap[yyy][xxx-1].move_group == 'soil' and m.tilemap[yyy][xxx+1].move_group == 'soil':
-						m.tilemap[yyy][xxx] = tl.tlist['dungeon'][3]
+				if m.tilemap[yyy][xxx].techID == tl.tlist['dungeon'][9].techID:										#Set all tiles that are surrounded by two moveable tiles on two opponent sides as doors 
+					if m.tilemap[yyy-1][xxx].move_group == 'soil' and m.tilemap[yyy+1][xxx].move_group == 'soil':	#
+						m.tilemap[yyy][xxx] = tl.tlist['dungeon'][3]												#
+					elif m.tilemap[yyy][xxx-1].move_group == 'soil' and m.tilemap[yyy][xxx+1].move_group == 'soil':	#
+						m.tilemap[yyy][xxx] = tl.tlist['dungeon'][3]												#
 				
 		for yyy in range(0,52):
 			for xxx in range(0,52):			#the 52 is hard scripted to safe performance
 				
-				if m.tilemap[yyy][xxx].techID == tl.tlist['dungeon'][3].techID:
-					size = m.get_quarter_size(xxx,yyy)
-					if size[0] > 1:
-						for rx in range(xxx,xxx+size[0]+1):
-							m.tilemap[yyy][rx] = tl.tlist['dungeon'][9]
-						rrx = int(xxx+((rx-xxx)/2))
-						m.tilemap[yyy][rrx] = tl.tlist['dungeon'][3]
-						
-						if m.tilemap[yyy-1][rrx].move_group != 'soil':
-							m.tilemap[yyy-1][rrx] = tl.tlist['dungeon'][1]
-						if m.tilemap[yyy+1][rrx].move_group != 'soil':
-							m.tilemap[yyy+1][rrx] = tl.tlist['dungeon'][1]
+				if m.tilemap[yyy][xxx].techID == tl.tlist['dungeon'][3].techID:	#Remove all doors that are next to another door.
+					size = m.get_quarter_size(xxx,yyy)							#Only spare one door per wall
+					if size[0] > 1:												#
+						for rx in range(xxx,xxx+size[0]+1):						#
+							m.tilemap[yyy][rx] = tl.tlist['dungeon'][9]			#
+						rrx = int(xxx+((rx-xxx)/2))								#
+						m.tilemap[yyy][rrx] = tl.tlist['dungeon'][3]			#
+																				#
+						if m.tilemap[yyy-1][rrx].move_group != 'soil':			#
+							m.tilemap[yyy-1][rrx] = tl.tlist['dungeon'][1]		#
+						if m.tilemap[yyy+1][rrx].move_group != 'soil':			#
+							m.tilemap[yyy+1][rrx] = tl.tlist['dungeon'][1]		#
+																				#
+					if size[1] > 1:												#
+						for ry in range(yyy,yyy+size[1]+1):						#
+							m.tilemap[ry][xxx] = tl.tlist['dungeon'][9]			#
+						rry = int(yyy+((ry-yyy)/2))								#
+						m.tilemap[rry][xxx] = tl.tlist['dungeon'][3]			#
+																				#
+						if m.tilemap[rry][xxx-1].move_group != 'soil':			#
+							m.tilemap[rry][xxx-1] = tl.tlist['dungeon'][1]		#
+						if m.tilemap[rry][xxx+1].move_group != 'soil':			#
+							m.tilemap[rry][xxx+1] = tl.tlist['dungeon'][1]		#
+		
+		screen.render_load(19,40)#Render progress bar 40%
+		
+		test = deepcopy(m)														#Make a copy of the map as is
+		pos = test.find_first(tl.tlist['dungeon'][0])							#and performe a float test,
+		test.floating(pos[0],pos[1],tl.tlist['misc'][0],tl.tlist['dungeon'][9])	#in order to find not conected parts.
+		
+		screen.render_load(19,50) #Render progress bar 50%
+		
+		for yyy in range(0,52):																														#Remove not connected parts
+			for xxx in range(0,52):																													#
+				if test.tilemap[yyy][xxx].techID != tl.tlist['dungeon'][9].techID and test.tilemap[yyy][xxx].techID != tl.tlist['misc'][0].techID:	#
+					m.tilemap[yyy][xxx] = tl.tlist['dungeon'][9]																					#
+		
+		screen.render_load(19,60)#Render progress bar 60%
+		
+		for yyy in range(0,52):														#Randomize doors:
+			for xxx in range(0,52):													#-normal door
+																					#-resisting door
+				if m.tilemap[yyy][xxx].techID == tl.tlist['dungeon'][3].techID:		#-etc.
+					ran = random.randint(3,6)										#
+					m.tilemap[yyy][xxx] = tl.tlist['dungeon'][ran]					#
 					
-					if size[1] > 1:
-						for ry in range(yyy,yyy+size[1]+1):
-							m.tilemap[ry][xxx] = tl.tlist['dungeon'][9]
-						rry = int(yyy+((ry-yyy)/2))
-						m.tilemap[rry][xxx] = tl.tlist['dungeon'][3]
-						
-						if m.tilemap[rry][xxx-1].move_group != 'soil':
-							m.tilemap[rry][xxx-1] = tl.tlist['dungeon'][1]
-						if m.tilemap[rry][xxx+1].move_group != 'soil':
-							m.tilemap[rry][xxx+1] = tl.tlist['dungeon'][1]
 		
-		screen.render_load(19,40)
-		
-		test = deepcopy(m)
-		pos = test.find_first(tl.tlist['dungeon'][0])
-		test.floating(pos[0],pos[1],tl.tlist['misc'][0],tl.tlist['dungeon'][9])#fill the dungeon with water
-		
-		screen.render_load(19,50)
-		
-		for yyy in range(0,52):
-			for xxx in range(0,52):			#the 52 is hard scripted to safe performance
-				if test.tilemap[yyy][xxx].techID != tl.tlist['dungeon'][9].techID and test.tilemap[yyy][xxx].techID != tl.tlist['misc'][0].techID:
-					m.tilemap[yyy][xxx] = tl.tlist['dungeon'][9]
-		
-		screen.render_load(19,60)
-		
-		for yyy in range(0,52):
-			for xxx in range(0,52):			#the 52 is hard scripted to safe performance
-				
-				if m.tilemap[yyy][xxx].techID == tl.tlist['dungeon'][3].techID:
-					ran = random.randint(3,6)
-					m.tilemap[yyy][xxx] = tl.tlist['dungeon'][ran]
-					
-		
-		screen.render_load(19,70)
+		screen.render_load(19,70)#Render progress bar 70%
 						
 		#3: Make stairs
-		stair_up_pos = m.find_any(tl.tlist['dungeon'][0])
-		if style == 'Tomb':
-			m.tilemap[stair_up_pos[1]][stair_up_pos[0]] = tl.tlist['dungeon'][19]
-		else:
-			m.tilemap[stair_up_pos[1]][stair_up_pos[0]] = tl.tlist['dungeon'][8]
+		stair_up_pos = m.find_any(tl.tlist['dungeon'][0])							#Set a up leading stair on any floor tile.
+		if style == 'Tomb':															#
+			m.tilemap[stair_up_pos[1]][stair_up_pos[0]] = tl.tlist['dungeon'][19]	#
+		else:																		#
+			m.tilemap[stair_up_pos[1]][stair_up_pos[0]] = tl.tlist['dungeon'][8]	#
 			
-		if stair_down == True:
-			stair_down_pos = m.find_any(tl.tlist['dungeon'][0])
+		if stair_down == True:																#If we are not on the deepest lvl:
+			stair_down_pos = m.find_any(tl.tlist['dungeon'][0])								#Set a down leading stair on any floor tile.
+			if style == 'Tomb':																#
+				m.tilemap[stair_down_pos[1]][stair_down_pos[0]] = tl.tlist['dungeon'][18]	#
+			else:																			#
+				m.tilemap[stair_down_pos[1]][stair_down_pos[0]] = tl.tlist['dungeon'][7]	#
+		else: 																		#Make a chest whit a reward on the deepest lvl instead
+			chest_pos = m.find_any(tl.tlist['dungeon'][0])							#
+			m.tilemap[chest_pos[1]][chest_pos[0]] = tl.tlist['dungeon'][20]			#
+			m.tilemap[chest_pos[1]][chest_pos[0]].replace = tl.tlist['dungeon'][0]	#
+			
 			if style == 'Tomb':
-				m.tilemap[stair_down_pos[1]][stair_down_pos[0]] = tl.tlist['dungeon'][18]
-			else:
-				m.tilemap[stair_down_pos[1]][stair_down_pos[0]] = tl.tlist['dungeon'][7]
-		else: #make a chest whit a reward on the last lvl
-			chest_pos = m.find_any(tl.tlist['dungeon'][0])
-			m.tilemap[chest_pos[1]][chest_pos[0]] = tl.tlist['dungeon'][20]#grand chest
-			m.tilemap[chest_pos[1]][chest_pos[0]].replace = tl.tlist['dungeon'][0]
-			
-			if style == 'Tomb':
-				m.add_container([il.ilist['clothe'][3],il.ilist['misc'][33],il.ilist['misc'][40]],chest_pos[0],chest_pos[1])
-			else:
-				m.add_container([il.ilist['clothe'][4],il.ilist['misc'][33],il.ilist['misc'][41]],chest_pos[0],chest_pos[1])
-			
+				m.add_container([il.ilist['clothe'][3],il.ilist['misc'][33],il.ilist['misc'][40]],chest_pos[0],chest_pos[1])# set the interior of the chest
+			else:																											#
+				m.add_container([il.ilist['clothe'][4],il.ilist['misc'][33],il.ilist['misc'][41]],chest_pos[0],chest_pos[1])#
 		
-		screen.render_load(19,80)
+		screen.render_load(19,80)#Render progress bar 80%
 		
 		#4: Make Traps
 		
-		for i in range(0,num_traps):
-			pos = m.find_any(tl.tlist['dungeon'][0])
-			replace = m.tilemap[pos[1]][pos[0]]
-			m.tilemap[pos[1]][pos[0]] = deepcopy(tl.tlist['dungeon'][10])#traps have to be deepcopied to work proper
-			m.tilemap[pos[1]][pos[0]].replace = replace
+		for i in range(0,num_traps):										#Set hidden traps on random floor tiles.
+			pos = m.find_any(tl.tlist['dungeon'][0])						#
+			replace = m.tilemap[pos[1]][pos[0]]								#
+			m.tilemap[pos[1]][pos[0]] = deepcopy(tl.tlist['dungeon'][10])	#Traps have to be deepcopied to work proper.
+			m.tilemap[pos[1]][pos[0]].replace = replace						#
 		
-		screen.render_load(19,90)
-		#make interiour
-		num_rooms = len(parts_with_rooms)
-		m.make_containers(int(num_rooms/3),int(num_rooms/2),tl.tlist['dungeon'][0],1,3,'chest')
+		screen.render_load(19,90) #Render Progress bar 90%
+		#5: Make interior
+		num_rooms = len(parts_with_rooms)														#Make chests with random loot
+		m.make_containers(int(num_rooms/3),int(num_rooms/2),tl.tlist['dungeon'][0],1,3,'chest')	#
 		
-		for c in range(0,num_rooms):
-			pos = m.find_any(tl.tlist['dungeon'][0])
-			ran = random.randint(0,99)
-			if ran < 15:
-				tile = deepcopy(tl.tlist['dungeon'][12])#acid fontain
-			elif ran > 84:
-				tile = deepcopy(tl.tlist['dungeon'][13])#healing fontain
-			else:
-				tile = deepcopy(tl.tlist['functional'][7])#fontain
-				tile.civilisation = False
-				tile.build_here = False
-				tile.can_grown = False
-			tile.replace = tl.tlist['dungeon'][0]	
-			m.tilemap[pos[1]][pos[0]] = tile
+		for c in range(0,num_rooms):						#Set random fontains on floor tiles
+			pos = m.find_any(tl.tlist['dungeon'][0])		#
+			ran = random.randint(0,99)						#
+			if ran < 15:									#
+				tile = deepcopy(tl.tlist['dungeon'][12])	#acid fontain
+			elif ran > 84:									#
+				tile = deepcopy(tl.tlist['dungeon'][13])	#healing fontain
+			else:											#
+				tile = deepcopy(tl.tlist['functional'][7])	#fontain
+				tile.civilisation = False					#
+				tile.build_here = False						#
+				tile.can_grown = False						#
+			tile.replace = tl.tlist['dungeon'][0]			#
+			m.tilemap[pos[1]][pos[0]] = tile				#
 			
-		coin = random.randint(0,1)
-		if coin == 1:
-			pos = m.find_any(tl.tlist['dungeon'][0])
-			tile = deepcopy(tl.tlist['functional'][15])#altar
-			tile.civilisation = False
-			tile.build_here = False
-			tile.can_grown = False
-			tile.replace = tl.tlist['dungeon'][0]
-			m.tilemap[pos[1]][pos[0]] = tile
+		coin = random.randint(0,1)						#Set a Altar on 50% of all maps
+		if coin == 1:									#that are generated with this function
+			pos = m.find_any(tl.tlist['dungeon'][0])	#
+			tile = deepcopy(tl.tlist['functional'][15])	#
+			tile.civilisation = False					#
+			tile.build_here = False						#
+			tile.can_grown = False						#
+			tile.replace = tl.tlist['dungeon'][0]		#
+			m.tilemap[pos[1]][pos[0]] = tile			#
 			
-		m.spawn_monsters(0)
-		m.make_special_monsters(10,20,tl.tlist['dungeon'][0],m.monster_plus,'vase')
-		m.make_special_monsters(1,2,tl.tlist['dungeon'][0],m.monster_plus,'mimic')
+		m.spawn_monsters(0)															#Spawn initial monsters
+		m.make_special_monsters(10,20,tl.tlist['dungeon'][0],m.monster_plus,'vase')	#
+		m.make_special_monsters(1,2,tl.tlist['dungeon'][0],m.monster_plus,'mimic')	#
 			
-		self.maplist[1][name] = m
+		self.maplist[1][name] = m # Add map to world.maplist
 		
-		screen.render_load(19,99)
+		screen.render_load(19,99) #Render progress bar 99%
 		
 	def desert_generator(self,chance_object):
-		# chance_scrubs and chance_trees must be between 0 and 99
+		#chance_objects must be between 0 and 99
 		
 		screen.render_load(18,70)
 		

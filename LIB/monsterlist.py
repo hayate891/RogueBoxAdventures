@@ -113,7 +113,7 @@ class monsterlist():
 				name = 'hill orc',
 				sprite_pos = (1,7),
 				move_border = 2,
-				attribute_prev = (3,0,0,1,1),
+				attribute_prev = (3,0,1,0,1),
 				worn_equipment = (1,0,1,0,0),
 				AI_style = 'hostile',
 				corps_style = 'human',
