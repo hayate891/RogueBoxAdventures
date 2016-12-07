@@ -118,7 +118,7 @@ class buffs():
 			slist.append('IMMOBILIZED(' + str(self.immobilized) + ')')
 		
 		if self.confused > 0:
-			slist.append('CONFUSED(' + str(self.immobilized) + ')')
+			slist.append('CONFUSED(' + str(self.confused) + ')')
 			
 		if self.light > 0:
 			slist.append('LIGHT(' + str(self.light) + ')')

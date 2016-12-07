@@ -262,11 +262,11 @@ class materials():
 	
 	def __init__(self):
 		
-		self.wood = 0
+		self.wood = 10
 		self.wood_max = 50
 		self.stone = 0
 		self.stone_max = 40
-		self.ore = 0 
+		self.ore = 10 
 		self.ore_max = 15
 		self.herb = 0
 		self.herb_max = 15

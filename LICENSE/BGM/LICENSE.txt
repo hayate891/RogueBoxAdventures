@@ -1,29 +1,19 @@
-Tracks by "Yubatake"(http://opengameart.org/content/jrpg-collection):
+All songs are composed by: Inigo del Valle(ietsu).
 
-acient_tomb.ogg: JRPG_dungeon_loop
-lava_cave.ogg: JRPG_temple
-elfish_fortress.ogg: JRPG_royalCourt_loop
-orcish_mines.ogg: JRPG_labyrinth_loop
-overworld.ogg: JRPG_dungeon_loop
-cave.ogg: JRPG_fields_loop
+Song list:
 
-
-
-Tracks by "Avgvsta"(http://opengameart.org/content/generic-8-bit-jrpg-soundtrack):
-
-grot.ogg: Z 339 - Here the Deities approve
-menu.ogg: Timeworn Pagoda
-
-
-
-Tracks by "CodeManu"(http://opengameart.org/content/platformer-game-music-pack):
-
-desert.ogg: Desert Theme
-dungeon.ogg: Mushroom Theme
-tomb.ogg: Dungeon Theme
-
+    menu.ogg - A Journey's Beginning
+    cave.ogg - Traversing the Unknown
+    desert.ogg - Murmur of a God
+    overworld.ogg - Going on an Adventure
+    elfish_fortress.ogg - Deep Thoughts
+    orcish_mines.ogg - Anxiety
+    lava_cave.ogg - Dark World
+    tomb.ogg - Bracing the Essence
+    dungeon.ogg - Fighting the Darkness
+    grot.ogg - A Forests Whisper
 
 All songs are licensed under CC-BY 3.0 (http://creativecommons.org/licenses/by/3.0/)
 
-All Songs can be found on http:\\www.opengameart.org\
+All Songs can be found on http://www.opengameart.org/content/a-journeys-end
 

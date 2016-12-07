@@ -13,5 +13,5 @@
 #    You should have received a copy of the GNU General Public License
 #    along with RogueBox Adventures.  If not, see <http://www.gnu.org/licenses/>.
 
-version = '2.1.1'
-release_number = 13
+version = '2.1.2'
+release_number = 14

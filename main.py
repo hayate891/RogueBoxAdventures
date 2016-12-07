@@ -6456,7 +6456,8 @@ class mob():
 								items = (item_wear('ring',material,0),  item_wear('amulet',material,0),  item_wear('necklace',material,0), item_wear('talisman',material,0))
 								final_choice = screen.get_choice('What do you want to prodcuce?', ('Ring','Amulet','Necklace','Talisman'), True)
 							
-							if final_choice == 'Foo':	
+							if final_choice == 'Foo':
+								items = (item_wear('ring',material,0),  item_wear('amulet',material,0),  item_wear('necklace',material,0), item_wear('talisman',material,0))
 								choose = random.randint(0, len(items)-1)
 							else:
 								choose = final_choice
@@ -8125,6 +8126,7 @@ class player_class(mob):
 		self.attribute.hunger = self.attribute.hunger_max
 		self.attribute.thirst = self.attribute.thirst_max
 		self.attribute.tiredness = self.attribute.tiredness_max
+		self.buffs = buffs()
 		
 		if self.difficulty == 0:#the player plays on easy
 			self.inventory.materials = materials()#reset materials
