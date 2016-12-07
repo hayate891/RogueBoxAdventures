@@ -708,7 +708,7 @@ class tilelist():
 		t=tile(techID = techID,
 					name = 'Master forge',
 					tile_color = 'purple',
-					use_group = 'masterforge',
+					use_group = 'forger',
 					move_group = 'soil',
 					grow_group = 'None',
 					damage = 0, 

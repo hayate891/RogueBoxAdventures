@@ -4888,9 +4888,11 @@ class world_class():
 					if ran > 69:
 						 
 						 m.tilemap[y][x] = tl.tlist['misc'][4]#set ore
+						 m.tilemap[y][x].replace = tl.tlist['global_caves'][0]
 					
 					elif ran < 10:
 						m.tilemap[y][x] = tl.tlist['misc'][5]#set gem
+						m.tilemap[y][x].replace = tl.tlist['global_caves'][0]
 		
 		screen.render_load(17,80)
 		
@@ -6276,20 +6278,18 @@ class mob():
 								items = (item_wear('ring',0,0),  item_wear('amulet',0,0),  item_wear('necklace',0,0), item_wear('talisman',0,0))
 								final_choice = screen.get_choice('What do you want to prodcuce?', ('Ring','Amulet','Necklace','Talisman'), True)
 							
-							if final_choice == 'Foo':
-								items = (item_wear('ring',0,0),  item_wear('amulet',0,0),  item_wear('necklace',0,0), item_wear('talisman',0,0))
-								choose = random.randint(0, len(items)-1)
-							else:
-								choose = final_choice
+							choose = final_choice
 							try:
-								if world.maplist[self.pos[2]][self.on_map].containers[self.pos[1]][self.pos[0]] == 0: 
-									world.maplist[self.pos[2]][self.on_map].containers[self.pos[1]][self.pos[0]] = container([items[choose]])
-								else:
-									world.maplist[self.pos[2]][self.on_map].containers[self.pos[1]][self.pos[0]].items.append(items[choose])
+								if choose != 'Foo':
+									if world.maplist[self.pos[2]][self.on_map].containers[self.pos[1]][self.pos[0]] == 0: 
+										world.maplist[self.pos[2]][self.on_map].containers[self.pos[1]][self.pos[0]] = container([items[choose]])
+									else:
+										world.maplist[self.pos[2]][self.on_map].containers[self.pos[1]][self.pos[0]].items.append(items[choose])
 								
 								message_string = 'You produced a ' + items[choose].name + '.'
 								message.add(message_string)
-								player.inventory.materials.wood -= 5
+								if choose != 'Foo':
+									player.inventory.materials.wood -= 5
 							except:
 								None
 								
@@ -6386,7 +6386,7 @@ class mob():
 					
 					run = False
 					
-		elif world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]][self.pos[0]].use_group == 'forger': 
+		elif world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]][self.pos[0]].use_group == 'forger' or world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]][self.pos[0]].use_group == 'masterforge': 
 			#this is a forger's workbench or a master forge
 			
 			run = True
@@ -6456,20 +6456,18 @@ class mob():
 								items = (item_wear('ring',material,0),  item_wear('amulet',material,0),  item_wear('necklace',material,0), item_wear('talisman',material,0))
 								final_choice = screen.get_choice('What do you want to prodcuce?', ('Ring','Amulet','Necklace','Talisman'), True)
 							
-							if final_choice == 'Foo':
-								items = (item_wear('ring',material,0),  item_wear('amulet',material,0),  item_wear('necklace',material,0), item_wear('talisman',material,0))
-								choose = random.randint(0, len(items)-1)
-							else:
-								choose = final_choice
+							choose = final_choice
 							try:
-								if world.maplist[self.pos[2]][self.on_map].containers[self.pos[1]][self.pos[0]] == 0: 
-									world.maplist[self.pos[2]][self.on_map].containers[self.pos[1]][self.pos[0]] = container([items[choose]])
-								else:
-									world.maplist[self.pos[2]][self.on_map].containers[self.pos[1]][self.pos[0]].items.append(items[choose])
+								if choose != 'Foo':
+									if world.maplist[self.pos[2]][self.on_map].containers[self.pos[1]][self.pos[0]] == 0: 
+										world.maplist[self.pos[2]][self.on_map].containers[self.pos[1]][self.pos[0]] = container([items[choose]])
+									else:
+										world.maplist[self.pos[2]][self.on_map].containers[self.pos[1]][self.pos[0]].items.append(items[choose])
 								
 								message_string = 'You produced a ' + items[choose].name + '.'
 								message.add(message_string)
-								player.inventory.materials.ore -= price
+								if choose != 'Foo':
+									player.inventory.materials.ore -= price
 							except:
 								None
 								
