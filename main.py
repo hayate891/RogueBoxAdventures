@@ -5907,8 +5907,6 @@ class mob():
 			
 	def stand_check(self):
 		
-		print(world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]][self.pos[0]].move_group)
-		
 		if self.on_map != self.cur_map:
 			self.last_map = self.cur_map
 			self.cur_map = self.on_map
