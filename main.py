@@ -4561,6 +4561,18 @@ class world_class():
 		pos = m.find_any(tl.tlist['misc'][0])#find any low water tile
 		m.tilemap[pos[1]][pos[0]] = tl.tlist['dungeon'][15]#set stair up
 		
+		for sy in range(pos[1]-4,pos[1]+5):
+			for sx in range(pos[0]-4,pos[0]+5):
+				try:
+					if m.tilemap[sy][sx].move_group == 'soil':
+						m.tilemap[sy][sx] = deepcopy(m.tilemap[sy][sx])
+						m.tilemap[sy][sx].move_group == 'dry_entrance'
+					elif m.tilemap[sy][sx].move_group == 'low_liquid':
+						m.tilemap[sy][sx] = deepcopy(m.tilemap[sy][sx])
+						m.tilemap[sy][sx].move_group == 'wet_entrance'
+				except:
+					None
+		
 		m.make_shops()
 		
 		m.spawn_monsters(3)
@@ -4913,8 +4925,20 @@ class world_class():
 		
 		screen.render_load(17,90)
 		
-		pos = m.find_any(tl.tlist['mine'][0])#find any low water tile
+		pos = m.find_any(tl.tlist['mine'][0])#find any mine floor tile
 		m.tilemap[pos[1]][pos[0]] = tl.tlist['dungeon'][17]#set stair up
+		
+		for sy in range(pos[1]-4,pos[1]+5):
+			for sx in range(pos[0]-4,pos[0]+5):
+				try:
+					if m.tilemap[sy][sx].move_group == 'soil':
+						m.tilemap[sy][sx] = deepcopy(m.tilemap[sy][sx])
+						m.tilemap[sy][sx].move_group == 'dry_entrance'
+					elif m.tilemap[sy][sx].move_group == 'low_liquid':
+						m.tilemap[sy][sx] = deepcopy(m.tilemap[sy][sx])
+						m.tilemap[sy][sx].move_group == 'wet_entrance'
+				except:
+					None
 		
 		m.spawn_monsters(9)
 		
@@ -5342,6 +5366,18 @@ class world_class():
 		else:																		#
 			m.tilemap[stair_up_pos[1]][stair_up_pos[0]] = tl.tlist['dungeon'][8]	#
 			
+		for sy in range(stair_up_pos[1]-4,stair_up_pos[1]+5):
+			for sx in range(stair_up_pos[0]-4,stair_up_pos[0]+5):
+				try:
+					if m.tilemap[sy][sx].move_group == 'soil':
+						m.tilemap[sy][sx] = deepcopy(m.tilemap[sy][sx])
+						m.tilemap[sy][sx].move_group = 'dry_entrance'
+					elif m.tilemap[sy][sx].move_group == 'low_liquid':
+						m.tilemap[sy][sx] = deepcopy(m.tilemap[sy][sx])
+						m.tilemap[sy][sx].move_group = 'wet_entrance'
+				except:
+					None
+			
 		if stair_down == True:																#If we are not on the deepest lvl:
 			stair_down_pos = m.find_any(tl.tlist['dungeon'][0])								#Set a down leading stair on any floor tile.
 			if style == 'Tomb':																#
@@ -5728,7 +5764,7 @@ class mob():
 		
 		mc = self.move_check(x,y)
 		tile_move_group = world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].move_group
-		player_move_groups = ['soil','low_liquid','holy','shop','house']
+		player_move_groups = ['soil','low_liquid','holy','shop','house','wet_entrance','dry_entrance']
 		
 		swim_check = True
 		
@@ -5738,6 +5774,9 @@ class mob():
 				
 		if swim_check == True:
 			player_move_groups.append('swim')
+		
+		if self.buffs.immobilized > 0:
+			player_move_groups = ['not_existent_group1','not_existent_group2']
 		
 		move_check2 = False	
 		
@@ -5763,9 +5802,14 @@ class mob():
 	def move_check(self,x,y):
 		
 		if world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].move_group == 'door':
-				message.add(world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].move_mes)
-				world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x] = world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].replace
-				return False
+			if world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].techID == tl.tlist['dungeon'][4].techID or world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].techID == tl.tlist['dungeon'][5].techID or world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].techID == tl.tlist['dungeon'][6].techID:
+				#this is a resisting door or a hidden door
+				sfx.play('locked')
+			else:
+				sfx.play('open')	
+			message.add(world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].move_mes)
+			world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x] = world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].replace
+			return False
 		
 		try:
 			
@@ -5778,7 +5822,8 @@ class mob():
 				if self.attribute.pickaxe_power + player.inventory.wearing['Hold(R)'].attribute.pickaxe_power >= world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].destroy:
 					if self == player:
 						message.add(world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].move_mes)
-						sfx.play('brake')
+						if world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].techID != tl.tlist['building'][3].techID: #this isn't a door
+							sfx.play('brake')
 						
 						try:
 							material = world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].conected_resources[0]
@@ -5790,6 +5835,7 @@ class mob():
 							
 						if world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].techID == tl.tlist['building'][3].techID: #this is a closed door
 							world.maplist[self.pos[2]][self.on_map].countdowns.append(countdown('door', self.pos[0]+x, self.pos[1]+y,3))
+							sfx.play('open')
 							player.inventory.wearing['Hold(R)'].defensibility += 1 #open doors dosn't damage your tool
 							
 					world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x] = deepcopy(world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].replace)
@@ -5844,11 +5890,14 @@ class mob():
 						message.add('You need a axe.')
 					
 					return False
-			
-			if world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].move_group == 'low_liquid' or world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].move_group == 'swim':
-				sfx.play('walk_wet')
+					
+			if self.buffs.immobilized == 0:
+				if world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].move_group == 'low_liquid' or world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].move_group == 'swim' or world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].move_group == 'wet_entrance':
+					sfx.play('walk_wet')
+				else:
+					sfx.play('walk_dry')
 			else:
-				sfx.play('walk_dry')
+				sfx.play('immobilized')
 			
 			return True
 			
@@ -5857,6 +5906,8 @@ class mob():
 			None
 			
 	def stand_check(self):
+		
+		print(world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]][self.pos[0]].move_group)
 		
 		if self.on_map != self.cur_map:
 			self.last_map = self.cur_map
@@ -7405,6 +7456,7 @@ class player_class(mob):
 				time.tick()
 		
 		if ui == 'i':
+			sfx.play('loot')
 			self.inventory.inv_user_interaction()
 			time.tick()
 			
@@ -9288,6 +9340,8 @@ class container():
 						
 	def inventory(self, tile_change = True):
 		
+		sfx.play('loot')
+		
 		run = True
 		
 		while run:
@@ -9485,6 +9539,7 @@ class time_class():
 						if world.maplist[player.pos[2]][player.on_map].countdowns[i].kind == 'door':
 							world.maplist[player.pos[2]][player.on_map].tilemap[world.maplist[player.pos[2]][player.on_map].countdowns[i].y][world.maplist[player.pos[2]][player.on_map].countdowns[i].x] = tl.tlist['building'][3]
 							message.add('A door falls shut.')
+							sfx.play('locked')
 							world.maplist[player.pos[2]][player.on_map].countdowns[i] = 'del'
 							
 						elif world.maplist[player.pos[2]][player.on_map].countdowns[i].kind == 'bomb3':
@@ -9698,7 +9753,11 @@ class sfX():
 						'chop': pygame.mixer.Sound(sfx_path + 'chop.ogg'),
 						'brake': pygame.mixer.Sound(sfx_path + 'brake.ogg'),
 						'lvl_up': pygame.mixer.Sound(sfx_path + 'lvl_up.ogg'),
-						'steal' : pygame.mixer.Sound(sfx_path + 'steal.ogg')}
+						'steal' : pygame.mixer.Sound(sfx_path + 'steal.ogg'),
+						'loot' : pygame.mixer.Sound(sfx_path + 'loot.ogg'),
+						'open' : pygame.mixer.Sound(sfx_path + 'open.ogg'),
+						'locked' : pygame.mixer.Sound(sfx_path + 'locked.ogg'),
+						'immobilized' : pygame.mixer.Sound(sfx_path + 'immobilized.ogg'),}
 						
 	def play(self,sfx_name):
 		
@@ -9730,7 +9789,7 @@ class bgM():
 		else:
 			pygame.mixer.music.stop()
 		
-		if self.song_played_now != self.last_song and play_menu_sound == False:
+		if self.song_played_now != self.last_song and play_menu_sound == False and game_options.bgmmode == 1:
 			
 			try:
 				pygame.mixer.music.stop()
@@ -9818,21 +9877,18 @@ def main():
 					if player.inventory.wearing[i] != player.inventory.nothing:
 						move_border += 1
 				
-				if player.buffs.immobilized > 0:
-					player.user_input(True)
-				else:
-					move_chance = random.randint(1,9)
-					if move_border < move_chance:
-						screen.reset_hit_matrix()
-						plus = 1
-						r = True
-						while r:
-							test = player.user_input()
-							if test == 'next_mes':
-								screen.render(0)
-							else:
-								message.more_messages = False
-								r = False
+				move_chance = random.randint(1,9)
+				if move_border < move_chance:
+					screen.reset_hit_matrix()
+					plus = 1
+					r = True
+					while r:
+						test = player.user_input()
+						if test == 'next_mes':
+							screen.render(0)
+						else:
+							message.more_messages = False
+							r = False
 				
 				if exitgame == True:
 					running = False
