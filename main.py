@@ -5823,7 +5823,7 @@ class mob():
 					if self == player:
 						message.add(world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].move_mes)
 						if world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].techID != tl.tlist['building'][3].techID: #this isn't a door
-							sfx.play('brake')
+							sfx.play('break')
 						
 						try:
 							material = world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].conected_resources[0]
@@ -5836,11 +5836,10 @@ class mob():
 						if world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].techID == tl.tlist['building'][3].techID: #this is a closed door
 							world.maplist[self.pos[2]][self.on_map].countdowns.append(countdown('door', self.pos[0]+x, self.pos[1]+y,3))
 							sfx.play('open')
-							player.inventory.wearing['Hold(R)'].defensibility += 1 #open doors dosn't damage your tool
 							
 					world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x] = deepcopy(world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].replace)
 					
-					if player.inventory.wearing['Hold(R)'] != player.inventory.nothing:
+					if player.inventory.wearing['Hold(R)'] != player.inventory.nothing and world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].techID != tl.tlist['building'][3].techID:
 					
 						player.inventory.wearing['Hold(R)'].take_damage()
 					
@@ -5849,6 +5848,7 @@ class mob():
 						else:
 							message.add('Your tool breaks into pieces.')
 							player.inventory.wearing['Hold(R)'] = player.inventory.nothing
+							sfx.play('item_break')
 					
 				else:
 					if self == player:
@@ -5881,7 +5881,8 @@ class mob():
 						player.inventory.wearing['Hold(R)'].set_name()
 					else:
 						message.add('Your axe breaks into pices.')
-						player.inventory.wearing['Hold(R)'] = player.inventory.nothing		
+						player.inventory.wearing['Hold(R)'] = player.inventory.nothing
+						sfx.play('item_break')
 						
 					return False
 					
@@ -7867,7 +7868,13 @@ class player_class(mob):
 					if self.inventory.wearing[bodypart] != self.inventory.nothing:
 						self.inventory.wearing[bodypart].take_damage()#your amor at this bodypart take twice damage
 						self.inventory.wearing[bodypart].take_damage()
-						self.inventory.wearing[bodypart].set_name()
+						if self.inventory.wearing[bodypart].state < 0:
+							self.inventory.wearing[bodypart].set_name()
+						else:
+							self.inventory.wearing[bodypart] = self.inventory.nothing
+							mes = 'Your '+self.inventory.wearing[bodypart].classe+' breaks!'
+							message.add(mes)
+							sfx.play('item_break')
 				else:
 					sfx.play('hit')
 					message_string = 'A ' + world.maplist[self.pos[2]][self.on_map].npcs[y][x].name + ' hits your ' + bodypart.lower() + '!'
@@ -7876,7 +7883,13 @@ class player_class(mob):
 					player.lp -= 2
 					if self.inventory.wearing[bodypart] != self.inventory.nothing:
 						self.inventory.wearing[bodypart].take_damage()
-						self.inventory.wearing[bodypart].set_name()
+						if self.inventory.wearing[bodypart].state < 0:
+							self.inventory.wearing[bodypart].set_name()
+						else:
+							self.inventory.wearing[bodypart] = self.inventory.nothing
+							mes = 'Your '+self.inventory.wearing[bodypart].classe+' breaks!'
+							message.add(mes)
+							sfx.play('item_break')
 						
 				if world.maplist[self.pos[2]][self.on_map].npcs[y][x].possible_effect != None:
 					
@@ -7928,12 +7941,24 @@ class player_class(mob):
 					if self.inventory.wearing['Neck'] != self.inventory.nothing:
 						self.inventory.wearing['Neck'].take_damage()#your amor at this bodypart take twice damage
 						self.inventory.wearing['Neck'].take_damage()
-						self.inventory.wearing['Neck'].set_name()
+						if self.inventory.wearing['Neck'].state < 0:
+							self.inventory.wearing['Neck'].set_name()
+						else:
+							self.inventory.wearing['Neck'] = self.inventory.nothing
+							mes = 'Your '+self.inventory.wearing['Neck'].classe+' breaks!'
+							message.add(mes)
+							sfx.play('item_break')
 						
 					if self.inventory.wearing['Hand'] != self.inventory.nothing:
 						self.inventory.wearing['Hand'].take_damage()#your amor at this bodypart take twice damage
 						self.inventory.wearing['Hand'].take_damage()
-						self.inventory.wearing['Hand'].set_name()	
+						if self.inventory.wearing['Hand'].state < 0:
+							self.inventory.wearing['Hand'].set_name()
+						else:
+							self.inventory.wearing['Hand'] = self.inventory.nothing
+							mes = 'Your '+self.inventory.wearing['Hand'].classe+' breaks!'
+							message.add(mes)
+							sfx.play('item_break')
 				else:
 					sfx.play('hit')
 					message_string = 'A ' + world.maplist[self.pos[2]][self.on_map].npcs[y][x].name + '\'s magic attack hits you!'
@@ -7943,11 +7968,23 @@ class player_class(mob):
 					
 					if self.inventory.wearing['Neck'] != self.inventory.nothing:
 						self.inventory.wearing['Neck'].take_damage()
-						self.inventory.wearing['Neck'].set_name()
+						if self.inventory.wearing['Neck'].state < 0:
+							self.inventory.wearing['Neck'].set_name()
+						else:
+							self.inventory.wearing['Neck'] = self.inventory.nothing
+							mes = 'Your '+self.inventory.wearing['Neck'].classe+' breaks!'
+							message.add(mes)
+							sfx.play('item_break')
 						
 					if self.inventory.wearing['Hand'] != self.inventory.nothing:
 						self.inventory.wearing['Hand'].take_damage()
-						self.inventory.wearing['Hand'].set_name()
+						if self.inventory.wearing['Hand'].state < 0:
+							self.inventory.wearing['Hand'].set_name()
+						else:
+							self.inventory.wearing['Hand'] = self.inventory.nothing
+							mes = 'Your '+self.inventory.wearing['Hand'].classe+' breaks!'
+							message.add(mes)
+							sfx.play('item_break')
 				
 				if world.maplist[self.pos[2]][self.on_map].npcs[y][x].possible_effect != None:
 					
@@ -7982,6 +8019,8 @@ class player_class(mob):
 			monster_defense = 0
 			for j in range(0,world.maplist[self.pos[2]][self.on_map].npcs[y][x].basic_attribute.m_defense):
 				monster_defense += random.randint(1,6)
+			if world.maplist[self.pos[2]][self.on_map].npcs[y][x].move_border > 9:
+				monster_defense = 0
 			
 			player_luck = self.attribute.luck + self.inventory.wearing['Hand'].attribute.luck +self.inventory.wearing['Neck'].attribute.luck
 			
@@ -8000,7 +8039,10 @@ class player_class(mob):
 				chance = random.randint(0,25)
 				
 				if chance < player_luck:#player hits critical
-					sfx.play('hit')
+					if world.maplist[self.pos[2]][self.on_map].npcs[y][x].name != 'vase' and world.maplist[self.pos[2]][self.on_map].npcs[y][x].name != 'monster vase':
+						sfx.play('hit')
+					else:
+						sfx.play('shatter')
 					message_string = 'Your magic attack hits the ' + world.maplist[self.pos[2]][self.on_map].npcs[y][x].name + ' critical!'
 					message.add(message_string)
 					screen.write_hit_matrix(x,y,5)
@@ -8022,10 +8064,19 @@ class player_class(mob):
 						
 					if self.inventory.wearing['Hold(L)'] != self.inventory.nothing:
 						self.inventory.wearing['Hold(L)'].take_damage()
-						self.inventory.wearing['Hold(L)'].set_name()
+						if self.inventory.wearing['Hold(L)'].state > 0:
+							self.inventory.wearing['Hold(L)'].set_name()
+						else:
+							self.inventory.wearing['Hold(L)'] = self.inventory.nothing
+							mes = 'Your '+self.inventory.wearing['Hold(L)'].classe+' breaks!'
+							message.add(mes)
+							sfx.play('item_break')
 					 
 				else:
-					sfx.play('hit')
+					if world.maplist[self.pos[2]][self.on_map].npcs[y][x].name != 'vase' and world.maplist[self.pos[2]][self.on_map].npcs[y][x].name != 'monster vase':
+						sfx.play('hit')
+					else:
+						sfx.play('shatter')
 					message_string = 'Your magic attack hits the ' + world.maplist[self.pos[2]][self.on_map].npcs[y][x].name + '!'
 					message.add(message_string)
 					screen.write_hit_matrix(x,y,4)
@@ -8047,7 +8098,13 @@ class player_class(mob):
 					
 					if self.inventory.wearing['Hold(L)'] != self.inventory.nothing:
 						self.inventory.wearing['Hold(L)'].take_damage()
-						self.inventory.wearing['Hold(L)'].set_name()
+						if self.inventory.wearing['Hold(L)'].state > 0:
+							self.inventory.wearing['Hold(L)'].set_name()
+						else:
+							self.inventory.wearing['Hold(L)'] = self.inventory.nothing
+							mes = 'Your '+self.inventory.wearing['Hold(L)'].classe+' breaks!'
+							message.add(mes)
+							sfx.play('item_break')
 			else:
 				sfx.play('miss')
 				message_string = 'You miss the ' + world.maplist[self.pos[2]][self.on_map].npcs[y][x].name + '.'
@@ -8062,6 +8119,8 @@ class player_class(mob):
 			monster_defense = 0
 			for i in range(0,world.maplist[self.pos[2]][self.on_map].npcs[y][x].basic_attribute.p_defense):
 				monster_defense += random.randint(1,6)
+			if world.maplist[self.pos[2]][self.on_map].npcs[y][x].move_border > 9:
+				monster_defense = 0
 			
 			player_luck = self.attribute.luck + self.inventory.wearing['Hand'].attribute.luck +self.inventory.wearing['Neck'].attribute.luck
 				
@@ -8080,7 +8139,10 @@ class player_class(mob):
 				chance = random.randint(0,25)
 				
 				if chance < player_luck:#player hits critical
-					sfx.play('hit')
+					if world.maplist[self.pos[2]][self.on_map].npcs[y][x].name != 'vase' and world.maplist[self.pos[2]][self.on_map].npcs[y][x].name != 'monster vase':
+						sfx.play('hit')
+					else:
+						sfx.play('shatter')
 					message_string = 'You hit the ' + world.maplist[self.pos[2]][self.on_map].npcs[y][x].name + ' critical!'
 					message.add(message_string)
 					screen.write_hit_matrix(x,y,5)
@@ -8103,10 +8165,19 @@ class player_class(mob):
 					 
 					if self.inventory.wearing['Hold(R)'] != self.inventory.nothing:
 						self.inventory.wearing['Hold(R)'].take_damage()
-						self.inventory.wearing['Hold(R)'].set_name() 
+						if self.inventory.wearing['Hold(R)'].state > 0:
+							self.inventory.wearing['Hold(R)'].set_name()
+						else:
+							self.inventory.wearing['Hold(R)'] = self.inventory.nothing
+							mes = 'Your '+self.inventory.wearing['Hold(R)'].classe+' breaks!'
+							message.add(mes)
+							sfx.play('item_break')
 					 
 				else:
-					sfx.play('hit')
+					if world.maplist[self.pos[2]][self.on_map].npcs[y][x].name != 'vase' and world.maplist[self.pos[2]][self.on_map].npcs[y][x].name != 'monster vase':
+						sfx.play('hit')
+					else:
+						sfx.play('shatter')
 					message_string = 'You hit the ' + world.maplist[self.pos[2]][self.on_map].npcs[y][x].name + '!'
 					message.add(message_string)
 					screen.write_hit_matrix(x,y,4)
@@ -8129,7 +8200,13 @@ class player_class(mob):
 					
 					if self.inventory.wearing['Hold(R)'] != self.inventory.nothing:
 						self.inventory.wearing['Hold(R)'].take_damage()
-						self.inventory.wearing['Hold(R)'].set_name()
+						if self.inventory.wearing['Hold(R)'].state > 0:
+							self.inventory.wearing['Hold(R)'].set_name()
+						else:
+							self.inventory.wearing['Hold(R)'] = self.inventory.nothing
+							mes = 'Your '+self.inventory.wearing['Hold(R)'].classe+' breaks!'
+							message.add(mes)
+							sfx.play('item_break')
 			
 			else:
 				sfx.play('miss')
@@ -9749,19 +9826,21 @@ class sfX():
 						'fire': pygame.mixer.Sound(sfx_path + 'fire.ogg'),
 						'boom': pygame.mixer.Sound(sfx_path + 'boom.ogg'),
 						'chop': pygame.mixer.Sound(sfx_path + 'chop.ogg'),
-						'brake': pygame.mixer.Sound(sfx_path + 'brake.ogg'),
+						'break': pygame.mixer.Sound(sfx_path + 'break.ogg'),
 						'lvl_up': pygame.mixer.Sound(sfx_path + 'lvl_up.ogg'),
 						'steal' : pygame.mixer.Sound(sfx_path + 'steal.ogg'),
 						'loot' : pygame.mixer.Sound(sfx_path + 'loot.ogg'),
 						'open' : pygame.mixer.Sound(sfx_path + 'open.ogg'),
 						'locked' : pygame.mixer.Sound(sfx_path + 'locked.ogg'),
-						'immobilized' : pygame.mixer.Sound(sfx_path + 'immobilized.ogg'),}
+						'immobilized' : pygame.mixer.Sound(sfx_path + 'immobilized.ogg'),
+						'item_break' : pygame.mixer.Sound(sfx_path + 'item_break.ogg'),
+						'shatter' : pygame.mixer.Sound(sfx_path + 'shatter.ogg')}
 						
 	def play(self,sfx_name):
 		
 		try:
 			if game_options.sfxmode == True:
-				self.sfx_list[sfx_name].play(maxtime=1000)
+				self.sfx_list[sfx_name].play()
 		except:
 			print('SFX error')
 				

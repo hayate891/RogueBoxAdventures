@@ -335,7 +335,7 @@ class monsterlist():
 				corps_style = 'human',
 				corps_lvl = 1,
 				personal_id = 'None',
-				move_groups = ('soil','low_liquid',,'dry_entrance','wet_entance'), 
+				move_groups = ('soil','low_liquid','dry_entrance','wet_entance'), 
 				behavior = 'attack_melee', 
 				attack_were = ('Head','Body','Legs'),
 				possible_effect = 'bleeding', 
