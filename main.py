@@ -228,6 +228,8 @@ class g_screen():
 		#		7:teleport
 		#		8:minus_gem
 		#		9:plus_gem
+		#		10:plus_fish
+		#		11:plus_shoe
 				
 		xx = x - player.pos[0] + 7
 		yy = y - player.pos[1] + 6
@@ -273,6 +275,10 @@ class g_screen():
 					s.blit(gra_files.gdic['display'][26],(((x-start)*32)+plusx,(y-start)*32+plusy))
 				elif self.hit_matrix[y][x] == 9:
 					s.blit(gra_files.gdic['display'][27],(((x-start)*32)+plusx,(y-start)*32+plusy))
+				elif self.hit_matrix[y][x] == 10:
+					s.blit(gra_files.gdic['display'][42],(((x-start)*32)+plusx,(y-start)*32+plusy))
+				elif self.hit_matrix[y][x] == 11:
+					s.blit(gra_files.gdic['display'][43],(((x-start)*32)+plusx,(y-start)*32+plusy))
 
 		s.set_colorkey((255,0,255),pygame.RLEACCEL)	
 		s = s.convert_alpha()
@@ -2117,7 +2123,8 @@ class g_screen():
 		
 		run = True
 		num = 0
-		options_path = save_path.replace(os.sep + 'World0','')
+		for c in range(0,5):
+			options_path = save_path.replace(os.sep + 'World' + str(c),'')
 		
 		while run:
 			
@@ -2259,7 +2266,7 @@ class g_screen():
 					else:
 						game_options.bgmmode = 1
 						pygame.mixer.music.unpause()
-						bgm.check_for_song()
+						bgm.check_for_song(force_play=True)
 						
 					save_options(game_options,options_path,os.sep)
 						
@@ -8931,52 +8938,82 @@ class inventory():
 				if chance == 0:
 					self.inv_mes ='Not here!'
 					return False
-					
-				got_fish = random.randint(0,20)
 				
-				if chance > got_fish:
-					status_quo = world.maplist[player.pos[2]][player.on_map].containers[player.pos[1]][player.pos[0]] #save the container at this ülace
-					coin = random.randint(0,99)
+				run = True
+				
+				while run:
+					got_fish = random.randint(0,20)
 					
-					if coin < 75:
+					if chance > got_fish:
+						status_quo = world.maplist[player.pos[2]][player.on_map].containers[player.pos[1]][player.pos[0]] #save the container at this ülace
+						coin = random.randint(0,99)
+					
+						if coin < 75:
 						
-						items = (il.ilist['food'][4],il.ilist['food'][25])#catch a fish or a jellyfish
+							items = (il.ilist['food'][4],il.ilist['food'][25])#catch a fish or a jellyfish
 						
-						choose = random.randint(0,len(items)-1)
+							choose = random.randint(0,len(items)-1)
 						
-						world.maplist[player.pos[2]][player.on_map].containers[player.pos[1]][player.pos[0]] = container([items[choose]])#set a temporary container
-						test = world.maplist[player.pos[2]][player.on_map].containers[player.pos[1]][player.pos[0]].loot(0)
+							world.maplist[player.pos[2]][player.on_map].containers[player.pos[1]][player.pos[0]] = container([items[choose]])#set a temporary container
+							test = world.maplist[player.pos[2]][player.on_map].containers[player.pos[1]][player.pos[0]].loot(0)
 						
-						if test == True:
-							message.add('You got a ' + items[choose].name + '.')
-						else:
-							message.add('You got a ' + items[choose].name + ', but you can\'t keep it.')
+							if test == True:
+								message.add('You got a ' + items[choose].name + '.')
+								screen.write_hit_matrix(player.pos[0],player.pos[1],10)
+								sfx.play('got_fish')
+							else:
+								message.add('You got a ' + items[choose].name + ', but you can\'t keep it.')
+								sfx.play('got_fish')
 							
+						else:
+							#catch old shoes
+							material = random.randint(6,20) #no wooden shoes. they would swim ;-)
+							curse = random.randint(0,2)
+							plus = random.randint(-2,2)
+							state = random.randint(4,11)
+						
+							item = item_wear('shoes',material,plus,state,curse)
+						
+							world.maplist[player.pos[2]][player.on_map].containers[player.pos[1]][player.pos[0]] = container([item])
+							test = world.maplist[player.pos[2]][player.on_map].containers[player.pos[1]][player.pos[0]].loot(0)
+							
+							if test == True:
+								message.add('You got some old ' + item.name + '.')
+								screen.write_hit_matrix(player.pos[0],player.pos[1],11)
+								sfx.play('got_fish')
+							else:
+								message.add('You got some old ' + item.name + ', but you can\'t keep it.')
+								sfx.play('got_fish')
+							
+						world.maplist[player.pos[2]][player.on_map].containers[player.pos[1]][player.pos[0]] = status_quo #recover the old container 
+					
 					else:
-						#catch old shoes
-						material = random.randint(6,20) #no wooden shoes. they would swim ;-)
-						curse = random.randint(0,2)
-						plus = random.randint(-2,2)
-						state = random.randint(4,11)
-						
-						item = item_wear('shoes',material,plus,state,curse)
-						
-						world.maplist[player.pos[2]][player.on_map].containers[player.pos[1]][player.pos[0]] = container([item])
-						test = world.maplist[player.pos[2]][player.on_map].containers[player.pos[1]][player.pos[0]].loot(0)
-							
-						if test == True:
-							message.add('You got some old ' + item.name + '.')
-						else:
-							message.add('You got some old ' + item.name + ', but you can\'t keep it.')
-							
-					world.maplist[player.pos[2]][player.on_map].containers[player.pos[1]][player.pos[0]] = status_quo #recover the old container 
-				
-				else:
+						message.add('It seems nothing want to bite...')
+						sfx.play('no_fish')
 					
-					message.add('It seems nothing want to bite...')
-				
+					for yy in range(player.pos[1]-1,player.pos[1]+2):
+						for xx in range(player.pos[0]-1,player.pos[0]+2):
+							
+							if world.maplist[player.pos[2]][player.on_map].npcs[yy][xx] != 0:
+								message.add('A monster interrupts you!')
+								return True
+					
+					screen.render_request('['+key_name['e']+']-Go on!',' ','['+key_name['x']+']-Stop')
+					
+					run2 = True
+					
+					while run2:
+						ui = getch(screen.displayx,screen.displayy,game_options.sfxmode,game_options.turnmode,mouse=game_options.mousepad)
+					
+						if ui == 'e':
+							time.tick()
+							screen.reset_hit_matrix()
+							run2 = False
+						elif ui == 'x':
+							run = False
+							run2 = False
 				return True
-			
+				
 			elif self.misc[slot].name == 'Torch':
 				
 				player.buffs.set_buff('light',180)
@@ -9834,7 +9871,9 @@ class sfX():
 						'locked' : pygame.mixer.Sound(sfx_path + 'locked.ogg'),
 						'immobilized' : pygame.mixer.Sound(sfx_path + 'immobilized.ogg'),
 						'item_break' : pygame.mixer.Sound(sfx_path + 'item_break.ogg'),
-						'shatter' : pygame.mixer.Sound(sfx_path + 'shatter.ogg')}
+						'shatter' : pygame.mixer.Sound(sfx_path + 'shatter.ogg'),
+						'got_fish' : pygame.mixer.Sound(sfx_path + 'got_fish.ogg'),
+						'no_fish' : pygame.mixer.Sound(sfx_path + 'no_fish.ogg')}
 						
 	def play(self,sfx_name):
 		
@@ -9851,7 +9890,7 @@ class bgM():
 		self.song_played_now = 'No'
 		self.last_song = 'No'
 		
-	def check_for_song(self,play_menu_sound = False):
+	def check_for_song(self,play_menu_sound = False,force_play = False):
 		
 		music_path = basic_path + os.sep + 'AUDIO' + os.sep + 'BGM' + os.sep
 		
@@ -9862,7 +9901,10 @@ class bgM():
 			play_menu_sound = True
 		
 		if game_options.bgmmode == 1 and play_menu_sound == False:
-			self.song_played_now = world.maplist[player.pos[2]][player.on_map].map_type
+			if force_play == False:
+				self.song_played_now = world.maplist[player.pos[2]][player.on_map].map_type
+			else:
+				self.last_song = 'FOO'
 		else:
 			pygame.mixer.music.stop()
 		

@@ -148,8 +148,9 @@ class g_files():
 						'icon_focus_passive',#38
 						'icon_inventory_active',#39
 						'icon_inventory_passive',#40
-						'choose_dir'#41
-						)
+						'choose_dir',#41
+						'plus_fish',#42
+						'plus_shoe')#43
 
 		for c in display_names:
 			i_name = display_path + c + '.png'
