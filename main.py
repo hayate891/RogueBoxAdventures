@@ -6014,10 +6014,13 @@ class mob():
 				if ran < luck:
 					screen.write_hit_matrix(player.pos[0],player.pos[1],3)
 					message.add('A flying dagger miss you.')
+					sfx.play('miss')
 				else:
 					player.lp -= 3
 					screen.write_hit_matrix(player.pos[0],player.pos[1],4)
 					message.add('A flying dagger hits you.')
+					sfx.play('hit')
+					
 					
 			elif kind == 1:#teleport trap
 				t=world.maplist[self.pos[2]][self.on_map].find_all_moveable()
@@ -9064,7 +9067,9 @@ class inventory():
 			
 			self.food[slot] = self.nothing
 			
-	def render(self, category, slot):
+	def render(self, category, slot, info=False):
+		
+		test = True
 		
 		s = pygame.Surface((640,360))
 		
@@ -9122,17 +9127,13 @@ class inventory():
 							color = (100,115,0)
 					if self.wearing[i].state < 11:
 						color = (200,0,0)
-				
-				if slot == num and self.wearing[h[slot]] != self.nothing:
-					string = i + ' : ' + self.wearing[i].name + '>(['+key_name['e']+']unwear, ['+key_name['b']+']drop)'
-					text_image = screen.font.render(string,1,color)
-					s.blit(text_image,(21,text_y+num*23))#blit item names
-				
 				else:
-					
-					string = i + ' : ' + self.wearing[i].name
-					text_image = screen.font.render(string,1,color)
-					s.blit(text_image,(21,text_y+num*23))#blit item names
+					if i == h[slot]:
+						test = False
+				
+				string = i + ' : ' + self.wearing[i].name
+				text_image = screen.font.render(string,1,color)
+				s.blit(text_image,(21,text_y+num*23))#blit item names
 				
 				num += 1
 			
@@ -9150,22 +9151,16 @@ class inventory():
 							color = (100,115,0)
 					if i.state < 11:
 						color = (200,0,0)
+		
 				
 				if slot == num:
-					
 					s.blit(gra_files.gdic['display'][4],(0,marker_y+num*25))#blit marker
-					if i != self.nothing:
-						string = i.name + '>(['+key_name['e']+']wear, ['+key_name['b']+']drop)'
-					else:
-						string = i.name
-					text_image = screen.font.render(string,1,color)
-					s.blit(text_image,(21,text_y+num*25))#blit item names
 				
-				else:
-					
-					string = i.name
-					text_image = screen.font.render(string,1,color)
-					s.blit(text_image,(21,text_y+num*25))#blit item names
+				if self.equipment[slot] == self.nothing:
+					test = False
+				
+				text_image = screen.font.render(i.name,1,color)
+				s.blit(text_image,(21,text_y+num*25))#blit item names
 			
 				num += 1
 		
@@ -9180,43 +9175,28 @@ class inventory():
 						color = (200,0,0)
 			
 				if slot == num:
-					
 					s.blit(gra_files.gdic['display'][4],(0,marker_y+num*25))#blit marker
-					if i != self.nothing:
-						string = i.name + '>(['+key_name['e']+']'+i.eat_name+', ['+key_name['b']+']drop)'
-					else:
-						string = i.name
-					text_image = screen.font.render(string,1,color)
-					s.blit(text_image,(21,text_y+num*25))#blit item names
 				
-				else:
-					
-					string = i.name
-					text_image = screen.font.render(string,1,color)
-					s.blit(text_image,(21,text_y+num*25))#blit item names
-			
+				if self.food[slot] == self.nothing:
+					test = False
+				
+				text_image = screen.font.render(i.name,1,color)
+				s.blit(text_image,(21,text_y+num*25))#blit item names
+				
 				num += 1
 				
 		elif category == 3:
 			
 			for i in self.misc:
-			
-				if slot == num:
-					
-					s.blit(gra_files.gdic['display'][4],(0,marker_y+num*25))#blit marker
-					if i != self.nothing:
-						string = i.name + '>(['+key_name['e']+']'+i.use_name+', ['+key_name['b']+']drop)'
-					else:
-						string = i.name
-						
-					text_image = screen.font.render(string,1,(0,0,0))
-					s.blit(text_image,(21,text_y+num*25))#blit item names
 				
-				else:
-					
-					string = i.name
-					text_image = screen.font.render(string,1,(0,0,0))
-					s.blit(text_image,(21,text_y+num*25))#blit item names
+				if self.misc == self.nothing:
+					use_name = False
+				
+				if slot == num:
+					s.blit(gra_files.gdic['display'][4],(0,marker_y+num*25))#blit marker
+				
+				text_image = screen.font.render(i.name,1,(0,0,0))
+				s.blit(text_image,(21,text_y+num*25))#blit item names
 			
 				num += 1
 		
@@ -9254,6 +9234,35 @@ class inventory():
 		s.blit(text_image,(5,335))
 		self.inv_mes = '~*~'
 		
+		if info == True:
+			s.blit(gra_files.gdic['display'][5],(0,0))
+			
+			use_name = 'use'
+			if category == 0 or category == 5:
+				use_name = 'unequip'
+			elif category == 1:
+				use_name = 'equip'
+			elif category == 2:
+				use_name = self.food[slot].eat_name
+			elif category == 3:
+				use_name = self.misc[slot].use_name
+				
+			drop_name = 'drop'
+			if world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]].techID == tl.tlist['functional'][15]: #this is an altar
+				drop_name = 'sacrifice'
+			elif world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]].techID == tl.tlist['functional'][3] or world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]].techID == tl.tlist['functional'][4]:
+				drop_name = 'store'
+			#Add trash here
+			
+			use_image = screen.font.render('['+key_name['e']+'] - '+use_name,1,(255,255,255))
+			s.blit(use_image,(5,0))
+			drop_image = screen.font.render('['+key_name['b']+'] - '+drop_name,1,(255,255,255))
+			s.blit(drop_image,(5,15))
+			info_image = screen.font.render('['+key_name['i']+'] - info',1,(255,255,255))
+			s.blit(info_image,(5,30))
+			cancel_image = screen.font.render('['+key_name['x']+'] - cancel',1,(255,255,255))
+			s.blit(cancel_image,(5,45))
+		
 		if game_options.mousepad == 1 and low_res == False:
 			s.blit(gra_files.gdic['display'][8],(480,0)) #render mouse pad
 		else:
@@ -9272,16 +9281,19 @@ class inventory():
 		screen.screen.blit(s,(0,0))
 		
 		pygame.display.flip()
+		
+		return test
 				
 	def inv_user_interaction(self):
 		
 		run = True
 		category = 0
 		slot = 0
+		info = False
 		
 		while run:
 			
-			self.render(category, slot)
+			test = self.render(category, slot, info)
 			
 			ui = getch(screen.displayx,screen.displayy,game_options.sfxmode,game_options.turnmode,mouse=game_options.mousepad)
 			
@@ -9298,20 +9310,22 @@ class inventory():
 					run = False
 					return('exit')
 			
-			if ui == 'd':	
+			if ui == 'd' and info == False:	
 				slot = 0
 				category += 1
 				if category > 5: ######change######
 					category = 0
-			elif ui == 'a':
+			elif ui == 'a' and info == False:
 				slot = 0
 				category -= 1
 				if category < 0: ######change######
 					category = 5
-			elif ui == 'x':
+			elif ui == 'x' and info == False:
 				run = False
 				break
-			elif ui == 'w':
+			elif ui == 'x' and info == True:
+				info = False
+			elif ui == 'w' and info == False:
 				slot -= 1
 				if category == 0:
 					if slot < 0:
@@ -9329,7 +9343,7 @@ class inventory():
 					if slot < 0:
 						slot  = 2
 						
-			elif ui == 's':
+			elif ui == 's' and info == False:
 				slot += 1
 				if category == 0:
 					if slot == len(self.wearing)-3:
@@ -9347,7 +9361,7 @@ class inventory():
 					if slot > 2:
 						slot = 0
 						
-			elif ui == 'e':
+			elif ui == 'e' and info == True:
 				
 				worn = ['Hold(R)','Hold(L)','Head','Body','Legs','Feet','Hand','Neck','Background','Clothing','Hat']
 				
@@ -9363,9 +9377,13 @@ class inventory():
 						run = False
 				elif category == 5 and self.wearing[worn[slot+8]] != self.nothing:
 					self.unwear(slot+8)
+				
+				info = False
 					
+			elif ui == 'e' and info == False and test == True and category != 4:
+				info = True
 						
-			elif ui == 'b':
+			elif ui == 'b' and info == True:
 				
 				worn = ['Hold(R)','Hold(L)','Head','Body','Legs','Feet','Hand','Neck','Background','Clothing','Hat']
 				drop_test =  True
@@ -9386,13 +9404,18 @@ class inventory():
 				elif category == 5:
 					if self.wearing[worn[slot+8]] == self.nothing:
 						drop_test = False
-				
-					
+						
 				if drop_test == True:
 					if category != 5:
 						self.drop(category,slot)
 					else:
 						self.drop(0,slot+8)
+				info = False
+			
+			elif ui == 'i' and info == True:
+				screen.render_text(texts['info_soon'])
+				
+			#####ADD info screen here
 		
 class container():
 	
