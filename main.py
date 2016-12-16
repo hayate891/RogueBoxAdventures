@@ -2076,7 +2076,7 @@ class g_screen():
 				s_help.fill((48,48,48))
 				s.blit(s_help,(480,0))
 			
-			top_text = '[Press ['+key_name['e']+']]'
+			top_text = '[Press ['+key_name['x']+']]'
 			text_image = screen.font.render(top_text,1,(255,255,255))
 			s.blit(text_image,(5,2))#menue title
 							
@@ -2108,15 +2108,19 @@ class g_screen():
 					global playing
 					global exitgame
 					exitgame = True
-					screen.render_load(5)
-					save(world,player,time,gods,save_path,os.sep)
-					screen.save_tmp_png()
+					try:
+						screen.render_load(5)
+						save(world,player,time,gods,save_path,os.sep)
+						screen.save_tmp_png()
+						del player
+					except:
+						None
 					master_loop = False
 					playing = False
 					run = False
 					return('exit')
 			
-			if ui == 'e':
+			if ui == 'x':
 				run = False
 							  
 	def render_options(self):
@@ -9290,6 +9294,7 @@ class inventory():
 		category = 0
 		slot = 0
 		info = False
+		worn = ['Hold(R)','Hold(L)','Head','Body','Legs','Feet','Hand','Neck','Background','Clothing','Hat']
 		
 		while run:
 			
@@ -9363,8 +9368,6 @@ class inventory():
 						
 			elif ui == 'e' and info == True:
 				
-				worn = ['Hold(R)','Hold(L)','Head','Body','Legs','Feet','Hand','Neck','Background','Clothing','Hat']
-				
 				if category == 0 and self.wearing[worn[slot]] != self.nothing:
 					self.unwear(slot)
 				elif category == 1:
@@ -9385,7 +9388,6 @@ class inventory():
 						
 			elif ui == 'b' and info == True:
 				
-				worn = ['Hold(R)','Hold(L)','Head','Body','Legs','Feet','Hand','Neck','Background','Clothing','Hat']
 				drop_test =  True
 				if category == 0:
 					if self.wearing[worn[slot]] == self.nothing:
@@ -9413,9 +9415,29 @@ class inventory():
 				info = False
 			
 			elif ui == 'i' and info == True:
-				screen.render_text(texts['info_soon'])
 				
-			#####ADD info screen here
+				if category == 0:
+					txt = self.wearing[worn[slot]].classe
+				elif category == 1:
+					if self.equipment[slot].name.find('[D]') != -1:#this is decorative clothing
+						txt = 'decorative_clothes'
+					else:
+						txt = self.equipment[slot].classe
+				elif category == 5:
+					txt = 'decorative_clothes'
+				else:
+					txt = 'info_soon'
+					
+				t = screen.render_text(texts[txt])
+				if t == 'exit':
+					exitgame = True
+					screen.render_load(5)
+					save(world,player,time,gods,save_path,os.sep)
+					screen.save_tmp_png()
+					master_loop = False
+					playing = False
+					run = False
+					return('exit')
 		
 class container():
 	
