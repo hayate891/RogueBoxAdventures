@@ -25,4 +25,6 @@ texts ={'tutorial_1.1' : ('Welcome to the RogueBox Adventures',
 						'pressing [e]',
 						'while standing on it.'),
 		'tutorial_1.2' : ('You will find a guidepost in',
-						'the south. Move there and read it!')}
+						'the south. Move there and read it!'),
+		'info_soon' : ('Test Page',
+						'Feature comming soon.')}
