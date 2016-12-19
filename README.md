@@ -2,9 +2,9 @@
 
 ## First things first...
 
-RogueBox Adventures is Free (like in Freedome) Software and distributets under the terms of GPL3(or later).
+RogueBox Adventures is Free (like in Freedom) Software and distributes under the terms of GPL3(or later).
 
-This guareantees you the right to:
+This guarantees you the right to:
 
 * share this software
 * use it in any way you like
@@ -23,13 +23,13 @@ According to Wikipedia:
 
  *"Roguelike is a subgenre of role-playing video games, characterized by procedural generation of game levels, turn-based gameplay, tile-based graphics, permanent death of the player-character, and typically based on a high fantasy narrative setting."*
 
-But RBA dosn't cover all of this points.
+But RBA doesn't cover all of this points.
 
 * It definitely features procedural generated levels. The whole gameworld is generated randomly for every new game.
-* It's gameplay is turnebased but the player has only a limited time to make the next turn (2sec) otherwise the game will go on
+* It's gameplay is turn-based but the player has only a limited time to make the next turn (2sec) otherwise the game will go on
 * It uses tile-based graphics (but no ASCII graphics like classic Roguelikes)
 * It is possible to play with permanent death but it isn't necessary
-* THere are monsters like orcs and dryades and items like magic scrolls and weapons inside RBA. So yes, it has got some kind of high fantasy setting
+* There are monsters like orcs and dryades and items like magic scrolls and weapons inside RBA. So yes, it has got some kind of high fantasy setting
 
 Sandbox games on the other hand are a special kind of open-world-game which is about the interaction between the player and the game-world. Everything is about changing the gameworld.
 
@@ -42,7 +42,7 @@ You can download a build of RBA at: [https://themightyglider.itch.io/roguebox-ad
 It is distributed in three ways:
 
 * A Windows-Standalone to run the game on Microsoft Windows PC's
-* A Source-Release that should be runable on any system with a working installation of Python2.7 and pygame. (So the game also runs on OSX, Linux, BSD* and so on) You can download Python at: https://www.python.org/ and pygame at: http://pygame.org. Afterward simply run the file main.py from the main directory of RBA.
+* A Source-Release that should be runnable on any system with a working installation of Python2.7 and pygame. (So the game also runs on OSX, Linux, BSD* and so on) You can download Python at: https://www.python.org/ and pygame at: http://pygame.org. Afterward simply run the file main.py from the main directory of RBA.
 
 ## What is about the version numbers?
     
@@ -52,11 +52,11 @@ That means a saved game from version 1.0 will be playable on version 1.2 for exa
 
 The second number is changed by every release with bugfixes and smaller new features.
 
-In the time between two milestone releases snapshots with version names like 'S170216' will be released in order to ilustrate the progress. These snapshots arn't compatible to any other version.
+In the time between two milestone releases snapshots with version names like 'S170216' will be released in order to illustrate the progress. These snapshots aren't compatible to any other version.
 
-## How do I Play? What are the keybindings?
+## How do I Play? What are the key-bindings?
 
-RBA can be played with the keybord, mouse/touchscreen or a gamepad.
+RBA can be played with the keyboard, mouse/touchscreen or a gamepad.
 
 The keybindings are:
 
@@ -67,19 +67,19 @@ The keybindings are:
     x/ESCAPE/gamepad Button2       : Open main menu/Abrot/Back
     f       /gamepad Button5       : Fire mode on/off
 
-## I've found a bug. I want to make a suggestion. I want to constribute something.
+## I've found a bug. I want to make a suggestion. I want to contribute something.
 
 You can report bugs on GitHub at: [https://gitgud.io/themightyglider/RogueBoxAdventures](https://gitgud.io/themightyglider/RogueBoxAdventures)
 
 Or you can mail me at: themightyglider@gmx.de (love- or hate-mail is welcome as well)
 
-Constributors please push your changes to the development branch of the git repositority.
+Contributors please push your changes to the development branch of the git repository.
 
 ## Have Fun!
 
 Thank you for being interested in my little game. I hope it will bring you some hours of joy.
 
-	Copyright (C) 2015  Marian Luck
+	Copyright (C) 2015-2016  Marian Luck
 	
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
