@@ -5897,7 +5897,7 @@ class mob():
 					if player.inventory.wearing['Hold(R)'].state > 0:
 						player.inventory.wearing['Hold(R)'].set_name()
 					else:
-						message.add('Your axe breaks into pices.')
+						message.add('Your axe breaks into pieces.')
 						player.inventory.wearing['Hold(R)'] = player.inventory.nothing
 						sfx.play('item_break')
 						
