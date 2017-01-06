@@ -8813,9 +8813,13 @@ class inventory():
 							final_bodyparts.append(i)
 							
 					if len(final_bodyparts) != 0:	
-						ran = random.randint(0, len(final_bodyparts)-1)
-						self.wearing[final_bodyparts[ran]].state = 100
-						self.wearing[final_bodyparts[ran]].set_name()
+						ran = random.randint(0, len(final_bodyparts)-1) # select a random item for repair, migt be replaced just with zero
+						# select the most damaged equipped inventory item
+						for i in range(0,len(final_bodyparts)-1):
+							if self.wearing[final_bodyparts[i]].state<self.wearing[final_bodyparts[ran]].state:
+								ran = i
+						self.wearing[final_bodyparts[ran]].state = 100 # actually repair the item
+						self.wearing[final_bodyparts[ran]].set_name() # and reset its name accordingly
 						mes = 'Your ' + self.wearing[final_bodyparts[ran]].classe + ' is fully repaired now.'
 						message.add(mes)
 					else:
