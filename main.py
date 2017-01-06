@@ -575,8 +575,14 @@ class g_screen():
 		if player.pos[2] > 0:
 			radius = 2
 		elif player.pos[2] == 0:
-			if time.hour > 19 or time.hour < 6:
+			if time.hour > 22 or time.hour < 4:
 				radius = 2 
+			elif time.hour > 21 or time.hour < 5:
+				radius = 3 
+			elif time.hour > 20 or time.hour < 6:
+				radius = 4 
+			elif time.hour > 19 or time.hour < 7:
+				radius = 5 
 			
 		if player.buffs.light > 0:
 			radius = 6
@@ -5932,8 +5938,10 @@ class mob():
 		if player.pos[2] > 0:
 			radius = 2
 		elif player.pos[2] == 0:
-			if time.hour > 19 or time.hour < 6:
+			if time.hour > 22 or time.hour < 4:
 				radius = 2 
+			elif time.hour > 19 or time.hour < 7:
+				radius = 3 
 			
 		if player.buffs.light > 0:
 			radius = 4
@@ -9858,6 +9866,9 @@ class time_class():
 			
 		if len(hourstring) == 1:
 			hourstring = '0' + hourstring
+
+		if hourstring == '00':
+			hourstring = '12'
 			
 		if len(str(self.minute)) == 1:
 			minutestring = '0' + str(self.minute)
