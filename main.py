@@ -7890,7 +7890,7 @@ class player_class(mob):
 					if self.inventory.wearing[bodypart] != self.inventory.nothing:
 						self.inventory.wearing[bodypart].take_damage()#your amor at this bodypart take twice damage
 						self.inventory.wearing[bodypart].take_damage()
-						if self.inventory.wearing[bodypart].state < 0:
+						if self.inventory.wearing[bodypart].state > 0:
 							self.inventory.wearing[bodypart].set_name()
 						else:
 							self.inventory.wearing[bodypart] = self.inventory.nothing
@@ -7905,7 +7905,7 @@ class player_class(mob):
 					player.lp -= 2
 					if self.inventory.wearing[bodypart] != self.inventory.nothing:
 						self.inventory.wearing[bodypart].take_damage()
-						if self.inventory.wearing[bodypart].state < 0:
+						if self.inventory.wearing[bodypart].state > 0:
 							self.inventory.wearing[bodypart].set_name()
 						else:
 							self.inventory.wearing[bodypart] = self.inventory.nothing
@@ -7963,7 +7963,7 @@ class player_class(mob):
 					if self.inventory.wearing['Neck'] != self.inventory.nothing:
 						self.inventory.wearing['Neck'].take_damage()#your amor at this bodypart take twice damage
 						self.inventory.wearing['Neck'].take_damage()
-						if self.inventory.wearing['Neck'].state < 0:
+						if self.inventory.wearing['Neck'].state > 0:
 							self.inventory.wearing['Neck'].set_name()
 						else:
 							self.inventory.wearing['Neck'] = self.inventory.nothing
@@ -7974,7 +7974,7 @@ class player_class(mob):
 					if self.inventory.wearing['Hand'] != self.inventory.nothing:
 						self.inventory.wearing['Hand'].take_damage()#your amor at this bodypart take twice damage
 						self.inventory.wearing['Hand'].take_damage()
-						if self.inventory.wearing['Hand'].state < 0:
+						if self.inventory.wearing['Hand'].state > 0:
 							self.inventory.wearing['Hand'].set_name()
 						else:
 							self.inventory.wearing['Hand'] = self.inventory.nothing
@@ -7990,7 +7990,7 @@ class player_class(mob):
 					
 					if self.inventory.wearing['Neck'] != self.inventory.nothing:
 						self.inventory.wearing['Neck'].take_damage()
-						if self.inventory.wearing['Neck'].state < 0:
+						if self.inventory.wearing['Neck'].state > 0:
 							self.inventory.wearing['Neck'].set_name()
 						else:
 							self.inventory.wearing['Neck'] = self.inventory.nothing
@@ -8000,7 +8000,7 @@ class player_class(mob):
 						
 					if self.inventory.wearing['Hand'] != self.inventory.nothing:
 						self.inventory.wearing['Hand'].take_damage()
-						if self.inventory.wearing['Hand'].state < 0:
+						if self.inventory.wearing['Hand'].state > 0:
 							self.inventory.wearing['Hand'].set_name()
 						else:
 							self.inventory.wearing['Hand'] = self.inventory.nothing
