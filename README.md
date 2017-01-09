@@ -1,15 +1,15 @@
-# RogueBox Adventures
+﻿# RogueBox Adventures
 
 ## First things first...
 
-RogueBox Adventures is Free (like in Freedom) Software and distributes under the terms of GPL3(or later).
+RogueBox Adventures is Free (like in Freedom) Software and distributes under the terms of GPL3 (or later).
 
 This guarantees you the right to:
 
-* share this software
-* use it in any way you like
-* learn from it's code
-* modify it
+* share this software,
+* use it in any way you like,
+* learn from it's code,
+* modify it.
 
 To learn more about free software and why it is always a good Idea to use it please visit:
 
@@ -23,18 +23,21 @@ According to Wikipedia:
 
  *"Roguelike is a subgenre of role-playing video games, characterized by procedural generation of game levels, turn-based gameplay, tile-based graphics, permanent death of the player-character, and typically based on a high fantasy narrative setting."*
 
-But RBA doesn't cover all of this points.
+But RBA doesn't strictly cover all of these points.
 
 * It definitely features procedural generated levels. The whole gameworld is generated randomly for every new game.
-* It's gameplay is turn-based but the player has only a limited time to make the next turn (2sec) otherwise the game will go on
-* It uses tile-based graphics (but no ASCII graphics like classic Roguelikes)
-* It is possible to play with permanent death but it isn't necessary
-* There are monsters like orcs and dryades and items like magic scrolls and weapons inside RBA. So yes, it has got some kind of high fantasy setting
+* It's gameplay is turn-based but the player has only a limited time to make the next turn (2sec) otherwise the game will go on. Still there is an option to turn a completely turn-based gameplay.
+* It uses tile-based graphics (but no ASCII graphics like classic Roguelikes).
+* It has an option to play with permanent death (roguelike mode) but it is not required.
+* There are monsters like orcs and dryades and items like magic scrolls and weapons inside RBA. So yes, it has got some kind of high fantasy setting.
 
 Sandbox games on the other hand are a special kind of open-world-game which is about the interaction between the player and the game-world. Everything is about changing the gameworld.
 
 RBA is definitely a game about changing the gameworld by interacting with it. So you can call it a sandbox game with some rogue-like elements...
 ...Or you simply can call it a RogueBox-game.
+
+## What's the story behind the game?
+Be patient... it'll come soon :)
 
 ## Were can I get the game? On witch platforms does it run?
 You can download a build of RBA at: [https://themightyglider.itch.io/roguebox-adventures](https://themightyglider.itch.io/roguebox-adventures)
@@ -66,6 +69,8 @@ The keybindings are:
     b/SPACE/gamepad Button3        : Open Build menu/Switch mode/Done/Drop
     x/ESCAPE/gamepad Button2       : Open main menu/Abrot/Back
     f       /gamepad Button5       : Fire mode on/off
+
+A low-spoiler tutorial on gameplay can be found in tutorial.html file.
 
 ## I've found a bug. I want to make a suggestion. I want to contribute something.
 
