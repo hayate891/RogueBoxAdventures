@@ -26,6 +26,10 @@ gcwz_input = False
 home_save = False
 force_small_worlds = False
 
+Time_ready = False
+entrance_x = 0
+entrance_y = 0
+
 basic_path = os.path.dirname(os.path.realpath('main.py')) #just get the execution path for resources
 
 for t in sys.argv:
@@ -3149,8 +3153,24 @@ class maP():
 		if self.npcs[y][x] != 0:
 			
 			ran = random.randint(1,3)
-		
-			monster_lvl = z + ran + self.monster_plus
+			if Time_ready == True:
+				if player.difficulty == 3:
+					base_lvl = 25
+				elif player.difficulty == 2:
+					base_lvl = 20
+				elif player.difficulty == 1:
+					base_lvl = 15
+				elif player.difficulty == 0:
+					base_lvl = 10
+				else:
+					base_lvl = 0
+
+				time_coeff = int(base_lvl*((time.year-1)*28*12 + time.day_total)/150) #base_lvl levels each 150 days of gameplay # 
+			else:
+				time_coeff = 0
+
+			monster_lvl = z + ran + self.monster_plus + time_coeff
+
 			if preset_lvl != None:
 				self.npcs[y][x].lvl = preset_lvl
 			else:
@@ -4148,7 +4168,7 @@ class maP():
 			ran = random.randint(0,len(found)-1)
 			return found[ran]
 	
-	def find_all_moveable(self,ignore_water = True,ignore_player_pos = True):
+	def find_all_moveable(self,ignore_water = True,ignore_player_pos = False):
 
 		cordinates_list = []
 		for y in range (0, max_map_size):
@@ -4166,12 +4186,12 @@ class maP():
 				if ignore_player_pos == True:
 					player_pos_check = False
 				else:
-					if x != player.pos[0] and y != player.pos[1]:
+					if (x - entrance_x < -7) or (y - entrance_y < -7) or (x - entrance_x > 7) or (y - entrance_y > 7):
 						player_pos_check = False
 					else:
 						player_pos_check = True
 				
-				if moveable == True and self.tilemap[y][x].damage == False and player_pos_check == False:
+				if (moveable == True) and (self.tilemap[y][x].damage == False) and (player_pos_check == False):
 					cordinates_list.append((x,y))
 						
 		if len(cordinates_list) > 0:
@@ -4577,6 +4597,8 @@ class world_class():
 		
 		pos = m.find_any(tl.tlist['misc'][0])#find any low water tile
 		m.tilemap[pos[1]][pos[0]] = tl.tlist['dungeon'][15]#set stair up
+		entrance_x = pos[0];
+		entrance_y = pos[1];
 		
 		for sy in range(pos[1]-4,pos[1]+5):
 			for sx in range(pos[0]-4,pos[0]+5):
@@ -4944,6 +4966,8 @@ class world_class():
 		
 		pos = m.find_any(tl.tlist['mine'][0])#find any mine floor tile
 		m.tilemap[pos[1]][pos[0]] = tl.tlist['dungeon'][17]#set stair up
+		entrance_x = pos[0]
+		entrance_y = pos[1]
 		
 		for sy in range(pos[1]-4,pos[1]+5):
 			for sx in range(pos[0]-4,pos[0]+5):
@@ -5378,6 +5402,8 @@ class world_class():
 						
 		#3: Make stairs
 		stair_up_pos = m.find_any(tl.tlist['dungeon'][0])							#Set a up leading stair on any floor tile.
+		entrance_x = stair_up_pos[0]
+		entrance_y = stari_up_pos[1]
 		if style == 'Tomb':															#
 			m.tilemap[stair_up_pos[1]][stair_up_pos[0]] = tl.tlist['dungeon'][19]	#
 		else:																		#
@@ -8815,12 +8841,17 @@ class inventory():
 					if len(final_bodyparts) != 0:	
 						ran = random.randint(0, len(final_bodyparts)-1) # select a random item for repair, migt be replaced just with zero
 						# select the most damaged equipped inventory item
-						for i in range(0,len(final_bodyparts)-1):
+						for i in range(0,len(final_bodyparts)):
 							if self.wearing[final_bodyparts[i]].state<self.wearing[final_bodyparts[ran]].state:
 								ran = i
 						self.wearing[final_bodyparts[ran]].state = 100 # actually repair the item
 						self.wearing[final_bodyparts[ran]].set_name() # and reset its name accordingly
-						mes = 'Your ' + self.wearing[final_bodyparts[ran]].classe + ' is fully repaired now.'
+						mes = 'Your ' + self.wearing[final_bodyparts[ran]].classe + ' '
+						if final_bodyparts[ran] == 'Feet':
+							mes = mes + 'are'
+						else:
+							mes = mes + 'is'
+						mes = mes + ' fully repaired now.'
 						message.add(mes)
 					else:
 						message.add('Nothing seems to happen.')
@@ -9671,6 +9702,7 @@ class time_class():
 	def __init__(self):
 		
 		name = save_path + os.sep + 'time.data'
+		Time_ready = True
 		
 		try:
 			
@@ -9697,6 +9729,8 @@ class time_class():
 		
 	def tick(self):
 		
+		Time_ready = True
+
 		for i in range (0,len(world.maplist[player.pos[2]][player.on_map].countdowns)): # check for countdown events
 			
 			if world.maplist[player.pos[2]][player.on_map].countdowns[i].x != player.pos[0] or world.maplist[player.pos[2]][player.on_map].countdowns[i].y != player.pos[1]:
