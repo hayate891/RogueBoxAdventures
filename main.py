@@ -4597,8 +4597,8 @@ class world_class():
 		
 		pos = m.find_any(tl.tlist['misc'][0])#find any low water tile
 		m.tilemap[pos[1]][pos[0]] = tl.tlist['dungeon'][15]#set stair up
-		entrance_x = pos[0];
-		entrance_y = pos[1];
+		entrance_x = pos[0]
+		entrance_y = pos[1]
 		
 		for sy in range(pos[1]-4,pos[1]+5):
 			for sx in range(pos[0]-4,pos[0]+5):
