@@ -27,11 +27,12 @@ class g_files():
 		
 		t32_path = basic_path + os.sep + 'GRAPHIC' + os.sep + 'TILE32' + os.sep
 		t1_path = basic_path + os.sep + 'GRAPHIC' + os.sep + 'TILE1' + os.sep
-		char_path = basic_path +os.sep + 'GRAPHIC' + os.sep + 'CHAR' + os.sep
-		display_path = basic_path +os.sep + 'GRAPHIC' + os.sep + 'DISPLAY' + os.sep
-		built_path = basic_path +os.sep + 'GRAPHIC' + os.sep + 'BUILT' + os.sep
-		monster_path = basic_path +os.sep + 'GRAPHIC' + os.sep + 'MONSTER' + os.sep
-		num_path = basic_path +os.sep + 'GRAPHIC' + os.sep + 'NUM' + os.sep
+		char_path = basic_path + os.sep + 'GRAPHIC' + os.sep + 'CHAR' + os.sep
+		display_path = basic_path + os.sep + 'GRAPHIC' + os.sep + 'DISPLAY' + os.sep
+		built_path = basic_path + os.sep + 'GRAPHIC' + os.sep + 'BUILT' + os.sep
+		monster_path = basic_path + os.sep + 'GRAPHIC' + os.sep + 'MONSTER' + os.sep
+		num_path = basic_path + os.sep + 'GRAPHIC' + os.sep + 'NUM' + os.sep
+		light_path = basic_path + os.sep + 'GRAPHIC' + os.sep + 'LIGHT' + os.sep
 		
 		#chars
 		
@@ -166,8 +167,15 @@ class g_files():
 		num_names = {'0','1','2','3','4','5','6','7','8','9','+'}
 		for c in num_names:
 			n_name = num_path + 'num' + c + '.png'
-			n = i = pygame.image.load(n_name)
+			n = pygame.image.load(n_name)
 			self.gdic['num'][c] = n 
+
+#############################################################################
+
+		#light
+		l_name = light_path + 'lightmap.png'
+		l = pygame.image.load(l_name)
+		self.gdic['lightmap'] = l
 		
 #############################################################################
 

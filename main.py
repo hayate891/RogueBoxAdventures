@@ -571,6 +571,49 @@ class g_screen():
 		save_options(game_options,options_path,os.sep)
 		
 		self.__init__(game_options.screenmode,False)
+	
+	def generate_light_effect(self):
+		
+		if player.pos[2] > 0:
+			y = 1
+		else:
+			y= 0
+			
+		x = time.hour
+		
+		if player.pos[2] == 0:
+			if time.hour == 12:
+				alpha = 0
+			elif time.hour < 12:
+				alpha = 60-(time.hour*5)
+			elif time.hour > 12:
+				alpha = 0+((time.hour-12)*5)
+		else:
+			alpha = 135
+			
+		light_color = gra_files.gdic['lightmap'].get_at((x,y))
+		
+		if low_res == False:
+			s = pygame.Surface((640,360))
+		else:
+			s = pygame.Surface((320,240))
+			
+		s.fill(light_color)
+		
+		if player.buffs.light > 0:
+			if low_res == False:
+				pygame.draw.circle(s,(255,0,255),[120,80],80,0)
+			else:
+				pygame.draw.circle(s,(255,0,255),[165,135],80,0)
+				
+			s.set_colorkey((255,0,255),pygame.RLEACCEL)
+		
+		s.set_alpha(alpha)
+		
+		if low_res == False:
+			s = pygame.transform.scale(s,(self.displayx,self.displayy))
+		
+		return s
 		
 	def render(self,mes_num, simulate = False):
 		
@@ -793,37 +836,37 @@ class g_screen():
 								if world.maplist[player.pos[2]][player.on_map].npcs[y][x] != 0:#render monsters
 											pos = world.maplist[player.pos[2]][player.on_map].npcs[y][x].sprite_pos
 											s.blit(gra_files.gdic['monster'][pos[1]][pos[0]],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)))
-											#if world.maplist[player.pos[2]][player.on_map].npcs[y][x].move_border > 9:
-											#	None
-											#elif world.maplist[player.pos[2]][player.on_map].npcs[y][x].AI_style == 'ignore':
-											#	s.blit(gra_files.gdic['display'][28],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)))
-											#	lvl = str(world.maplist[player.pos[2]][player.on_map].npcs[y][x].lvl)
-											#	if len(lvl) == 1:
-											#		lvl = '0'+lvl
-											#	elif len(lvl) > 2:
-											#		lvl = lvl[0]+'+'
-											#	s.blit(gra_files.gdic['num'][lvl[0]],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)+6))	
-											#	s.blit(gra_files.gdic['num'][lvl[1]],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)+14))
-											#elif world.maplist[player.pos[2]][player.on_map].npcs[view_y][view_x].AI_style == 'flee':
-											#	s.blit(gra_files.gdic['display'][29],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)))
-											#	lvl = str(world.maplist[player.pos[2]][player.on_map].npcs[y][x].lvl)
-											#	if len(lvl) == 1:
-											#		lvl = '0'+lvl
-											#	elif len(lvl) > 2:
-											#		lvl = lvl[0]+'+'
-											#	s.blit(gra_files.gdic['num'][lvl[0]],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)+6))	
-											#	s.blit(gra_files.gdic['num'][lvl[1]],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)+14))
-											#elif world.maplist[player.pos[2]][player.on_map].npcs[y][x].AI_style == 'hostile':
-											#	s.blit(gra_files.gdic['display'][30],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)))
-											#	lvl = str(world.maplist[player.pos[2]][player.on_map].npcs[y][x].lvl)
-											#	if len(lvl) == 1:
-											#		lvl = '0'+lvl
-											#	elif len(lvl) > 2:
-											#		lvl = lvl[0]+'+'
-											#	s.blit(gra_files.gdic['num'][lvl[0]],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)+6))	
-											#	s.blit(gra_files.gdic['num'][lvl[1]],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)+14))
-											#else:
-											#	None
+											if world.maplist[player.pos[2]][player.on_map].npcs[y][x].move_border > 9:
+												None
+											elif world.maplist[player.pos[2]][player.on_map].npcs[y][x].AI_style == 'ignore':
+												s.blit(gra_files.gdic['display'][28],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)))
+												lvl = str(world.maplist[player.pos[2]][player.on_map].npcs[y][x].lvl)
+												if len(lvl) == 1:
+													lvl = '0'+lvl
+												elif len(lvl) > 2:
+													lvl = lvl[0]+'+'
+												s.blit(gra_files.gdic['num'][lvl[0]],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)+6))	
+												s.blit(gra_files.gdic['num'][lvl[1]],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)+14))
+											elif world.maplist[player.pos[2]][player.on_map].npcs[view_y][view_x].AI_style == 'flee':
+												s.blit(gra_files.gdic['display'][29],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)))
+												lvl = str(world.maplist[player.pos[2]][player.on_map].npcs[y][x].lvl)
+												if len(lvl) == 1:
+													lvl = '0'+lvl
+												elif len(lvl) > 2:
+													lvl = lvl[0]+'+'
+												s.blit(gra_files.gdic['num'][lvl[0]],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)+6))	
+												s.blit(gra_files.gdic['num'][lvl[1]],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)+14))
+											elif world.maplist[player.pos[2]][player.on_map].npcs[y][x].AI_style == 'hostile':
+												s.blit(gra_files.gdic['display'][30],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)))
+												lvl = str(world.maplist[player.pos[2]][player.on_map].npcs[y][x].lvl)
+												if len(lvl) == 1:
+													lvl = '0'+lvl
+												elif len(lvl) > 2:
+													lvl = lvl[0]+'+'
+												s.blit(gra_files.gdic['num'][lvl[0]],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)+6))	
+												s.blit(gra_files.gdic['num'][lvl[1]],(start_pos_x+((x-player.pos[0])*32),start_pos_y+((y-player.pos[1])*32)+14))
+											else:
+												None
 												
 								if x == player.pos[0] and y == player.pos[1]:
 											player_pos_help = (x,y)
@@ -886,6 +929,8 @@ class g_screen():
 					
 				except:
 					None
+		
+		s.blit(screen.generate_light_effect(),(0,0))
 		
 		s.blit(self.render_hits(),(0,0))
 		
@@ -7029,7 +7074,40 @@ class mob():
 				player.stand_check()
 			
 		else:
-			message.add('There is nothing to interact with at this place.')
+			wait_1m = '['+key_name['e']+'] - Wait 1 minute'
+			wait_10m = '['+key_name['b']+'] - Wait 10 minutes'
+			wait_1h = '['+key_name['i']+'] - Wait 1 hour'
+			screen.render_request(wait_1m,wait_10m,wait_1h)
+			
+			run = True
+			while run:
+				ui = getch(screen.displayx,screen.displayy,game_options.sfxmode,game_options.turnmode,mouse=game_options.mousepad)
+			
+				if ui == 'exit':
+					exitgame = True
+					screen.render_load(5)
+					save(world,player,time,gods,save_path,os.sep)
+					screen.save_tmp_png()
+					master_loop = False
+					playing = False
+					run = False
+					return('exit')
+				
+				if ui == 'e':
+					time.tick()
+					run = False
+				elif ui == 'b':
+					for i in range(0,10):
+						time.tick()
+						run = False
+				elif ui == 'i':
+					for i in range(0,60):
+						time.tick()
+						run = False
+				elif ui == 'x':
+					run = False
+			
+			#message.add('There is nothing to interact with at this place.')
 			
 class player_class(mob):
 	
