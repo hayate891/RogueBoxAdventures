@@ -5403,7 +5403,7 @@ class world_class():
 		#3: Make stairs
 		stair_up_pos = m.find_any(tl.tlist['dungeon'][0])							#Set a up leading stair on any floor tile.
 		entrance_x = stair_up_pos[0]
-		entrance_y = stari_up_pos[1]
+		entrance_y = stair_up_pos[1]
 		if style == 'Tomb':															#
 			m.tilemap[stair_up_pos[1]][stair_up_pos[0]] = tl.tlist['dungeon'][19]	#
 		else:																		#
@@ -5962,12 +5962,16 @@ class mob():
 		radius = 4
 		
 		if player.pos[2] > 0:
-			radius = 2
+			radius = 1
 		elif player.pos[2] == 0:
 			if time.hour > 22 or time.hour < 4:
+				radius = 1 
+			elif time.hour > 21 or time.hour < 5:
 				radius = 2 
-			elif time.hour > 19 or time.hour < 7:
+			elif time.hour > 20 or time.hour < 6:
 				radius = 3 
+			elif time.hour > 19 or time.hour < 7:
+				radius = 4 
 			
 		if player.buffs.light > 0:
 			radius = 4
