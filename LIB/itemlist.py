@@ -152,7 +152,7 @@ class itemlist():
 		t=item_misc(techID, 'Mysterious Blue Crystal', 'break', None, None, None)
 		self.ilist['misc'].append(t)
 		techID += 1
-		t=item_misc(techID, 'Anchanted Enhancemen Powder', 'use', None, None, None)
+		t=item_misc(techID, 'Enchanted Enhancement Powder', 'use', None, None, None)
 		self.ilist['misc'].append(t)
 		techID += 1
 		t=item_misc(techID, 'Heavy Bag', 'open', None, None, None)

@@ -195,7 +195,7 @@ class item_food(item):
 		self.satisfy_thirst = satisfy_thirst
 		self.satisfy_tiredness = satisfy_tiredness
 		self.heal = heal
-		self.rise_hunger_max = rise_hunger_max
+		self.rise_hunger_max = rise_hunger_max # I know this must be raise. But I dont change the typo because I don't want to brake the code elsewhere.
 		self.rise_thirst_max = rise_thirst_max
 		self.rise_tiredness_max = rise_tiredness_max
 		self.rise_lp_max = rise_lp_max 

@@ -602,9 +602,9 @@ class g_screen():
 		
 		if player.buffs.light > 0:
 			if low_res == False:
-				pygame.draw.circle(s,(255,0,255),[120,80],80,0)
+				pygame.draw.circle(s,(255,0,255),[130,90],60,0)
 			else:
-				pygame.draw.circle(s,(255,0,255),[165,135],80,0)
+				pygame.draw.circle(s,(255,0,255),[170,140],60,0)
 				
 			s.set_colorkey((255,0,255),pygame.RLEACCEL)
 		
@@ -2070,9 +2070,9 @@ class g_screen():
 			s.blit(text_image,(5,2))#menue title
 			
 			if low_res == False:
-				credit_items = ('Code & Art: Marian Luck aka Nothing', 'BGM: Yubatake, Avgvsta & RevampedPRO [opengameart.org]' , 'SFX: Various Artists [CC0]', 'Font: Cody Boisclair', 'GCW-Zero port: cxong', ' ', 'Special Thanks: taknamay & !freegaming@quitter.se')
+				credit_items = ('Code & Art: Marian Luck aka Nothing', 'BGM: Inigo del Valle' , 'SFX: Various Artists [mostly CC0]', 'Font: Cody Boisclair', 'Testing: eugeneloza', ' ', 'Special Thanks: taknamay & !freegaming@quitter.se')
 			else:
-				credit_items = ('Code & Art: Marian Luck aka Nothing', 'BGM: Yubatake, Avgvsta & RevampedPRO' , 'SFX: Various Artists [CC0]', 'Font: Cody Boisclair', 'GCW-Zero port: cxong', 'Special Thanks: taknamay', '                freegaming@quitter.se')
+				credit_items = ('Code & Art: Marian Luck aka Nothing', 'BGM: Inigo del Valle' , 'SFX: Various Artists [mostly CC0]', 'Font: Cody Boisclair', 'Testing: eugeneloza', 'Special Thanks: taknamay', '                freegaming@quitter.se')
 				
 			for i in range (0,len(credit_items)):
 			
@@ -2131,7 +2131,7 @@ class g_screen():
 				s_help.fill((48,48,48))
 				s.blit(s_help,(480,0))
 			
-			top_text = '[Press ['+key_name['x']+']]'
+			top_text = '[Press ['+key_name['x']+'] to leave]'
 			text_image = screen.font.render(top_text,1,(255,255,255))
 			s.blit(text_image,(5,2))#menue title
 							
@@ -7074,13 +7074,15 @@ class mob():
 				player.stand_check()
 			
 		else:
-			wait_1m = '['+key_name['e']+'] - Wait 1 minute'
-			wait_10m = '['+key_name['b']+'] - Wait 10 minutes'
+			wait_10m = '['+key_name['e']+'] - Wait 10 minute'
+			wait_30m = '['+key_name['b']+'] - Wait 30 minutes'
 			wait_1h = '['+key_name['i']+'] - Wait 1 hour'
-			screen.render_request(wait_1m,wait_10m,wait_1h)
+			screen.render_request(wait_10m,wait_30m,wait_1h)
 			
 			run = True
 			while run:
+				turns = 0
+				
 				ui = getch(screen.displayx,screen.displayy,game_options.sfxmode,game_options.turnmode,mouse=game_options.mousepad)
 			
 				if ui == 'exit':
@@ -7094,18 +7096,49 @@ class mob():
 					return('exit')
 				
 				if ui == 'e':
-					time.tick()
+					turns = 10
 					run = False
 				elif ui == 'b':
-					for i in range(0,10):
-						time.tick()
-						run = False
-				elif ui == 'i':
-					for i in range(0,60):
-						time.tick()
-						run = False
-				elif ui == 'x':
 					run = False
+					turns = 30
+				elif ui == 'i':
+					turns = 60
+					run = False
+				elif ui == 'x':
+					return
+				
+				
+				if turns > 0:	
+					while turns > 0:
+						
+						hostile_count = 0
+						
+						for my in range(player.pos[1]-1,player.pos[1]+2):
+							for mx in range(player.pos[0]-1,player.pos[0]+2):
+								if world.maplist[self.pos[2]][self.on_map].npcs[my][mx] != 0:
+									if world.maplist[self.pos[2]][self.on_map].npcs[my][mx].AI_style == 'hostile':
+										hostile_count += 1
+								
+						
+						if (player.attribute.hunger*100)/player.attribute.hunger_max < 10:
+							message.add('You feel to hungry to wait any longer.')
+							return
+						elif (player.attribute.thirst*100)/player.attribute.thirst_max < 10:
+							message.add('You feel to thirsty to wait any longer.')
+							return
+						elif (player.attribute.tiredness*100)/player.attribute.tiredness_max < 10:
+							message.add('You feel to tired to wait any longer.')
+							return
+						elif hostile_count == 1:
+							message.add('You are interupted by a monster.')
+							return
+						elif hostile_count > 1:
+							message.add('You are interupted by a group of monsters.')
+							return
+						
+						time.tick()
+						turns -= 1
+					
 			
 			#message.add('There is nothing to interact with at this place.')
 			
@@ -9511,7 +9544,7 @@ class inventory():
 			elif ui == 'e' and info == False and test == True and category != 4:
 				info = True
 						
-			elif ui == 'b' and info == True:
+			elif ui == 'b':
 				
 				drop_test =  True
 				if category == 0:
@@ -9541,6 +9574,8 @@ class inventory():
 			
 			elif ui == 'i' and info == True:
 				
+				static_txt = True
+				
 				if category == 0:
 					txt = self.wearing[worn[slot]].classe
 				elif category == 1:
@@ -9550,10 +9585,58 @@ class inventory():
 						txt = self.equipment[slot].classe
 				elif category == 5:
 					txt = 'decorative_clothes'
+				elif category == 2:
+					static_txt = False
+					txt = []
+					txt.append(self.food[slot].name)
+					txt.append(' ')
+					if self.food[slot].satisfy_hunger > 0:
+						txt.append('Reduces hunger.')
+					if self.food[slot].satisfy_hunger < 0:
+						txt.append('Raises hunger.')
+					if self.food[slot].satisfy_thirst > 0:
+						txt.append('Reduces thirst.')
+					if self.food[slot].satisfy_thirst < 0:
+						txt.append('Raises thirst.')
+					if self.food[slot].satisfy_tiredness > 0:
+						txt.append('Can adrenalise!')
+					if self.food[slot].rise_hunger_max > 0:
+						txt.append('Let your stomach grow.')
+					if self.food[slot].rise_thirst_max > 0:
+						txt.append('Raises your water capacity.')
+					if self.food[slot].rise_tiredness_max > 0:
+						txt.append('Raises your sleep capacity.')#I'm not happy with this phrase
+					if self.food[slot].heal > 0:
+						txt.append('Can heal your wounds.')
+					if self.food[slot].heal > 0:
+						txt.append('Can hurt you!')
+					if self.food[slot].rise_lp_max > 0:
+						txt.append('Raises your max. LP.')
+					if self.food[slot].rotten:
+						txt.append('Rotten food may harm you!.')
+				elif category == 3:
+					if self.misc[slot].name.find('Blueprint') != -1:
+						txt = 'Blueprint'
+					elif self.misc[slot].name.find('Scroll') != -1:
+						txt = 'Scroll'
+					elif self.misc[slot].name.find('Spellbook') != -1:
+						txt = 'Spellbook'
+					else:
+						if texts[self.misc[slot].name]:
+							txt = self.misc[slot].name
+						else:
+							txt = 'info_soon' 	
+				
 				else:
 					txt = 'info_soon'
+				
+				if static_txt:	
+					t = screen.render_text(texts[txt])
+				else:
+					t = screen.render_text(txt)
 					
-				t = screen.render_text(texts[txt])
+				info = False
+				
 				if t == 'exit':
 					exitgame = True
 					screen.render_load(5)
@@ -9568,7 +9651,7 @@ class container():
 	
 	def __init__(self, items):
 		
-		self.items = items
+		self.items = deepcopy(items)
 		self.con_mes = '~*~'
 					
 	def loot(self,num,real_mes= False):
@@ -10139,13 +10222,13 @@ def main():
 		master_loop = screen.render_main_menu()	
 		if playing == True:
 			exitgame = False
+			time = time_class()
 			world = world_class(tl)
 			gods = gods_class()
 			message = messager()
 			p_attribute = attribute(2,2,2,2,2,10,10)
 			p_inventory = inventory()
 			player = player_class ('Testificate', 'local_0_0', p_attribute,p_inventory)
-			time = time_class()
 			mes = 'Welcome to Roguebox Adventures[' + version +']'
 			message.add(mes)
 			player.stand_check()
