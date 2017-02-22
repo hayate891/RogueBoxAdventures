@@ -151,7 +151,14 @@ class g_files():
 						'icon_inventory_passive',#40
 						'choose_dir',#41
 						'plus_fish',#42
-						'plus_shoe')#43
+						'plus_shoe',#43
+						'no_axe',#44
+						'no_pickaxe',#45
+						'tool_active',#46
+						'item_bar_empty',#47
+						'item_bar_full',#48
+						'game_menu_bg_alt_big',#49
+						'game_menu_bg_alt_small')#50
 
 		for c in display_names:
 			i_name = display_path + c + '.png'

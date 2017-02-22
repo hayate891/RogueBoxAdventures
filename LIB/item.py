@@ -110,7 +110,7 @@ class item_wear(item):
 		
 		self.set_name()
 		
-		if self.classe == 'sword' or self.classe == 'axe' or self.classe == 'spear' or self.classe == 'hammer'or self.classe == 'pickaxe':
+		if self.classe == 'sword' or self.classe == 'spear' or self.classe == 'hammer':
 			self.worn_at = 'Hold(R)'
 		elif self.classe == 'wand' or self.classe == 'rune' or self.classe == 'rune staff' or self.classe == 'artefact':
 			self.worn_at = 'Hold(L)'
@@ -126,6 +126,10 @@ class item_wear(item):
 			self.worn_at = 'Hand'
 		elif self.classe == 'necklace' or self.classe == 'amulet' or self.classe == 'talisman':
 			self.worn_at = 'Neck'
+		elif self.classe == 'axe':
+			self.worn_at = 'Axe'
+		elif self.classe == 'pickaxe':
+			self.worn_at = 'Pickaxe'
 		
 		if self.classe == 'Nothing':
 			self.attribute = attribute(0,0,0,0,0,0,0,0,0,0,0)

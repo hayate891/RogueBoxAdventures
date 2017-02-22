@@ -943,6 +943,33 @@ class g_screen():
 			s.blit(gra_files.gdic['display'][10],(0,0))
 			s.blit(gra_files.gdic['display'][41],(start_pos_x+((player_pos_help[0]-player.pos[0])*32)-32,start_pos_y+((player_pos_help[1]-player.pos[1])*32)-32))
 		
+		#render tool info
+			#1. Axe
+		if player.inventory.wearing['Axe'] == player.inventory.nothing:
+			s.blit(gra_files.gdic['display'][44],(240,39))
+		else:
+			s.blit(gra_files.gdic['display'][46],(240,39))
+			axestring = 'WEAPONS_' + player.inventory.wearing['Axe'].material + '_' + player.inventory.wearing['Axe'].classe
+			s.blit(gra_files.gdic['char'][axestring],(240,39))
+			s.blit(gra_files.gdic['display'][47],(240,39))
+			axe_state = (15*player.inventory.wearing['Axe'].state)/100
+			help_sur = pygame.Surface((axe_state,1))
+			help_sur.blit(gra_files.gdic['display'][48],(0,0))
+			s.blit(help_sur,(250,67))
+			
+			#2. Pickaxe
+		if player.inventory.wearing['Pickaxe'] == player.inventory.nothing:
+			s.blit(gra_files.gdic['display'][45],(260,39))
+		else:
+			s.blit(gra_files.gdic['display'][46],(260,39))
+			pickaxestring = 'WEAPONS_' + player.inventory.wearing['Pickaxe'].material + '_' + player.inventory.wearing['Pickaxe'].classe
+			s.blit(gra_files.gdic['char'][pickaxestring],(260,39))
+			s.blit(gra_files.gdic['display'][47],(260,39))
+			pickaxe_state = (15*player.inventory.wearing['Pickaxe'].state)/100
+			help_sur = pygame.Surface((pickaxe_state,1))
+			help_sur.blit(gra_files.gdic['display'][48],(0,0))
+			s.blit(help_sur,(270,67))
+			
 		#render icons
 			#1. Use
 		if world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]].use_group == 'None' and world.maplist[player.pos[2]][player.on_map].containers[player.pos[1]][player.pos[0]] == 0:
@@ -1003,7 +1030,10 @@ class g_screen():
 			focus_state = 1
 		
 		help_sur = pygame.Surface((focus_state,32))
+		help_sur.fill((255,0,255))
 		help_sur.blit(gra_files.gdic['display'][31],(0,0))
+		help_sur.set_colorkey((255,0,255),pygame.RLEACCEL)
+		help_sur = help_sur.convert_alpha()
 		s.blit(help_sur,(0,65))
 		
 		if player.mp < player.attribute.max_mp:
@@ -1067,7 +1097,7 @@ class g_screen():
 			posy = 10
 		else:
 			posx = 228
-			posy = 65
+			posy = 75
 		
 		for i in buffs:
 			if i != ' ':
@@ -4246,9 +4276,9 @@ class maP():
 					
 			return False
 	
-	def add_container(self, inventory, x, y):
+	def add_container(self, inventory, x, y, deep_copy = True):
 		
-		self.containers[y][x] = container(inventory)
+		self.containers[y][x] = container(inventory,deep_copy)
 	
 	def make_special_monsters(self, min_no, max_no, on_tile, depth, monster_type='vase'):
 		
@@ -5907,7 +5937,7 @@ class mob():
 			
 			if world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].destroy != False: #for digging
 				
-				if self.attribute.pickaxe_power + player.inventory.wearing['Hold(R)'].attribute.pickaxe_power >= world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].destroy:
+				if self.attribute.pickaxe_power + player.inventory.wearing['Pickaxe'].attribute.pickaxe_power >= world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].destroy:
 					if self == player:
 						message.add(world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].move_mes)
 						if world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].techID != tl.tlist['building'][3].techID: #this isn't a door
@@ -5927,15 +5957,15 @@ class mob():
 							
 					world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x] = deepcopy(world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].replace)
 					
-					if player.inventory.wearing['Hold(R)'] != player.inventory.nothing and world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].techID != tl.tlist['building'][3].techID:
+					if player.inventory.wearing['Pickaxe'] != player.inventory.nothing and world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].techID != tl.tlist['building'][3].techID:
 					
-						player.inventory.wearing['Hold(R)'].take_damage()
+						player.inventory.wearing['Pickaxe'].take_damage()
 					
-						if player.inventory.wearing['Hold(R)'].state > 0:
-							player.inventory.wearing['Hold(R)'].set_name()
+						if player.inventory.wearing['Pickaxe'].state > 0:
+							player.inventory.wearing['Pickaxe'].set_name()
 						else:
 							message.add('Your tool breaks into pieces.')
-							player.inventory.wearing['Hold(R)'] = player.inventory.nothing
+							player.inventory.wearing['Pickaxe'] = player.inventory.nothing
 							sfx.play('item_break')
 					
 				else:
@@ -5949,36 +5979,34 @@ class mob():
 				
 			if world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].move_group == 'tree':
 				
-				if player.inventory.wearing['Hold(R)'].classe == 'axe': #if player has a axe in his hand
-							
-					try:
-						material = world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].conected_resources[0]
-						mat_num = world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].conected_resources[1]
-						mes = player.inventory.materials.add(material,mat_num)
-						message.add(mes)
-						world.maplist[self.pos[2]][self.on_map].make_monsters_angry(self.pos[0],self.pos[1],'tree')
-						sfx.play('chop')
-					except:
-						None
+				if player.inventory.wearing['Axe'] != player.inventory.nothing: #if player has a axe in his hand			
+					player.inventory.wearing['Axe'].take_damage()
 					
-					world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x] = deepcopy(world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].replace) #let the tree disappear
-					
-					player.inventory.wearing['Hold(R)'].take_damage()
-					
-					if player.inventory.wearing['Hold(R)'].state > 0:
-						player.inventory.wearing['Hold(R)'].set_name()
+					if player.inventory.wearing['Axe'].state > 0:
+						player.inventory.wearing['Axe'].set_name()
 					else:
 						message.add('Your axe breaks into pieces.')
-						player.inventory.wearing['Hold(R)'] = player.inventory.nothing
+						player.inventory.wearing['Axe'] = player.inventory.nothing
 						sfx.play('item_break')
-						
-					return False
 					
 				else:
-					if self == player:
-						message.add('You need a axe.')
+					message.add('That hurts!')
+					player.lp -= 1
+					sfx.play('hit')
+				
+				try:
+					material = world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].conected_resources[0]
+					mat_num = world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].conected_resources[1]
+					mes = player.inventory.materials.add(material,mat_num)
+					message.add(mes)
+					world.maplist[self.pos[2]][self.on_map].make_monsters_angry(self.pos[0],self.pos[1],'tree')
+					sfx.play('chop')
+				except:
+					None
 					
-					return False
+				world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x] = deepcopy(world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].replace) #let the tree disappear
+				return False
+						
 					
 			if self.buffs.immobilized == 0:
 				if world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].move_group == 'low_liquid' or world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].move_group == 'swim' or world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].move_group == 'wet_entrance':
@@ -6340,7 +6368,7 @@ class mob():
 								choose = random.randint(0, len(items)-1)
 							try:
 								if world.maplist[self.pos[2]][self.on_map].containers[self.pos[1]][self.pos[0]] == 0: 
-									world.maplist[self.pos[2]][self.on_map].containers[self.pos[1]][self.pos[0]] = container([items[choose]])
+									world.maplist[self.pos[2]][self.on_map].containers[self.pos[1]][self.pos[0]] = container([items[choose]],False)
 								else:
 									world.maplist[self.pos[2]][self.on_map].containers[self.pos[1]][self.pos[0]].items.append(items[choose])
 									
@@ -6429,7 +6457,7 @@ class mob():
 							try:
 								if choose != 'Foo':
 									if world.maplist[self.pos[2]][self.on_map].containers[self.pos[1]][self.pos[0]] == 0: 
-										world.maplist[self.pos[2]][self.on_map].containers[self.pos[1]][self.pos[0]] = container([items[choose]])
+										world.maplist[self.pos[2]][self.on_map].containers[self.pos[1]][self.pos[0]] = container([items[choose]],False)
 									else:
 										world.maplist[self.pos[2]][self.on_map].containers[self.pos[1]][self.pos[0]].items.append(items[choose])
 								
@@ -6508,7 +6536,7 @@ class mob():
 							choose = random.randint(0, len(items)-1)
 							try:
 								if world.maplist[self.pos[2]][self.on_map].containers[self.pos[1]][self.pos[0]] == 0: 
-									world.maplist[self.pos[2]][self.on_map].containers[self.pos[1]][self.pos[0]] = container([items[choose]])
+									world.maplist[self.pos[2]][self.on_map].containers[self.pos[1]][self.pos[0]] = container([items[choose]],False)
 								else:
 									world.maplist[self.pos[2]][self.on_map].containers[self.pos[1]][self.pos[0]].items.append(items[choose])
 								
@@ -6607,7 +6635,7 @@ class mob():
 							try:
 								if choose != 'Foo':
 									if world.maplist[self.pos[2]][self.on_map].containers[self.pos[1]][self.pos[0]] == 0: 
-										world.maplist[self.pos[2]][self.on_map].containers[self.pos[1]][self.pos[0]] = container([items[choose]])
+										world.maplist[self.pos[2]][self.on_map].containers[self.pos[1]][self.pos[0]] = container([items[choose]],False)
 									else:
 										world.maplist[self.pos[2]][self.on_map].containers[self.pos[1]][self.pos[0]].items.append(items[choose])
 								
@@ -6692,7 +6720,7 @@ class mob():
 							choose = random.randint(0, len(items)-1)
 							
 							if world.maplist[self.pos[2]][self.on_map].containers[self.pos[1]][self.pos[0]] == 0: 
-								world.maplist[self.pos[2]][self.on_map].containers[self.pos[1]][self.pos[0]] = container([items[choose]])
+								world.maplist[self.pos[2]][self.on_map].containers[self.pos[1]][self.pos[0]] = container([items[choose]],False)
 							else:
 								world.maplist[self.pos[2]][self.on_map].containers[self.pos[1]][self.pos[0]].items.append(items[choose])
 								
@@ -8602,7 +8630,7 @@ class inventory():
 	def __init__(self, equipment=7, food=7, misc=7):
 		
 		self.nothing = item_wear('Nothing',21,0,0)
-		self.wearing = {'Head' : self.nothing, 'Body' : self.nothing, 'Legs' : self.nothing, 'Feet' : self.nothing, 'Hand' : self.nothing, 'Neck' : self.nothing, 'Hold(R)' : self.nothing, 'Hold(L)' : self.nothing, 'Background' : self.nothing, 'Clothing' : self.nothing, 'Hat' : self.nothing}
+		self.wearing = {'Head' : self.nothing, 'Body' : self.nothing, 'Legs' : self.nothing, 'Feet' : self.nothing, 'Hand' : self.nothing, 'Neck' : self.nothing, 'Hold(R)' : self.nothing, 'Hold(L)' : self.nothing, 'Background' : self.nothing, 'Clothing' : self.nothing, 'Hat' : self.nothing, 'Axe' : self.nothing, 'Pickaxe' : self.nothing}
 		self.item_change = self.nothing
 		self.equipment = []
 		self.food = []
@@ -8640,7 +8668,7 @@ class inventory():
 		
 	def unwear(self, slot):
 		
-		worn = ['Hold(R)','Hold(L)','Head','Body','Legs','Feet','Hand','Neck','Background','Clothing','Hat']	
+		worn = ['Hold(R)','Hold(L)','Head','Body','Legs','Feet','Hand','Neck','Axe','Pickaxe','Background','Clothing','Hat']	
 		
 		if self.wearing[worn[slot]].cursed != 0: #this is no cursed item
 		
@@ -8669,7 +8697,7 @@ class inventory():
 			
 	def drop(self,category, slot):
 		
-		worn = ['Hold(R)','Hold(L)','Head','Body','Legs','Feet','Hand','Neck','Background','Clothing','Hat']
+		worn = ['Hold(R)','Hold(L)','Head','Body','Legs','Feet','Hand','Neck','Axe','Pickaxe','Background','Clothing','Hat']
 		
 		try:
 			field_full = False
@@ -8701,7 +8729,7 @@ class inventory():
 			if world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]].damage == 0 and field_full == False: #you only can drop thing on save tiles with 7 or less other items on it
 			
 				if world.maplist[player.pos[2]][player.on_map].containers[player.pos[1]][player.pos[0]] == 0: #if there is no container
-					world.maplist[player.pos[2]][player.on_map].add_container([self.nothing],player.pos[0],player.pos[1]) #make new container
+					world.maplist[player.pos[2]][player.on_map].add_container([self.nothing],player.pos[0],player.pos[1],False) #make new container
 				
 					if world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]].techID != tl.tlist['functional'][3].techID and sacrifice == False: #if there is no empty chest at this pos and this is no sacrifice make a stack
 						help_tile = deepcopy(world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]]) #get old tile at player pos
@@ -9235,7 +9263,13 @@ class inventory():
 		
 		s = pygame.Surface((640,360))
 		
-		s.blit(gra_files.gdic['display'][1],(0,0)) #render background
+		if category != 1:
+			s.blit(gra_files.gdic['display'][1],(0,0)) #render background
+		else:
+			if low_res == False:
+				s.blit(gra_files.gdic['display'][49],(0,0))
+			else:
+				s.blit(gra_files.gdic['display'][50],(0,0))
 		
 		if low_res == False:
 			text_y = 120
@@ -9261,19 +9295,19 @@ class inventory():
 			
 		s.blit(gra_files.gdic['display'][3],(category*50,25))#blit used tab
 		
-		tab_names = ('Body','Equi.','Food','Misc', 'Reso.', 'Deco.')
+		tab_names = ('Worn1','Worn2','Equi.','Food','Misc', 'Reso.')
 		
 		for d in range (0,6):
 			
 			text_image = screen.font.render(tab_names[d],1,(0,0,0))
 			s.blit(text_image,(d*50+5,27))#blit tb names
 			
-		if category == 0 or category == 5:
+		if category == 0 or category == 1:
 			
 			if category == 0:
 				h = ['Hold(R)','Hold(L)','Head','Body','Legs','Feet','Hand','Neck']
 			else:
-				h = ['Background','Clothing','Hat']
+				h = ['Axe','Pickaxe','Background','Clothing','Hat']
 				
 			s.blit(gra_files.gdic['display'][4],(0,marker_y+slot*23))#blit marker
 			 
@@ -9299,7 +9333,7 @@ class inventory():
 				
 				num += 1
 			
-		elif category == 1:
+		elif category == 2:
 			
 			for i in self.equipment:
 				
@@ -9326,7 +9360,7 @@ class inventory():
 			
 				num += 1
 		
-		elif category == 2:
+		elif category == 3:
 			
 			for i in self.food:
 				
@@ -9347,7 +9381,7 @@ class inventory():
 				
 				num += 1
 				
-		elif category == 3:
+		elif category == 4:
 			
 			for i in self.misc:
 				
@@ -9362,7 +9396,7 @@ class inventory():
 			
 				num += 1
 		
-		elif category == 4:
+		elif category == 5:
 			
 			string = 'Wood: ' + str(self.materials.wood) + '/' + str(self.materials.wood_max)
 			text_image = screen.font.render(string,1,(0,0,0))
@@ -9400,13 +9434,13 @@ class inventory():
 			s.blit(gra_files.gdic['display'][5],(0,0))
 			
 			use_name = 'use'
-			if category == 0 or category == 5:
+			if category == 0 or category == 1:
 				use_name = 'unequip'
-			elif category == 1:
-				use_name = 'equip'
 			elif category == 2:
-				use_name = self.food[slot].eat_name
+				use_name = 'equip'
 			elif category == 3:
+				use_name = self.food[slot].eat_name
+			elif category == 4:
 				use_name = self.misc[slot].use_name
 				
 			drop_name = 'drop'
@@ -9452,7 +9486,7 @@ class inventory():
 		category = 0
 		slot = 0
 		info = False
-		worn = ['Hold(R)','Hold(L)','Head','Body','Legs','Feet','Hand','Neck','Background','Clothing','Hat']
+		worn = ['Hold(R)','Hold(L)','Head','Body','Legs','Feet','Hand','Neck','Axe','Pickaxe','Background','Clothing','Hat']
 		
 		while run:
 			
@@ -9492,56 +9526,56 @@ class inventory():
 				slot -= 1
 				if category == 0:
 					if slot < 0:
-						slot = len(self.wearing)-4
-				elif category == 1:
-					if slot < 0:
-						slot = len(self.equipment)-1
+						slot = 7
 				elif category == 2:
 					if slot < 0:
-						slot = len(self.food)-1
+						slot = len(self.equipment)-1
 				elif category == 3:
 					if slot < 0:
-						slot = len(self.misc)-1
-				elif category == 5:
+						slot = len(self.food)-1
+				elif category == 4:
 					if slot < 0:
-						slot  = 2
+						slot = len(self.misc)-1
+				elif category == 1:
+					if slot < 0:
+						slot  = 4
 						
 			elif ui == 's' and info == False:
 				slot += 1
 				if category == 0:
-					if slot == len(self.wearing)-3:
-						slot = 0
-				elif category == 1:
-					if slot == len(self.equipment):
+					if slot == 8:
 						slot = 0
 				elif category == 2:
-					if slot == len(self.food):
+					if slot == len(self.equipment):
 						slot = 0
 				elif category == 3:
+					if slot == len(self.food):
+						slot = 0
+				elif category == 4:
 					if slot == len(self.misc):
 						slot = 0
-				elif category == 5:
-					if slot > 2:
+				elif category == 1:
+					if slot > 4:
 						slot = 0
 						
 			elif ui == 'e' and info == True:
 				
 				if category == 0 and self.wearing[worn[slot]] != self.nothing:
 					self.unwear(slot)
-				elif category == 1:
-					self.wear(slot)
 				elif category == 2:
+					self.wear(slot)
+				elif category == 3:
 					self.eat(slot)
-				elif category ==3:
+				elif category == 4:
 					test = self.use(slot)
 					if test == True:
 						run = False
-				elif category == 5 and self.wearing[worn[slot+8]] != self.nothing:
+				elif category == 1 and self.wearing[worn[slot+8]] != self.nothing:
 					self.unwear(slot+8)
 				
 				info = False
 					
-			elif ui == 'e' and info == False and test == True and category != 4:
+			elif ui == 'e' and info == False and test == True and category != 5:
 				info = True
 						
 			elif ui == 'b':
@@ -9550,23 +9584,23 @@ class inventory():
 				if category == 0:
 					if self.wearing[worn[slot]] == self.nothing:
 						drop_test = False
-				elif category == 1:
+				elif category == 2:
 					if self.equipment[slot] == self.nothing:
 						drop_test = False
-				elif category == 2:
+				elif category == 3:
 					if self.food[slot] == self.nothing:
 						drop_test = False
-				elif category == 3:
+				elif category == 4:
 					if self.misc[slot] == self.nothing:
 						drop_test = False
-				elif category == 4:
-					drop_test = False
 				elif category == 5:
+					drop_test = False
+				elif category == 1:
 					if self.wearing[worn[slot+8]] == self.nothing:
 						drop_test = False
 						
 				if drop_test == True:
-					if category != 5:
+					if category != 1:
 						self.drop(category,slot)
 					else:
 						self.drop(0,slot+8)
@@ -9578,14 +9612,17 @@ class inventory():
 				
 				if category == 0:
 					txt = self.wearing[worn[slot]].classe
-				elif category == 1:
+				elif category == 2:
 					if self.equipment[slot].name.find('[D]') != -1:#this is decorative clothing
 						txt = 'decorative_clothes'
 					else:
 						txt = self.equipment[slot].classe
-				elif category == 5:
-					txt = 'decorative_clothes'
-				elif category == 2:
+				elif category == 1:
+					if self.wearing[worn[slot+8]].name.find('[D]') != -1:
+						txt = 'decorative_clothes'
+					else:
+						txt = self.wearing[worn[slot+8]].classe
+				elif category == 3:
 					static_txt = False
 					txt = []
 					txt.append(self.food[slot].name)
@@ -9614,7 +9651,7 @@ class inventory():
 						txt.append('Raises your max. LP.')
 					if self.food[slot].rotten:
 						txt.append('Rotten food may harm you!.')
-				elif category == 3:
+				elif category == 4:
 					if self.misc[slot].name.find('Blueprint') != -1:
 						txt = 'Blueprint'
 					elif self.misc[slot].name.find('Scroll') != -1:
@@ -9649,9 +9686,12 @@ class inventory():
 		
 class container():
 	
-	def __init__(self, items):
+	def __init__(self, items, deep_copy = True):
 		
-		self.items = deepcopy(items)
+		if deep_copy:
+			self.items = deepcopy(items)
+		else:
+			self.items = items
 		self.con_mes = '~*~'
 					
 	def loot(self,num,real_mes= False):
