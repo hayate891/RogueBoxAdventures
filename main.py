@@ -234,6 +234,7 @@ class g_screen():
 		#		9:plus_gem
 		#		10:plus_fish
 		#		11:plus_shoe
+		#		12:monster_lvl_up
 				
 		xx = x - player.pos[0] + 7
 		yy = y - player.pos[1] + 6
@@ -283,6 +284,8 @@ class g_screen():
 					s.blit(gra_files.gdic['display'][42],(((x-start)*32)+plusx,(y-start)*32+plusy))
 				elif self.hit_matrix[y][x] == 11:
 					s.blit(gra_files.gdic['display'][43],(((x-start)*32)+plusx,(y-start)*32+plusy))
+				elif self.hit_matrix[y][x] == 12:
+					s.blit(gra_files.gdic['display'][51],(((x-start)*32)+plusx,(y-start)*32+plusy))
 
 		s.set_colorkey((255,0,255),pygame.RLEACCEL)	
 		s = s.convert_alpha()
@@ -3227,6 +3230,8 @@ class maP():
 		
 		if self.npcs[y][x] != 0:
 			
+			old_lvl = self.npcs[y][x].lvl
+			
 			ran = random.randint(1,3)
 			if Time_ready == True:
 				if player.difficulty == 3:
@@ -3243,9 +3248,21 @@ class maP():
 				time_coeff = int(base_lvl*((time.year-1)*28*12 + time.day_total)/150) #base_lvl levels each 150 days of gameplay # 
 			else:
 				time_coeff = 0
-
+			
+			if self.npcs[y][x].techID == ml.mlist['overworld'][0] or self.npcs[y][x].techID == ml.mlist['angry_monster'][2]: #this is a dryade
+				try:
+					time_coeff = player.lvl
+				except:
+					None
+			
 			monster_lvl = z + ran + self.monster_plus + time_coeff
-
+			
+			if monster_lvl >= old_lvl and old_lvl > 0:
+				try:
+					screen.write_hit_matrix(x,y,12) #render monster_lvl_up
+				except:
+					None
+				
 			if preset_lvl != None:
 				self.npcs[y][x].lvl = preset_lvl
 			else:
@@ -3276,20 +3293,21 @@ class maP():
 					self.npcs[y][x].basic_attribute.max_lp +=1
 					self.npcs[y][x].lp = self.npcs[y][x].basic_attribute.max_lp	
 			
-			el = [['spear','sword','axe','hammer'],['rune','wand','rune staff','artefact'],['armor','armor'],['necklace','amulet','talisman'],['ring','ring']]
-			e_nr = 0
+			if old_lvl == 0:
+				el = [['spear','sword','axe','hammer'],['rune','wand','rune staff','artefact'],['armor','armor'],['necklace','amulet','talisman'],['ring','ring']]
+				e_nr = 0
 			
-			for q in range(0,len(el)-1):
-				ran = random.randint(0,len(el[q])-1)
-				
-				if self.npcs[y][x].worn_equipment[q] == 1:
-					help_equipment = item_wear(el[q][ran],random.randint(0,z),random.randint(-2,2))
+				for q in range(0,len(el)-1):
+					ran = random.randint(0,len(el[q])-1)
 					
-					self.npcs[y][x].basic_attribute.p_strange += help_equipment.attribute.p_strange
-					self.npcs[y][x].basic_attribute.p_defense += help_equipment.attribute.p_defense
-					self.npcs[y][x].basic_attribute.m_strange += help_equipment.attribute.m_strange
-					self.npcs[y][x].basic_attribute.m_defense += help_equipment.attribute.m_defense
-					self.npcs[y][x].basic_attribute.luck += help_equipment.attribute.luck
+					if self.npcs[y][x].worn_equipment[q] == 1:
+						help_equipment = item_wear(el[q][ran],random.randint(0,min((z*3),21)),random.randint(-2,2))
+					
+						self.npcs[y][x].basic_attribute.p_strange += help_equipment.attribute.p_strange
+						self.npcs[y][x].basic_attribute.p_defense += help_equipment.attribute.p_defense
+						self.npcs[y][x].basic_attribute.m_strange += help_equipment.attribute.m_strange
+						self.npcs[y][x].basic_attribute.m_defense += help_equipment.attribute.m_defense
+						self.npcs[y][x].basic_attribute.luck += help_equipment.attribute.luck
 				
 	def AI_move(self):
 		#This function moves all monsters that are 7 or less fields away from the player.
@@ -5749,6 +5767,7 @@ class world_class():
 				if m.tilemap[y][x].techID == tl.tlist['functional'][8].techID:#bed
 					ran = random.randint(5,6)
 					m.npcs[y][x] = deepcopy(ml.mlist['special'][ran])
+					m.set_monster_strange(x,y,0)
 					
 		
 		m.set_frame(tl.tlist['functional'][0])
@@ -7124,13 +7143,13 @@ class mob():
 					return('exit')
 				
 				if ui == 'e':
-					turns = 10
+					turns = 9
 					run = False
 				elif ui == 'b':
 					run = False
-					turns = 30
+					turns = 29
 				elif ui == 'i':
-					turns = 60
+					turns = 59
 					run = False
 				elif ui == 'x':
 					return
@@ -7682,6 +7701,31 @@ class player_class(mob):
 		
 		self.lvl += 1
 		self.xp -= 100
+		
+		if self.inventory.materials.wood_max < 200:
+			self.inventory.materials.wood_max += 10
+			if self.inventory.materials.wood_max > 200:
+				self.inventory.materials.wood_max = 200
+		
+		if self.inventory.materials.stone_max < 200:
+			self.inventory.materials.stone_max += 10
+			if self.inventory.materials.stone_max > 200:
+				self.inventory.materials.stone_max = 200
+		
+		if self.inventory.materials.ore_max < 30:
+			self.inventory.materials.ore_max += 1
+			if self.inventory.materials.ore_max > 30:
+				self.inventory.materials.ore_max = 30
+		
+		if self.inventory.materials.herb_max < 30:
+			self.inventory.materials.herb_max += 1
+			if self.inventory.materials.herb_max > 30:
+				self.inventory.materials.herb_max = 30
+				
+		if self.inventory.materials.gem_max < 30:
+			self.inventory.materials.gem_max += 1
+			if self.inventory.materials.gem_max > 30:
+				self.inventory.materials.gem_max = 30		
 		
 		choices = []
 		
@@ -10329,7 +10373,7 @@ if __name__ == '__main__':
 		f = open(logfile,'a')
 		f.write('###############################################')
 		f.write('\n')
-		traceback.print_exception(exc_type, exc_obj, exc_tb, limit=5, file=f)
+		traceback.print_exception(exc_type, exc_obj, exc_tb, limit=9, file=f)
 		f.close()
 	finally:
 		if everything_fine == False:

@@ -158,7 +158,8 @@ class g_files():
 						'item_bar_empty',#47
 						'item_bar_full',#48
 						'game_menu_bg_alt_big',#49
-						'game_menu_bg_alt_small')#50
+						'game_menu_bg_alt_small',#50
+						'monster_lvl_up')#51
 
 		for c in display_names:
 			i_name = display_path + c + '.png'
