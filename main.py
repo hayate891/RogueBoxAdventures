@@ -949,29 +949,164 @@ class g_screen():
 		#render tool info
 			#1. Axe
 		if player.inventory.wearing['Axe'] == player.inventory.nothing:
-			s.blit(gra_files.gdic['display'][44],(240,39))
+			s.blit(gra_files.gdic['display'][44],(0,39))
 		else:
-			s.blit(gra_files.gdic['display'][46],(240,39))
+			s.blit(gra_files.gdic['display'][46],(0,39))
 			axestring = 'WEAPONS_' + player.inventory.wearing['Axe'].material + '_' + player.inventory.wearing['Axe'].classe
-			s.blit(gra_files.gdic['char'][axestring],(240,39))
-			s.blit(gra_files.gdic['display'][47],(240,39))
+			s.blit(gra_files.gdic['char'][axestring],(0,39))
+			s.blit(gra_files.gdic['display'][47],(0,39))
 			axe_state = (15*player.inventory.wearing['Axe'].state)/100
 			help_sur = pygame.Surface((axe_state,1))
 			help_sur.blit(gra_files.gdic['display'][48],(0,0))
-			s.blit(help_sur,(250,67))
+			s.blit(help_sur,(10,67))
 			
 			#2. Pickaxe
 		if player.inventory.wearing['Pickaxe'] == player.inventory.nothing:
-			s.blit(gra_files.gdic['display'][45],(260,39))
+			s.blit(gra_files.gdic['display'][45],(16,39))
 		else:
-			s.blit(gra_files.gdic['display'][46],(260,39))
+			s.blit(gra_files.gdic['display'][46],(16,39))
 			pickaxestring = 'WEAPONS_' + player.inventory.wearing['Pickaxe'].material + '_' + player.inventory.wearing['Pickaxe'].classe
-			s.blit(gra_files.gdic['char'][pickaxestring],(260,39))
-			s.blit(gra_files.gdic['display'][47],(260,39))
+			s.blit(gra_files.gdic['char'][pickaxestring],(16,39))
+			s.blit(gra_files.gdic['display'][47],(16,39))
 			pickaxe_state = (15*player.inventory.wearing['Pickaxe'].state)/100
 			help_sur = pygame.Surface((pickaxe_state,1))
 			help_sur.blit(gra_files.gdic['display'][48],(0,0))
-			s.blit(help_sur,(270,67))
+			s.blit(help_sur,(26,67))
+			
+			#3. Melee weapon
+		if player.inventory.wearing['Hold(R)'] == player.inventory.nothing:
+			s.blit(gra_files.gdic['display'][52],(32,39))
+		else:
+			s.blit(gra_files.gdic['display'][46],(32,39))
+			melee_string = 'WEAPONS_' + player.inventory.wearing['Hold(R)'].material + '_' + player.inventory.wearing['Hold(R)'].classe
+			if player.inventory.wearing['Hold(R)'].classe != 'spear':
+				s.blit(gra_files.gdic['char'][melee_string],(32,39))
+			else:
+				h_sur = pygame.Surface((32,19))
+				h_sur.fill((255,0,255))
+				h_sur.blit(gra_files.gdic['char'][melee_string],(0,0))
+				h_sur.set_colorkey((255,0,255),pygame.RLEACCEL)
+				h_sur = h_sur.convert_alpha()
+				s.blit(h_sur,(39,48))	
+			s.blit(gra_files.gdic['display'][47],(32,39))
+			melee_state = (15*player.inventory.wearing['Hold(R)'].state)/100
+			help_sur = pygame.Surface((melee_state,1))
+			help_sur.blit(gra_files.gdic['display'][48],(0,0))
+			s.blit(help_sur,(42,67))
+			
+			#4. Magic weapon
+		if player.inventory.wearing['Hold(L)'] == player.inventory.nothing:
+			s.blit(gra_files.gdic['display'][53],(48,39))
+		else:
+			s.blit(gra_files.gdic['display'][46],(48,39))
+			magic_string = 'WEAPONS_' + player.inventory.wearing['Hold(L)'].material + '_' + player.inventory.wearing['Hold(L)'].classe
+			if player.inventory.wearing['Hold(R)'].classe != 'runestaff':
+				s.blit(gra_files.gdic['char'][magic_string],(42,39))
+			else:
+				h_sur = pygame.Surface((32,19))
+				h_sur.fill((255,0,255))
+				h_sur.blit(gra_files.gdic['char'][magic_string],(0,0))
+				h_sur.set_colorkey((255,0,255),pygame.RLEACCEL)
+				h_sur = h_sur.convert_alpha()
+				s.blit(h_sur,(37,48))	
+			s.blit(gra_files.gdic['display'][47],(48,39))
+			magic_state = (15*player.inventory.wearing['Hold(L)'].state)/100
+			help_sur = pygame.Surface((magic_state,1))
+			help_sur.blit(gra_files.gdic['display'][48],(0,0))
+			s.blit(help_sur,(58,67))
+			
+			#5. Necklace
+		if player.inventory.wearing['Neck'] == player.inventory.nothing:
+			s.blit(gra_files.gdic['display'][40],(64,39))
+		else:
+			s.blit(gra_files.gdic['display'][46],(64,39))
+			necklacestring = 'WEAPONS_' + player.inventory.wearing['Neck'].material + '_' + player.inventory.wearing['Neck'].classe
+			s.blit(gra_files.gdic['char'][necklacestring],(64,39))
+			s.blit(gra_files.gdic['display'][47],(64,39))
+			necklace_state = (15*player.inventory.wearing['Neck'].state)/100
+			help_sur = pygame.Surface((necklace_state,1))
+			help_sur.blit(gra_files.gdic['display'][48],(0,0))
+			s.blit(help_sur,(74,67))
+		
+			#6. Helmet
+		if player.inventory.wearing['Head'] == player.inventory.nothing:
+			s.blit(gra_files.gdic['display'][54],(0,54))
+		else:
+			s.blit(gra_files.gdic['display'][46],(0,54))
+			helmet_string = player.gender + '_' + player.inventory.wearing['Head'].material + '_' + player.inventory.wearing['Head'].classe
+			h_sur = pygame.Surface((32,32))
+			h_sur.fill((255,0,255))
+			h_sur.blit(gra_files.gdic['char'][helmet_string],(0,0))
+			pygame.draw.rect(h_sur,(255,0,255),(0,0,10,32),0)
+			pygame.draw.rect(h_sur,(255,0,255),(0,0,32,4),0)
+			pygame.draw.rect(h_sur,(255,0,255),(25,0,7,32),0)
+			h_sur.set_colorkey((255,0,255),pygame.RLEACCEL)
+			h_sur = h_sur.convert_alpha()
+			s.blit(h_sur,(0,65))	
+			s.blit(gra_files.gdic['display'][47],(0,54))
+			helmet_state = (15*player.inventory.wearing['Head'].state)/100
+			help_sur = pygame.Surface((helmet_state,1))
+			help_sur.blit(gra_files.gdic['display'][48],(0,0))
+			s.blit(help_sur,(10,82))
+		
+			#7. Armor
+		if player.inventory.wearing['Body'] == player.inventory.nothing:
+			s.blit(gra_files.gdic['display'][55],(16,54))
+		else:
+			s.blit(gra_files.gdic['display'][46],(16,54))
+			armor_string = player.gender + '_' + player.inventory.wearing['Body'].material + '_' + player.inventory.wearing['Body'].classe
+			h_sur = pygame.Surface((32,32))
+			h_sur.fill((255,0,255))
+			h_sur.blit(gra_files.gdic['char'][armor_string],(0,0))
+			pygame.draw.rect(h_sur,(255,0,255),(0,0,10,32),0)
+			pygame.draw.rect(h_sur,(255,0,255),(25,0,7,32),0)
+			h_sur.set_colorkey((255,0,255),pygame.RLEACCEL)
+			h_sur = h_sur.convert_alpha()
+			s.blit(h_sur,(16,55))	
+			s.blit(gra_files.gdic['display'][47],(16,54))
+			armor_state = (15*player.inventory.wearing['Body'].state)/100
+			help_sur = pygame.Surface((armor_state,1))
+			help_sur.blit(gra_files.gdic['display'][48],(0,0))
+			s.blit(help_sur,(26,82))
+			
+			#8. Cuisse
+		if player.inventory.wearing['Legs'] == player.inventory.nothing:
+			s.blit(gra_files.gdic['display'][56],(32,54))
+		else:
+			s.blit(gra_files.gdic['display'][46],(32,54))
+			cuisse_string = player.gender + '_' + player.inventory.wearing['Legs'].material + '_' + player.inventory.wearing['Legs'].classe
+			s.blit(gra_files.gdic['char'][cuisse_string],(32,50))	
+			s.blit(gra_files.gdic['display'][47],(32,54))
+			cuisse_state = (15*player.inventory.wearing['Legs'].state)/100
+			help_sur = pygame.Surface((cuisse_state,1))
+			help_sur.blit(gra_files.gdic['display'][48],(0,0))
+			s.blit(help_sur,(42,82))
+		
+			#9. Shoes
+		if player.inventory.wearing['Feet'] == player.inventory.nothing:
+			s.blit(gra_files.gdic['display'][57],(48,54))
+		else:
+			s.blit(gra_files.gdic['display'][46],(48,54))
+			shoes_string = player.gender + '_' + player.inventory.wearing['Feet'].material + '_' + player.inventory.wearing['Feet'].classe
+			s.blit(gra_files.gdic['char'][shoes_string],(49,46))	
+			s.blit(gra_files.gdic['display'][47],(48,54))
+			shoes_state = (15*player.inventory.wearing['Feet'].state)/100
+			help_sur = pygame.Surface((shoes_state,1))
+			help_sur.blit(gra_files.gdic['display'][48],(0,0))
+			s.blit(help_sur,(58,82))	
+		
+			#10. Ring
+		if player.inventory.wearing['Hand'] == player.inventory.nothing:
+			s.blit(gra_files.gdic['display'][39],(64,54))
+		else:
+			s.blit(gra_files.gdic['display'][46],(64,54))
+			ring_string = 'WEAPONS_' + player.inventory.wearing['Hand'].material + '_' + player.inventory.wearing['Hand'].classe
+			s.blit(gra_files.gdic['char'][ring_string],(64,54))
+			s.blit(gra_files.gdic['display'][47],(64,54))
+			ring_state = (15*player.inventory.wearing['Hand'].state)/100
+			help_sur = pygame.Surface((ring_state,1))
+			help_sur.blit(gra_files.gdic['display'][48],(0,0))
+			s.blit(help_sur,(74,82))
 			
 		#render icons
 			#1. Use
@@ -1004,29 +1139,29 @@ class g_screen():
 			s.blit(fire_image2,(34,141))
 		
 			#3.Inventory
-		inventory_broken = False
-		for t in player.inventory.wearing:
-			if player.inventory.wearing[t].state < 11 and player.inventory.wearing[t] != player.inventory.nothing:
-				inventory_broken = True
+		#inventory_broken = False
+		#for t in player.inventory.wearing:
+		#	if player.inventory.wearing[t].state < 11 and player.inventory.wearing[t] != player.inventory.nothing:
+		#		inventory_broken = True
 		
-		if inventory_broken == False:
-			s.blit(gra_files.gdic['display'][32],(0,97))
-			s.blit(gra_files.gdic['display'][40],(0,97))
-			inventory_string = '['+key_name['i']+']inventory'
-			inventory_image1 = self.font.render(inventory_string,1,(0,0,0))
-			inventory_image2 = self.font.render(inventory_string,1,(255,255,255))
-		else:
-			s.blit(gra_files.gdic['display'][31],(0,97))
-			s.blit(gra_files.gdic['display'][39],(0,97))
-			inventory_string = '['+key_name['i']+']inventory!'
-			inventory_image1 = self.font.render(inventory_string,1,(0,0,0))
-			inventory_image2 = self.font.render(inventory_string,1,(255,0,0))
+		#if inventory_broken == False:
+		#	s.blit(gra_files.gdic['display'][32],(0,97))
+		#	s.blit(gra_files.gdic['display'][40],(0,97))
+		#	inventory_string = '['+key_name['i']+']inventory'
+		#	inventory_image1 = self.font.render(inventory_string,1,(0,0,0))
+		#	inventory_image2 = self.font.render(inventory_string,1,(255,255,255))
+		#else:
+		#	s.blit(gra_files.gdic['display'][31],(0,97))
+		#	s.blit(gra_files.gdic['display'][39],(0,97))
+		#	inventory_string = '['+key_name['i']+']inventory!'
+		#	inventory_image1 = self.font.render(inventory_string,1,(0,0,0))
+		#	inventory_image2 = self.font.render(inventory_string,1,(255,0,0))
 		
-		s.blit(inventory_image1,(36,109))
-		s.blit(inventory_image2,(34,109))
+		#s.blit(inventory_image1,(36,109))
+		#s.blit(inventory_image2,(34,109))
 		
 			#4.Focus
-		s.blit(gra_files.gdic['display'][32],(0,65))
+		s.blit(gra_files.gdic['display'][32],(0,97))#65
 		try:
 			focus_state = (32*player.mp/player.attribute.max_mp)
 		except:
@@ -1037,19 +1172,19 @@ class g_screen():
 		help_sur.blit(gra_files.gdic['display'][31],(0,0))
 		help_sur.set_colorkey((255,0,255),pygame.RLEACCEL)
 		help_sur = help_sur.convert_alpha()
-		s.blit(help_sur,(0,65))
+		s.blit(help_sur,(0,97))
 		
 		if player.mp < player.attribute.max_mp:
-			s.blit(gra_files.gdic['display'][38],(0,65))
+			s.blit(gra_files.gdic['display'][38],(0,97))
 			focus_string = 'unfocused'
 		else:
-			s.blit(gra_files.gdic['display'][37],(0,65))
+			s.blit(gra_files.gdic['display'][37],(0,97))
 			focus_string = 'focused'
 			
 		focus_image1 = self.font.render(focus_string,1,(0,0,0))
 		focus_image2 = self.font.render(focus_string,1,(255,255,255))
-		s.blit(focus_image1,(36,77))
-		s.blit(focus_image2,(34,77))
+		s.blit(focus_image1,(36,109))#77
+		s.blit(focus_image2,(34,109))
 		
 		# render messages
 		

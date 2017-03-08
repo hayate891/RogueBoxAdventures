@@ -38,8 +38,8 @@ class g_files():
 		
 		gender_list = {'MALE', 'FEMALE'}
 		amo_list = ('helmet', 'armor', 'cuisse', 'shoes')
-		weapon_list = ('spear' , 'sword' , 'axe', 'hammer', 'rune', 'wand', 'rune staff', 'artefact', 'pickaxe')
-		weapon_list2 = ('spear' , 'sword' , 'axe', 'hammer', 'rune', 'wand', 'runestaff', 'artefact', 'pickaxe')
+		weapon_list = ('spear' , 'sword' , 'axe', 'hammer', 'rune', 'wand', 'rune staff', 'artefact', 'pickaxe', 'ring', 'necklace', 'talisman', 'amulet')
+		weapon_list2 = ('spear' , 'sword' , 'axe', 'hammer', 'rune', 'wand', 'runestaff', 'artefact', 'pickaxe', 'ring', 'necklace', 'talisman', 'amulet')
 		material_list = ('wooden', 'tin', 'copper', 'steel', 'titan', 'magnicum')
 		other_list = ('SKIN', 'HAIR')
 		
@@ -147,8 +147,8 @@ class g_files():
 						'icon_magic_passive',#36
 						'icon_focus_active',#37
 						'icon_focus_passive',#38
-						'icon_inventory_active',#39
-						'icon_inventory_passive',#40
+						'no_ring',#39
+						'no_necklace',#40
 						'choose_dir',#41
 						'plus_fish',#42
 						'plus_shoe',#43
@@ -159,7 +159,13 @@ class g_files():
 						'item_bar_full',#48
 						'game_menu_bg_alt_big',#49
 						'game_menu_bg_alt_small',#50
-						'monster_lvl_up')#51
+						'monster_lvl_up',#51
+						'no_melee',#52
+						'no_magic',#53
+						'no_helmet',#54
+						'no_armor',#55
+						'no_cuisse',#56
+						'no_shoes')#57
 
 		for c in display_names:
 			i_name = display_path + c + '.png'
