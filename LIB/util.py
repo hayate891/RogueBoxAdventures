@@ -80,7 +80,6 @@ class game_options():
 			self.turnmode = temp.turnmode
 			self.mousepad = temp.mousepad
 			self.check_version = temp.check_version
-		
 		except:
 			self.screenmode = 1 #0:windowed,1:fullscreen
 			self.bgmmode = 1 #0:bgm off, 1:bgm on

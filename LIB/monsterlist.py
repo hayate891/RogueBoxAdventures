@@ -1187,7 +1187,7 @@ class monsterlist():
 				possible_effect = 'hexed', 
 				effect_duration = 30, 
 				effect_probability = 30,
-				message = 'The wisp glows.',
+				message = 'Necromancer murmurs strange words.',
 				spawn_skeleton = 40,
 				num_special = 3)
 		techID+=1

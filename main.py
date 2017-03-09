@@ -18,6 +18,7 @@
 
 import datetime
 import time
+from time import sleep as sleep
 import sys
 import os
 
@@ -2350,8 +2351,9 @@ class g_screen():
 		
 		run = True
 		num = 0
+		options_path = save_path
 		for c in range(0,5):
-			options_path = save_path.replace(os.sep + 'World' + str(c),'')
+			options_path = options_path.replace(os.sep + 'World' + str(c),'')
 		
 		while run:
 			
@@ -2455,6 +2457,7 @@ class g_screen():
 				global player
 				exitgame = True
 				try:
+					save_options(game_options,options_path,os.sep)
 					screen.render_load(5)
 					save(world,player,time,gods,save_path,os.sep)
 					screen.save_tmp_png()
@@ -2532,6 +2535,7 @@ class g_screen():
 					save_options(game_options,options_path,os.sep)
 					
 				if num == 6:
+					save_options(game_options,options_path,os.sep)
 					run = False
 					
 			
@@ -8904,7 +8908,7 @@ class inventory():
 		except: 
 			field_full = False
 			
-		if category != 0 or self.wearing[worn[slot]].cursed != 0:#there is no worn cursed item you wanna drop
+		if category > 1 or self.wearing[worn[slot]].cursed != 0:#there is no worn cursed item you wanna drop
 			if world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]].damage == 0 and field_full == False: #you only can drop thing on save tiles with 7 or less other items on it
 			
 				if world.maplist[player.pos[2]][player.on_map].containers[player.pos[1]][player.pos[0]] == 0: #if there is no container
@@ -8919,22 +8923,22 @@ class inventory():
 						world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]] = deepcopy(tl.tlist['functional'][4])#else make a full chest out of the empty one
 						world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]].replace = replace
 					
-				if category == 0:
+				if category == 0 or category == 1:
 					world.maplist[player.pos[2]][player.on_map].containers[player.pos[1]][player.pos[0]].items.append(self.wearing[worn[slot]])
 					if self.wearing[worn[slot]] != self.nothing: #this slot isn't empty
 						self.inv_mes = 'You drop a %s.' %(self.wearing[worn[slot]].name)
 					self.wearing[worn[slot]] = self.nothing
-				elif category == 1:
+				elif category == 2:
 					world.maplist[player.pos[2]][player.on_map].containers[player.pos[1]][player.pos[0]].items.append(self.equipment[slot])
 					if self.equipment[slot] != self.nothing:
 						self.inv_mes = 'You drop a %s.' %(self.equipment[slot].name)
 					self.equipment[slot] = self.nothing
-				elif category == 2:
+				elif category == 3:
 					world.maplist[player.pos[2]][player.on_map].containers[player.pos[1]][player.pos[0]].items.append(self.food[slot])
 					if self.food[slot] != self.nothing:
 						self.inv_mes = 'You drop a %s.' %(self.food[slot].name)
 					self.food[slot] = self.nothing
-				elif category == 3:
+				elif category == 4:
 					world.maplist[player.pos[2]][player.on_map].containers[player.pos[1]][player.pos[0]].items.append(self.misc[slot])
 					if self.misc[slot] != self.nothing:
 						self.inv_mes = 'You drop a %s.' %(self.misc[slot].name)
@@ -10356,6 +10360,9 @@ class sfX():
 	def play(self,sfx_name):
 		
 		try:
+			if pygame.mixer.get_busy():
+				sleep(0.1)
+				
 			if game_options.sfxmode == True:
 				self.sfx_list[sfx_name].play()
 		except:
