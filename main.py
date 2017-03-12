@@ -606,9 +606,9 @@ class g_screen():
 		
 		if player.buffs.light > 0:
 			if low_res == False:
-				pygame.draw.circle(s,(255,0,255),[130,90],60,0)
+				pygame.draw.circle(s,(255,0,255),[128,99],60,0)
 			else:
-				pygame.draw.circle(s,(255,0,255),[170,140],60,0)
+				pygame.draw.circle(s,(255,0,255),[169,140],60,0)
 				
 			s.set_colorkey((255,0,255),pygame.RLEACCEL)
 		
