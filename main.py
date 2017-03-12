@@ -3026,6 +3026,7 @@ class maP():
 		self.build_type = 'Full' #Full: build everything you want, Part: no stairs, None: Buildmode is not callable
 		self.thirst_multi_day = 1
 		self.thirst_multi_night = 1
+		self.no_monster_respawn = False
 		self.countdowns = []
 		self.npcs = []
 		self.monster_plus = 0
@@ -4353,8 +4354,8 @@ class maP():
 						#########add other events for growing plants etc here########
 			
 				self.last_visit = time.day_total #change the day of last visit to today to prevent the map of changed a second time for this day
-			
-				self.spawn_monsters(player.pos[2])#spawn new monsters 
+				if self.no_monster_respawn == False:
+					self.spawn_monsters(player.pos[2])#spawn new monsters 
 			
 			for i in range(0,len(player.inventory.food)):#let the food rot in the players inventory
 			
@@ -5515,6 +5516,7 @@ class world_class():
 		m.build_type = 'None'					#
 		m.monster_plus = monster_plus			#
 		m.monster_num = 0.3						#
+		m.no_monster_respawn = True				#
 		
 		m.fill(tl.tlist['dungeon'][9])#fill the map with dungeon wall tiles
 		
