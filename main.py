@@ -7307,8 +7307,8 @@ class mob():
 						
 						hostile_count = 0
 						
-						for my in range(player.pos[1]-1,player.pos[1]+2):
-							for mx in range(player.pos[0]-1,player.pos[0]+2):
+						for my in range(player.pos[1]-2,player.pos[1]+3):
+							for mx in range(player.pos[0]-2,player.pos[0]+3):
 								if world.maplist[self.pos[2]][self.on_map].npcs[my][mx] != 0:
 									if world.maplist[self.pos[2]][self.on_map].npcs[my][mx].AI_style == 'hostile':
 										hostile_count += 1
