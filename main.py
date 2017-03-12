@@ -7309,9 +7309,12 @@ class mob():
 						
 						for my in range(player.pos[1]-2,player.pos[1]+3):
 							for mx in range(player.pos[0]-2,player.pos[0]+3):
-								if world.maplist[self.pos[2]][self.on_map].npcs[my][mx] != 0:
-									if world.maplist[self.pos[2]][self.on_map].npcs[my][mx].AI_style == 'hostile':
-										hostile_count += 1
+								try:
+									if world.maplist[self.pos[2]][self.on_map].npcs[my][mx] != 0:
+										if world.maplist[self.pos[2]][self.on_map].npcs[my][mx].AI_style == 'hostile':
+											hostile_count += 1
+								except:
+									None
 								
 						
 						if (player.attribute.hunger*100)/player.attribute.hunger_max < 10:
