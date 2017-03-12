@@ -6138,6 +6138,7 @@ class mob():
 			if world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].move_group == 'tree':
 				
 				if player.inventory.wearing['Axe'] != player.inventory.nothing: #if player has a axe in his hand			
+					chop_success = True
 					player.inventory.wearing['Axe'].take_damage()
 					
 					if player.inventory.wearing['Axe'].state > 0:
@@ -6151,16 +6152,21 @@ class mob():
 					message.add('That hurts!')
 					player.lp -= 1
 					sfx.play('hit')
+					if random.randint(0,9) != 0: #90% to fail chopping down the wood with bare hands
+						chop_success = False
+					else:
+						chop_success = True
 				
-				try:
-					material = world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].conected_resources[0]
-					mat_num = world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].conected_resources[1]
-					mes = player.inventory.materials.add(material,mat_num)
-					message.add(mes)
-					world.maplist[self.pos[2]][self.on_map].make_monsters_angry(self.pos[0],self.pos[1],'tree')
-					sfx.play('chop')
-				except:
-					None
+				#try:
+				if chop_success == True:
+						material = world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].conected_resources[0]
+						mat_num = world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].conected_resources[1]
+						mes = player.inventory.materials.add(material,mat_num)
+						message.add(mes)
+						sfx.play('chop')
+				world.maplist[self.pos[2]][self.on_map].make_monsters_angry(self.pos[0],self.pos[1],'tree')
+				#except:
+				#	None
 					
 				world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x] = deepcopy(world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].replace) #let the tree disappear
 				return False
