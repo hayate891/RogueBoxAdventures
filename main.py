@@ -7302,9 +7302,10 @@ class mob():
 					return
 				
 				
-				if turns > 0:	
+				if turns > 0:
+					old_lp = player.lp	
 					while turns > 0:
-						
+						old_lp = player.lp
 						hostile_count = 0
 						
 						for my in range(player.pos[1]-2,player.pos[1]+3):
@@ -7334,6 +7335,9 @@ class mob():
 							return
 						
 						time.tick()
+						if player.lp < old_lp:
+							message.add('Something hurts you!')
+							return
 						turns -= 1
 					
 			
