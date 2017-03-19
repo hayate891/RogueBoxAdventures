@@ -67,7 +67,7 @@ class item_wear(item):
 			
 			plus_final = plus + material + kind[self.classe]
 			
-			self.attribute.p_strange += plus_final
+			self.attribute.p_strength += plus_final
 		
 		elif self.classe == 'helmet' or self.classe == 'armor' or self.classe == 'cuisse' or self.classe == 'shoes':
 			
@@ -79,7 +79,7 @@ class item_wear(item):
 			
 			plus_final = plus + material + kind[self.classe]
 			
-			self.attribute.m_strange += plus_final
+			self.attribute.m_strength += plus_final
 			
 		elif self.classe == 'amulet' or self.classe == 'ring':
 			
@@ -100,9 +100,9 @@ class item_wear(item):
 			self.attribute.pickaxe_power += plus_final
 		
 		
-		self.attribute.p_strange *= cursed
+		self.attribute.p_strength *= cursed
 		self.attribute.p_defense *= cursed
-		self.attribute.m_strange *= cursed
+		self.attribute.m_strength *= cursed
 		self.attribute.m_defense *= cursed
 		self.attribute.luck *= cursed
 		self.attribute.max_lp *= cursed

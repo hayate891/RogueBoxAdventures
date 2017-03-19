@@ -3348,7 +3348,7 @@ class maP():
 				
 			if self.tilemap[spawnpoints[ran2][1]][spawnpoints[ran2][0]].civilisation == False:#spawn a wild monster
 				self.npcs[spawnpoints[ran2][1]][spawnpoints[ran2][0]] = deepcopy(ml.mlist[self.map_type][ran])#deepcopy is used that every monster on the map is saved separate
-				self.set_monster_strange(spawnpoints[ran2][0],spawnpoints[ran2][1],depth)
+				self.set_monster_strength(spawnpoints[ran2][0],spawnpoints[ran2][1],depth)
 				try:
 					if player.difficulty == 4:
 						self.npcs[spawnpoints[ran2][1]][spawnpoints[ran2][0]].AI_style = 'ignore'
@@ -3357,13 +3357,13 @@ class maP():
 						
 			else:#spawn a civilian
 				self.npcs[spawnpoints[ran2][1]][spawnpoints[ran2][0]] = deepcopy(ml.mlist['civilian'][ran3])
-				self.set_monster_strange(spawnpoints[ran2][1],spawnpoints[ran2][1],depth)
+				self.set_monster_strength(spawnpoints[ran2][1],spawnpoints[ran2][1],depth)
 			
 			#set monsters personal_id
 			
 			self.npcs[spawnpoints[ran2][1]][spawnpoints[ran2][0]].personal_id = str(self.npcs[spawnpoints[ran2][1]][spawnpoints[ran2][0]].techID)+'_'+str(spawnpoints[ran2][0])+'_'+str(spawnpoints[ran2][1])+'_'+str(random.randint(0,9999))
 			
-	def set_monster_strange(self,x,y,z,preset_lvl=None ):
+	def set_monster_strength(self,x,y,z,preset_lvl=None ):
 		
 		if self.npcs[y][x] != 0:
 			
@@ -3407,7 +3407,7 @@ class maP():
 			
 			attribute_list =[] 
 		
-			al = ('p_strange','p_defense','m_strange','m_defense','health')
+			al = ('p_strength','p_defense','m_strength','m_defense','health')
 			a_nr = 0
 		
 			for c in self.npcs[y][x].attribute_prev:
@@ -3418,12 +3418,12 @@ class maP():
 			for i in range(0,monster_lvl):
 				choice = al[random.randint(0,len(al)-1)]
 				
-				if choice == 'p_strange':
-					self.npcs[y][x].basic_attribute.p_strange +=3
+				if choice == 'p_strength':
+					self.npcs[y][x].basic_attribute.p_strength +=3
 				elif choice == 'p_defense':
 					self.npcs[y][x].basic_attribute.p_defense +=3
-				elif choice == 'm_strange':
-					self.npcs[y][x].basic_attribute.m_strange +=3
+				elif choice == 'm_strength':
+					self.npcs[y][x].basic_attribute.m_strength +=3
 				elif choice == 'm_defense':
 					self.npcs[y][x].basic_attribute.m_defense +=3
 				elif choice == 'health':
@@ -3440,9 +3440,9 @@ class maP():
 					if self.npcs[y][x].worn_equipment[q] == 1:
 						help_equipment = item_wear(el[q][ran],random.randint(0,min((z*3),21)),random.randint(-2,2))
 					
-						self.npcs[y][x].basic_attribute.p_strange += help_equipment.attribute.p_strange
+						self.npcs[y][x].basic_attribute.p_strength += help_equipment.attribute.p_strength
 						self.npcs[y][x].basic_attribute.p_defense += help_equipment.attribute.p_defense
-						self.npcs[y][x].basic_attribute.m_strange += help_equipment.attribute.m_strange
+						self.npcs[y][x].basic_attribute.m_strength += help_equipment.attribute.m_strength
 						self.npcs[y][x].basic_attribute.m_defense += help_equipment.attribute.m_defense
 						self.npcs[y][x].basic_attribute.luck += help_equipment.attribute.luck
 				
@@ -3605,7 +3605,7 @@ class maP():
 										if self.npcs[y][x].spawn_skeleton > 0 and self.npcs[y][x].move_done != 1 and self.npcs[y][x].num_special > 0:
 											self.npcs[ylist[num]][xlist[num]] = deepcopy(ml.mlist['special'][7])
 											self.npcs[ylist[num]][xlist[num]].personal_id = self.npcs[y][x].personal_id + '_child'
-											self.set_monster_strange(x,y,player.pos[2])
+											self.set_monster_strength(x,y,player.pos[2])
 											mes = 'A ' + self.npcs[y][x].name + ' summones a skeleton.'
 											message.add(mes)
 											screen.write_hit_matrix(xlist[num],ylist[num],7)
@@ -3615,7 +3615,7 @@ class maP():
 										if self.npcs[y][x].spawn_shadow > 0 and self.npcs[y][x].move_done != 1 and self.npcs[y][x].num_special > 0:
 											self.npcs[ylist[num]][xlist[num]] = deepcopy(ml.mlist['special'][8])
 											self.npcs[ylist[num]][xlist[num]].personal_id = self.npcs[y][x].personal_id + '_child'
-											self.set_monster_strange(x,y,player.pos[2])
+											self.set_monster_strength(x,y,player.pos[2])
 											mes = 'A ' + self.npcs[y][x].name + ' summones a shadow.'
 											message.add(mes)
 											screen.write_hit_matrix(xlist[num],ylist[num],7)
@@ -4008,7 +4008,7 @@ class maP():
 						if yy != player.pos[1] or xx!= player.pos[0]:
 							if self.npcs[yy][xx] == 0 and self.tilemap[yy][xx].move_group == 'soil' and self.tilemap[yy][xx].damage == 0:
 								self.npcs[yy][xx] = deepcopy(ml.mlist['special'][2])#set vase monsters
-								self.set_monster_strange(xx,yy,player.pos[2])
+								self.set_monster_strength(xx,yy,player.pos[2])
 								if player.difficulty == 4:
 									self.npcs[yy][xx].AI_style = 'ignore'
 								
@@ -4062,7 +4062,7 @@ class maP():
 		
 		if self.npcs[y][x].corps_style == 'mimic':
 			self.npcs[y][x] = deepcopy(ml.mlist['special'][4])#set a mimic
-			self.set_monster_strange(x,y,player.pos[2])
+			self.set_monster_strength(x,y,player.pos[2])
 			if player.difficulty == 4:
 				self.npcs[y][x].AI_style = 'ignore'
 		else:
@@ -4116,7 +4116,7 @@ class maP():
 						if self.npcs[yy][xx].anger == style:
 							lvl = self.npcs[yy][xx].lvl
 							self.npcs[yy][xx] = deepcopy(ml.mlist['angry_monster'][self.npcs[yy][xx].anger_monster])
-							self.set_monster_strange(xx,yy,player.pos[2],lvl)
+							self.set_monster_strength(xx,yy,player.pos[2],lvl)
 							if player.difficulty == 4:
 								self.npcs[yy][xx].AI_style = 'ignore'		
 				except:
@@ -5905,7 +5905,7 @@ class world_class():
 				if m.tilemap[y][x].techID == tl.tlist['functional'][8].techID:#bed
 					ran = random.randint(5,6)
 					m.npcs[y][x] = deepcopy(ml.mlist['special'][ran])
-					m.set_monster_strange(x,y,0)
+					m.set_monster_strength(x,y,0)
 					
 		
 		m.set_frame(tl.tlist['functional'][0])
@@ -6191,22 +6191,22 @@ class mob():
 			self.last_z = self.cur_z
 			self.cur_z = self.pos[2]
 		
-		radius = 4
+		radius = 5
 		
 		if player.pos[2] > 0:
-			radius = 1
+			radius = 2
 		elif player.pos[2] == 0:
 			if time.hour > 22 or time.hour < 4:
-				radius = 1 
-			elif time.hour > 21 or time.hour < 5:
 				radius = 2 
-			elif time.hour > 20 or time.hour < 6:
+			elif time.hour > 21 or time.hour < 5:
 				radius = 3 
-			elif time.hour > 19 or time.hour < 7:
+			elif time.hour > 20 or time.hour < 6:
 				radius = 4 
+			elif time.hour > 19 or time.hour < 7:
+				radius = 5 
 			
 		if player.buffs.light > 0:
-			radius = 4
+			radius = 5
 			
 		if player.buffs.blind > 0:
 			radius = 1
@@ -7358,9 +7358,9 @@ class player_class(mob):
 			self.difficulty = temp.difficulty
 			
 			#attribute
-			self.attribute.p_strange = temp.attribute.p_strange
+			self.attribute.p_strength = temp.attribute.p_strength
 			self.attribute.p_defense = temp.attribute.p_defense
-			self.attribute.m_strange = temp.attribute.m_strange
+			self.attribute.m_strength = temp.attribute.m_strength
 			self.attribute.m_defense = temp.attribute.m_defense
 			self.attribute.luck = temp.attribute.luck
 			self.attribute.max_lp = temp.attribute.max_lp
@@ -7876,13 +7876,13 @@ class player_class(mob):
 		
 		choices = []
 		
-		st_string = 'Strength(' + str(self.attribute.p_strange) + ' -> ' + str(self.attribute.p_strange+3) +')'
+		st_string = 'Strength(' + str(self.attribute.p_strength) + ' -> ' + str(self.attribute.p_strength+3) +')'
 		choices.append(st_string)
 		
 		sk_string = 'Skill(' + str(self.attribute.p_defense) + ' -> ' + str(self.attribute.p_defense+3) +')'
 		choices.append(sk_string)
 		
-		po_string = 'Power(' + str(self.attribute.m_strange) + ' -> ' + str(self.attribute.m_strange+3) +')'
+		po_string = 'Power(' + str(self.attribute.m_strength) + ' -> ' + str(self.attribute.m_strength+3) +')'
 		choices.append(po_string)
 		
 		wi_string = 'Will(' + str(self.attribute.m_defense) + ' -> ' + str(self.attribute.m_defense+3) +')'
@@ -7895,11 +7895,11 @@ class player_class(mob):
 		c = screen.get_choice('~*Level up! Please choose an attribute.*~',choices,False)
 		
 		if c == 0:
-			self.attribute.p_strange += 3
+			self.attribute.p_strength += 3
 		elif c == 1:
 			self.attribute.p_defense += 3
 		elif c == 2:
-			self.attribute.m_strange += 3
+			self.attribute.m_strength += 3
 		elif c == 3:
 			self.attribute.m_defense += 3
 		else:
@@ -8216,15 +8216,15 @@ class player_class(mob):
 			
 			bodypart = world.maplist[self.pos[2]][self.on_map].npcs[y][x].attack_were[random.randint(0,len(world.maplist[self.pos[2]][self.on_map].npcs[y][x].attack_were)-1)]
 			
-			monster_strange  = 0
-			for i in range(0,world.maplist[self.pos[2]][self.on_map].npcs[y][x].basic_attribute.p_strange):
-				 monster_strange += random.randint(1,6)
+			monster_strength  = 0
+			for i in range(0,world.maplist[self.pos[2]][self.on_map].npcs[y][x].basic_attribute.p_strength):
+				 monster_strength += random.randint(1,6)
 				 
 			player_defense = 0
 			for j in range(0,self.attribute.p_defense + self.inventory.wearing[bodypart].attribute.p_defense):
 				player_defense += random.randint(1,6)
 			
-			if monster_strange >= player_defense:
+			if monster_strength >= player_defense:
 				attack_success = True
 			else:
 				attack_success = False
@@ -8289,15 +8289,15 @@ class player_class(mob):
 		
 		elif world.maplist[self.pos[2]][self.on_map].npcs[y][x].behavior == 'attack_magic' or random_attack == 'magic':
 			
-			monster_strange = 0
-			for i in range(world.maplist[self.pos[2]][self.on_map].npcs[y][x].basic_attribute.m_strange):
-				monster_strange += random.randint(1,6)
+			monster_strength = 0
+			for i in range(world.maplist[self.pos[2]][self.on_map].npcs[y][x].basic_attribute.m_strength):
+				monster_strength += random.randint(1,6)
 				
 			player_defense = 0
 			for j in range(0,player.attribute.p_defense + player.inventory.wearing['Neck'].attribute.m_defense + self.inventory.wearing['Hand'].attribute.m_defense):
 				player_defense += random.randint(1,6)
 			
-			if monster_strange >= player_defense:
+			if monster_strength >= player_defense:
 				attack_success = True
 			else:
 				attack_success = False
@@ -8394,9 +8394,9 @@ class player_class(mob):
 		
 		if style == 'magic':
 			
-			player_strange = 0
-			for i in range(0,self.attribute.m_strange + self.inventory.wearing['Hold(L)'].attribute.m_strange + self.lvl):
-				player_strange += random.randint(1,6)
+			player_strength = 0
+			for i in range(0,self.attribute.m_strength + self.inventory.wearing['Hold(L)'].attribute.m_strength + self.lvl):
+				player_strength += random.randint(1,6)
 				
 			monster_defense = 0
 			for j in range(0,world.maplist[self.pos[2]][self.on_map].npcs[y][x].basic_attribute.m_defense):
@@ -8406,7 +8406,7 @@ class player_class(mob):
 			
 			player_luck = self.attribute.luck + self.inventory.wearing['Hand'].attribute.luck +self.inventory.wearing['Neck'].attribute.luck
 			
-			if player_strange >= monster_defense:
+			if player_strength >= monster_defense:
 				attack_success = True
 			else:
 				attack_success = False
@@ -8494,9 +8494,9 @@ class player_class(mob):
 				screen.write_hit_matrix(x,y,3)
 		else:
 			
-			player_strange = 0
-			for i in range(0,player.attribute.p_strange + player.inventory.wearing['Hold(R)'].attribute.p_strange):
-				player_strange += random.randint(1,6)
+			player_strength = 0
+			for i in range(0,player.attribute.p_strength + player.inventory.wearing['Hold(R)'].attribute.p_strength):
+				player_strength += random.randint(1,6)
 				
 			monster_defense = 0
 			for i in range(0,world.maplist[self.pos[2]][self.on_map].npcs[y][x].basic_attribute.p_defense):
@@ -8506,7 +8506,7 @@ class player_class(mob):
 			
 			player_luck = self.attribute.luck + self.inventory.wearing['Hand'].attribute.luck +self.inventory.wearing['Neck'].attribute.luck
 				
-			if player_strange >= monster_defense:
+			if player_strength >= monster_defense:
 				attack_success = True
 			else:
 				attack_success = False

@@ -22,7 +22,7 @@ from attribute import attribute
 # a sprite_pos to pick the right image when rendering
 # a value of move border between 0 and 9: 0 means the monster can move every turn 9 means the monster can move never
 # a integer that represents the monsters lvl
-# a attribute_prev object that vontains integers that stand for the importence aspecial attribute has to this monstere when the attribute points are given. order: (p_strange,p_defense,m_strange,m_defense,max_lp)
+# a attribute_prev object that vontains integers that stand for the importence aspecial attribute has to this monstere when the attribute points are given. order: (p_strength,p_defense,m_strength,m_defense,max_lp)
 # a basic attribure object
 # a worn_equipment object which is a list if bools standing for equipment this monster type can wear. Order: (melee weapon,magic_weapon,armor,necklance/amulet/talisman,ring)
 # a AI_style that says how the monster acts toward the player. possible styles are: 'hostile', 'flee' and 'ignore'

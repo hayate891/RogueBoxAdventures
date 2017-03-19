@@ -15,11 +15,11 @@
 
 class attribute():
 
-	def __init__(self, p_strange, p_defense, m_strange, m_defense, luck, max_lp, max_mp, hunger_max = 3600, thirst_max = 2160, tiredness_max = 5040, pickaxe_power = 1):
+	def __init__(self, p_strength, p_defense, m_strength, m_defense, luck, max_lp, max_mp, hunger_max = 3600, thirst_max = 2160, tiredness_max = 5040, pickaxe_power = 1):
 		
-		self.p_strange = p_strange
+		self.p_strength = p_strength
 		self.p_defense = p_defense
-		self.m_strange = m_strange
+		self.m_strength = m_strength
 		self.m_defense = m_defense
 		self.luck = luck
 		self.max_lp = max_lp
