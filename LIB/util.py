@@ -81,7 +81,7 @@ class game_options():
 			self.mousepad = temp.mousepad
 			self.check_version = temp.check_version
 		except:
-			self.screenmode = 1 #0:windowed,1:fullscreen
+			self.screenmode = 1 #0:windowed(small),1:windowed(big),2:fullscreen
 			self.bgmmode = 1 #0:bgm off, 1:bgm on
 			self.sfxmode = 1 #0:sfx off, 1:sfx on
 			self.turnmode = 1 #0:classic, 1:Semi-Real-Time

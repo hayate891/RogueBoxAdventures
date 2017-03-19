@@ -606,17 +606,14 @@ class g_screen():
 		
 		if player.buffs.light > 0:
 			if low_res == False:
-				pygame.draw.circle(s,(255,0,255),[128,99],60,0)
+				pygame.draw.circle(s,(255,0,255),[254,197],120,0)
 			else:
 				pygame.draw.circle(s,(255,0,255),[169,140],60,0)
 				
 			s.set_colorkey((255,0,255),pygame.RLEACCEL)
 		
 		s.set_alpha(alpha)
-		
-		if low_res == False:
-			s = pygame.transform.scale(s,(self.displayx,self.displayy))
-		
+	
 		return s
 		
 	def render(self,mes_num, simulate = False):
@@ -6159,18 +6156,14 @@ class mob():
 					else:
 						chop_success = True
 				
-				#try:
 				if chop_success == True:
-						material = world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].conected_resources[0]
-						mat_num = world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].conected_resources[1]
-						mes = player.inventory.materials.add(material,mat_num)
-						message.add(mes)
-						sfx.play('chop')
-				world.maplist[self.pos[2]][self.on_map].make_monsters_angry(self.pos[0],self.pos[1],'tree')
-				#except:
-				#	None
-					
-				world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x] = deepcopy(world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].replace) #let the tree disappear
+					material = world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].conected_resources[0]
+					mat_num = world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].conected_resources[1]
+					mes = player.inventory.materials.add(material,mat_num)
+					message.add(mes)
+					sfx.play('chop')
+					world.maplist[self.pos[2]][self.on_map].make_monsters_angry(self.pos[0],self.pos[1],'tree')
+					world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x] = deepcopy(world.maplist[self.pos[2]][self.on_map].tilemap[self.pos[1]+y][self.pos[0]+x].replace) #let the tree disappear
 				return False
 						
 					
@@ -9281,6 +9274,7 @@ class inventory():
 				elif self.misc[slot].effect == 7:
 					player.buffs.set_buff('light',180)
 					message.add('A magical light surrounds your body.')
+					player.stand_check()
 				
 				if scroll == True:
 					self.misc[slot] = self.nothing
@@ -9410,6 +9404,7 @@ class inventory():
 				player.buffs.set_buff('light',180)
 				self.misc[slot] = self.nothing
 				message.add('The burning torch illumines your surroundings.')
+				player.stand_check()
 				return True
 							
 	def eat(self,slot):
@@ -9687,8 +9682,10 @@ class inventory():
 		worn = ['Hold(R)','Hold(L)','Head','Body','Legs','Feet','Hand','Neck','Axe','Pickaxe','Background','Clothing','Hat']
 		
 		while run:
-			
-			test = self.render(category, slot, info)
+			try:
+				master_test = self.render(category, slot, info)
+			except:
+				master_test = False
 			
 			ui = getch(screen.displayx,screen.displayy,game_options.sfxmode,game_options.turnmode,mouse=game_options.mousepad)
 			
@@ -9773,7 +9770,7 @@ class inventory():
 				
 				info = False
 					
-			elif ui == 'e' and info == False and test == True and category != 5:
+			elif ui == 'e' and info == False and master_test == True and category != 5:
 				info = True
 						
 			elif ui == 'b':
