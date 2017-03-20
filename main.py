@@ -3027,6 +3027,7 @@ class maP():
 		self.countdowns = []
 		self.npcs = []
 		self.monster_plus = 0
+		self.monster_count = 0
 		
 		for y in range (0,max_map_size):
 			self.known.append([])
@@ -3302,6 +3303,8 @@ class maP():
 	def spawn_monsters(self,depth):
 		#This function spawns monsters on the map
 		
+		print('start spawn')
+		
 		if self.map_type == 'elfish_fortress':
 			monster_max = 0
 			for y in range(0,max_map_size):
@@ -3319,13 +3322,13 @@ class maP():
 			spawnpoints = self.find_all_moveable()
 		
 		del_list = []
-		monster_count = 0
+		monster_count = self.monster_count
 		
 		for i in range (0,len(spawnpoints)):
 			
 			if self.npcs[spawnpoints[i][1]][spawnpoints[i][0]] != 0: #there is a monster here
 				spawnpoints[i] = 'del'
-				monster_count += 1#count the monsters that are already on the map
+				#monster_count += 1#count the monsters that are already on the map
 			
 		newlist = []
 		
@@ -3339,7 +3342,7 @@ class maP():
 		
 		if monster_max > len(spawnpoints):
 			monster_max = len(spawnpoints)
-			
+		print(monster_max,monster_count)	
 		for k in range(0,monster_max):
 			
 			ran = random.randint(0,len(ml.mlist[self.map_type])-1)
@@ -3349,6 +3352,9 @@ class maP():
 			if self.tilemap[spawnpoints[ran2][1]][spawnpoints[ran2][0]].civilisation == False:#spawn a wild monster
 				self.npcs[spawnpoints[ran2][1]][spawnpoints[ran2][0]] = deepcopy(ml.mlist[self.map_type][ran])#deepcopy is used that every monster on the map is saved separate
 				self.set_monster_strength(spawnpoints[ran2][0],spawnpoints[ran2][1],depth)
+				self.monster_count += 1
+				if self.no_monster_respawn == False:
+					self.countdowns.append(countdown('spawner',spawnpoints[ran2][1],spawnpoints[ran2][0],random.randint(5,60)))
 				try:
 					if player.difficulty == 4:
 						self.npcs[spawnpoints[ran2][1]][spawnpoints[ran2][0]].AI_style = 'ignore'
@@ -3362,6 +3368,8 @@ class maP():
 			#set monsters personal_id
 			
 			self.npcs[spawnpoints[ran2][1]][spawnpoints[ran2][0]].personal_id = str(self.npcs[spawnpoints[ran2][1]][spawnpoints[ran2][0]].techID)+'_'+str(spawnpoints[ran2][0])+'_'+str(spawnpoints[ran2][1])+'_'+str(random.randint(0,9999))
+			
+		print('Spawn success')
 			
 	def set_monster_strength(self,x,y,z,preset_lvl=None ):
 		
@@ -4068,6 +4076,8 @@ class maP():
 		else:
 			self.npcs[y][x] = 0 #always del the monster if it is no mimic
 		self.make_monsters_angry(x,y,'kill')
+		self.monster_count -= 1
+		print(die_mess, self.monster_count)
 		message.add(die_mess)
 		return True
 	
@@ -4351,8 +4361,8 @@ class maP():
 						#########add other events for growing plants etc here########
 			
 				self.last_visit = time.day_total #change the day of last visit to today to prevent the map of changed a second time for this day
-				if self.no_monster_respawn == False:
-					self.spawn_monsters(player.pos[2])#spawn new monsters 
+				#if self.no_monster_respawn == False:
+				#	self.spawn_monsters(player.pos[2])#spawn new monsters 
 			
 			for i in range(0,len(player.inventory.food)):#let the food rot in the players inventory
 			
@@ -4857,6 +4867,7 @@ class world_class():
 		map_name = 'local_0_0'
 		m = self.default_map_generator(map_name,'global_caves', tilelist)
 		m.map_type = 'elfish_fortress'
+		m.no_monster_respawn = True
 		
 		m.fill(tl.tlist['elfish'][0])
 		
@@ -10200,10 +10211,48 @@ class time_class():
 							world.maplist[player.pos[2]][player.on_map].tilemap[world.maplist[player.pos[2]][player.on_map].countdowns[i].y][world.maplist[player.pos[2]][player.on_map].countdowns[i].x] = world.maplist[player.pos[2]][player.on_map].tilemap[world.maplist[player.pos[2]][player.on_map].countdowns[i].y][world.maplist[player.pos[2]][player.on_map].countdowns[i].x].replace
 							world.maplist[player.pos[2]][player.on_map].countdowns[i] = 'del'		
 						
-						elif  world.maplist[player.pos[2]][player.on_map].countdowns[i].kind == 'init_tutorial':
+						elif world.maplist[player.pos[2]][player.on_map].countdowns[i].kind == 'init_tutorial':
 							screen.render_text(texts['tutorial_1.1'])
 							screen.render_text(texts['tutorial_1.2'])
 							world.maplist[player.pos[2]][player.on_map].countdowns[i] = 'del'
+						
+						elif world.maplist[player.pos[2]][player.on_map].countdowns[i].kind == 'spawner':
+							x = world.maplist[player.pos[2]][player.on_map].countdowns[i].x
+							y = world.maplist[player.pos[2]][player.on_map].countdowns[i].y
+							map_type = world.maplist[player.pos[2]][player.on_map].map_type
+							
+							spawn_here = False
+							if world.maplist[player.pos[2]][player.on_map].tilemap[y][x].move_group == 'soil':
+								spawn_here = True
+							if map_type == 'grot':
+								if world.maplist[player.pos[2]][player.on_map].tilemap[y][x].move_group == 'low_liquid':
+									spawn_here = True
+							
+							if world.maplist[player.pos[2]][player.on_map].npcs[y][x] == 0:
+								no_monsters = True
+							else:
+								no_monsters = False
+							
+							player_distance = ((player.pos[0]-x)**2+(player.pos[1]-y)**2)**0.5
+							
+							monster_max = (max_map_size*max_map_size)/30
+							#monster_max = int(monster_max * world.maplist[player.pos[2]][player.on_map].monster_num)
+							
+							if world.maplist[player.pos[2]][player.on_map].monster_count < monster_max:
+								if player_distance > 8:
+									if spawn_here == True and no_monsters == True:
+										ran = random.randint(0,len(ml.mlist[map_type])-1)
+										world.maplist[player.pos[2]][player.on_map].npcs[y][x] = deepcopy(ml.mlist[map_type][ran])
+										world.maplist[player.pos[2]][player.on_map].set_monster_strength(x,y,player.pos[2])
+										try:
+											if player.difficulty == 4:
+												self.npcs[spawnpoints[ran2][1]][spawnpoints[ran2][0]].AI_style = 'ignore'
+										except:
+											None
+										print(world.maplist[player.pos[2]][player.on_map].npcs[y][x].name, (x,y), str(world.maplist[player.pos[2]][player.on_map].monster_count)+'/'+str(monster_max))
+										world.maplist[player.pos[2]][player.on_map].monster_count += 1
+							world.maplist[player.pos[2]][player.on_map].countdowns[i].countfrom = random.randint(5,60)
+						
 							
 		newcountdown = []
 		
