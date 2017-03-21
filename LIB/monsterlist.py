@@ -109,27 +109,6 @@ class monsterlist():
 		techID+=1
 		self.mlist['overworld'].append(m)
 
-		m=monster(techID = techID,
-				name = 'hill orc',
-				sprite_pos = (1,7),
-				move_border = 2,
-				attribute_prev = (3,0,1,0,1),
-				worn_equipment = (1,0,1,0,0),
-				AI_style = 'hostile',
-				corps_style = 'human',
-				corps_lvl = 2, 
-				personal_id = 'None',
-				move_groups = ('soil','low_liquid'), 
-				behavior = 'attack_melee', 
-				attack_were = ('Head','Body','Legs','Feet'),
-				possible_effect = None, 
-				effect_duration = 0, 
-				effect_probability = 0, 
-				message = 'None',
-				def_potion = 20)
-		techID+=1
-		self.mlist['overworld'].append(m)
-
 		#civilians
 		self.mlist['civilian'] = []
 		
@@ -324,7 +303,7 @@ class monsterlist():
 		#mine
 
 		self.mlist['orcish_mines'] = []
-		
+		#0
 		m=monster(techID = techID,
 				name = 'orc warlord',
 				sprite_pos = (1,5),
@@ -345,7 +324,7 @@ class monsterlist():
 				message = 'The orc warlord tears you a bleeding wound.')
 		techID+=1
 		self.mlist['orcish_mines'].append(m)
-
+		#1
 		m=monster(techID = techID,
 				name = 'orcish hag',
 				sprite_pos = (0,6),
@@ -367,7 +346,7 @@ class monsterlist():
 				message = 'The orcish hag puts a hex on you.')
 		techID+=1
 		self.mlist['orcish_mines'].append(m)
-
+		#2
 		m=monster(techID = techID,
 				name = 'orcish digger',
 				sprite_pos = (1,6),
@@ -387,7 +366,7 @@ class monsterlist():
 				message = 'None')
 		techID+=1
 		self.mlist['orcish_mines'].append(m)
-
+		#3
 		m=monster(techID = techID,
 				name = 'blood snake',
 				sprite_pos = (2,6),
@@ -1199,3 +1178,32 @@ class monsterlist():
 			self.mlist['tomb'].append(self.mlist['desert'][3])#lizard
 			self.mlist['tomb'].append(self.mlist['cave'][2])#orc warlord
 			self.mlist['tomb'].append(self.mlist['lava_cave'][3])#fire bat
+		
+		
+		#overworld orc
+		self.mlist['orc'] = []
+		
+		for a in range(0,4):
+			m=monster(techID = techID,
+					name = 'hill orc',
+					sprite_pos = (1,7),
+					move_border = 2,
+					attribute_prev = (3,0,1,0,1),
+					worn_equipment = (1,0,1,0,0),
+					AI_style = 'hostile',
+					corps_style = 'human',
+					corps_lvl = 2, 
+					personal_id = 'None',
+					move_groups = ('soil','low_liquid'), 
+					behavior = 'attack_melee', 
+					attack_were = ('Head','Body','Legs','Feet'),
+					possible_effect = None, 
+					effect_duration = 0, 
+					effect_probability = 0, 
+					message = 'None',
+					def_potion = 20)
+			techID+=1
+			self.mlist['orc'].append(m)
+			
+		self.mlist['orc'].append(self.mlist['cave'][0])#cave orc
+		self.mlist['orc'].append(self.mlist['orcish_mines'][2])#orcish digger

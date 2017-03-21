@@ -200,13 +200,13 @@ class g_files():
 		
 		tilemap = []
 		
-		for i in range (0,11):
+		for i in range (0,13):
 			tilemap.append([])
-			for j in range (0,11):
+			for j in range (0,13):
 				tilemap[i].append(0)
 		
-		for x in range (0,11):
-			for y in range (0,11):
+		for x in range (0,13):
+			for y in range (0,13):
 				
 				r = pygame.Rect((0,0),(x*32,y*32))
 				i = pygame.transform.chop(tile_object,r)

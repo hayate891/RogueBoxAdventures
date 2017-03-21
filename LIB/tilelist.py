@@ -199,15 +199,17 @@ class tilelist():
 		techID+=1
 		#12
 		t=tile(techID = techID,
-					name = 'Unused',
+					name = 'Orcish deco',
 					tile_color = 'red',
 					use_group = 'None',
-					move_group = 'soil',
+					move_group = 'solide',
 					grow_group = 'None',
 					damage = 0, 
-					move_message = 'UNUSED', 
+					move_message = 'None', 
 					damage_message = None,
-					tile_pos = (1,8))
+					build_here = False,
+					tile_pos = (0,11),
+					transparency = False)
 		self.tlist['misc'].append(t)
 		techID+=1
 		#13
@@ -254,7 +256,21 @@ class tilelist():
 					conected_resources = ('wood',3))
 		self.tlist['misc'].append(t)
 		techID+=1
-	
+		#16
+		t=tile(techID = techID,
+					name = 'Solide orcish wall',
+					tile_color = 'red',
+					use_group = 'None',
+					move_group = 'solide',
+					grow_group = 'None',
+					damage = 0, 
+					move_message = 'None', 
+					damage_message = None,
+					tile_pos = (0,4),
+					transparency = False)
+		self.tlist['misc'].append(t)
+		techID+=1
+		
 		self.tlist['mine'] = []
 	
 		t=tile(techID = techID,

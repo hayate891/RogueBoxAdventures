@@ -3349,22 +3349,17 @@ class maP():
 			ran2 = random.randint(0,len(spawnpoints)-1)
 			ran3 = random.randint(0,len(ml.mlist['civilian'])-1)
 				
-			if self.tilemap[spawnpoints[ran2][1]][spawnpoints[ran2][0]].civilisation == False:#spawn a wild monster
-				self.npcs[spawnpoints[ran2][1]][spawnpoints[ran2][0]] = deepcopy(ml.mlist[self.map_type][ran])#deepcopy is used that every monster on the map is saved separate
-				self.set_monster_strength(spawnpoints[ran2][0],spawnpoints[ran2][1],depth)
-				self.monster_count += 1
-				if self.no_monster_respawn == False:
-					self.countdowns.append(countdown('spawner',spawnpoints[ran2][1],spawnpoints[ran2][0],random.randint(5,60)))
-				try:
-					if player.difficulty == 4:
-						self.npcs[spawnpoints[ran2][1]][spawnpoints[ran2][0]].AI_style = 'ignore'
-				except:
-					None
-						
-			else:#spawn a civilian
-				self.npcs[spawnpoints[ran2][1]][spawnpoints[ran2][0]] = deepcopy(ml.mlist['civilian'][ran3])
-				self.set_monster_strength(spawnpoints[ran2][1],spawnpoints[ran2][1],depth)
-			
+			self.npcs[spawnpoints[ran2][1]][spawnpoints[ran2][0]] = deepcopy(ml.mlist[self.map_type][ran])#deepcopy is used that every monster on the map is saved separate
+			self.set_monster_strength(spawnpoints[ran2][0],spawnpoints[ran2][1],depth)
+			self.monster_count += 1
+			if self.no_monster_respawn == False:
+				self.countdowns.append(countdown('spawner',spawnpoints[ran2][1],spawnpoints[ran2][0],random.randint(5,60)))
+			try:
+				if player.difficulty == 4:
+					self.npcs[spawnpoints[ran2][1]][spawnpoints[ran2][0]].AI_style = 'ignore'
+			except:
+				None
+					
 			#set monsters personal_id
 			
 			self.npcs[spawnpoints[ran2][1]][spawnpoints[ran2][0]].personal_id = str(self.npcs[spawnpoints[ran2][1]][spawnpoints[ran2][0]].techID)+'_'+str(spawnpoints[ran2][0])+'_'+str(spawnpoints[ran2][1])+'_'+str(random.randint(0,9999))
@@ -3453,7 +3448,45 @@ class maP():
 						self.npcs[y][x].basic_attribute.m_strength += help_equipment.attribute.m_strength
 						self.npcs[y][x].basic_attribute.m_defense += help_equipment.attribute.m_defense
 						self.npcs[y][x].basic_attribute.luck += help_equipment.attribute.luck
+	
+	def make_orc_cave(self,on_tile):
+		
+		run = True
+		
+		while run:
+			pos = self.find_any(on_tile)
+			
+			if ((pos[0]-(max_map_size/2))**2+(pos[1]-(max_map_size/2))**2)**0.5 > 10:
+				if pos[0] > 5 and pos[0] < max_map_size-5 and pos[1] > 5 and pos[1] < max_map_size-5:
+					run = False
+					
+		for y in range(pos[1]-2,pos[1]+3):
+			for x in range(pos[0]-2,pos[0]+3):
+				self.tilemap[y][x] = tl.tlist['misc'][16] #fill with solide orcish wall
+		for y in range(pos[1]-1,pos[1]+2):
+			for x in range(pos[0]-1,pos[0]+2):
+				self.tilemap[y][x] = tl.tlist['mine'][0] #fill inner with  orcish mine floor
 				
+				self.npcs[y][x] = deepcopy(ml.mlist['orc'][random.randint(0,len(ml.mlist['orc'])-1)])#
+				self.set_monster_strength(x,y,1)													#generate orcs
+				self.countdowns.append(countdown('orc_spawner',x,y,random.randint(5,60)))			#
+				
+		self.tilemap[pos[1]-2][pos[0]] = deepcopy(tl.tlist['dungeon'][3])#
+		self.tilemap[pos[1]+2][pos[0]] = deepcopy(tl.tlist['dungeon'][3])# make dungeon doors
+		self.tilemap[pos[1]][pos[0]-2] = deepcopy(tl.tlist['dungeon'][3])#
+		self.tilemap[pos[1]][pos[0]+2] = deepcopy(tl.tlist['dungeon'][3])#
+		
+		self.tilemap[pos[1]-2][pos[0]-2] = deepcopy(tl.tlist['misc'][12])#
+		self.tilemap[pos[1]-2][pos[0]-2].replace = deepcopy(on_tile)	 #
+		self.tilemap[pos[1]-2][pos[0]+2] = deepcopy(tl.tlist['misc'][12])#
+		self.tilemap[pos[1]-2][pos[0]+2].replace = deepcopy(on_tile)	 # add orc deko to the connors
+		self.tilemap[pos[1]+2][pos[0]-2] = deepcopy(tl.tlist['misc'][12])#
+		self.tilemap[pos[1]+2][pos[0]-2].replace = deepcopy(on_tile)	 #
+		self.tilemap[pos[1]+2][pos[0]+2] = deepcopy(tl.tlist['misc'][12])#
+		self.tilemap[pos[1]+2][pos[0]+2].replace = deepcopy(on_tile)	 #
+		
+		print('orc cave at '+str(pos[0])+','+str(pos[1]))
+		
 	def AI_move(self):
 		#This function moves all monsters that are 7 or less fields away from the player.
 		#It dosn't move all monsters to save performance
@@ -5445,6 +5478,9 @@ class world_class():
 		#set dungeon
 		ran_pos = m.find_any(tl.tlist['local'][0])
 		m.tilemap[ran_pos[1]][ran_pos[0]] = tl.tlist['dungeon'][7]
+		
+		for q in range(0,(max_map_size**2/50**2)*3):
+			m.make_orc_cave(tl.tlist['local'][0])#generate orc caves on grass
 		
 		m.spawn_monsters(0)
 					
@@ -10216,10 +10252,13 @@ class time_class():
 							screen.render_text(texts['tutorial_1.2'])
 							world.maplist[player.pos[2]][player.on_map].countdowns[i] = 'del'
 						
-						elif world.maplist[player.pos[2]][player.on_map].countdowns[i].kind == 'spawner':
+						elif world.maplist[player.pos[2]][player.on_map].countdowns[i].kind == 'spawner' or world.maplist[player.pos[2]][player.on_map].countdowns[i].kind == 'orc_spawner':
 							x = world.maplist[player.pos[2]][player.on_map].countdowns[i].x
 							y = world.maplist[player.pos[2]][player.on_map].countdowns[i].y
-							map_type = world.maplist[player.pos[2]][player.on_map].map_type
+							if world.maplist[player.pos[2]][player.on_map].countdowns[i].kind == 'orc_spawner':
+								map_type = 'orc'
+							else:
+								map_type = world.maplist[player.pos[2]][player.on_map].map_type
 							
 							spawn_here = False
 							if world.maplist[player.pos[2]][player.on_map].tilemap[y][x].move_group == 'soil':
