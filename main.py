@@ -6587,7 +6587,7 @@ class mob():
 							run = False
 						
 						else:
-							message.add('You have not enough wood!')
+							message.add('You do not have enough wood!')
 							run = False
 						
 				elif ui == 'b' and world.maplist[self.pos[2]][self.on_map].containers[self.pos[1]][self.pos[0]] != 0:
@@ -6677,7 +6677,7 @@ class mob():
 							run = False
 						
 						else:
-							message.add('You have not enough wood!')
+							message.add('You do not have enough wood!')
 							run = False
 						
 				elif ui == 'b' and world.maplist[self.pos[2]][self.on_map].containers[self.pos[1]][self.pos[0]] != 0:
@@ -6755,7 +6755,7 @@ class mob():
 							run = False
 						
 						else:
-							message.add('You have not enough Stone!')
+							message.add('You do not have enough Stone!')
 							run = False
 						
 				elif ui == 'b' and world.maplist[self.pos[2]][self.on_map].containers[self.pos[1]][self.pos[0]] != 0:
@@ -6855,7 +6855,7 @@ class mob():
 							run = False
 						
 						else:
-							message.add('You have not enough ore!')
+							message.add('You do not have enough ore!')
 							run = False
 						
 				elif ui == 'b' and world.maplist[self.pos[2]][self.on_map].containers[self.pos[1]][self.pos[0]] != 0:
@@ -6936,7 +6936,7 @@ class mob():
 							run = False
 						
 						else:
-							message.add('You have not enough herbs!')
+							message.add('You do have not enough herbs!')
 							run = False
 						
 				elif ui == 'b' and world.maplist[self.pos[2]][self.on_map].containers[self.pos[1]][self.pos[0]] != 0:
@@ -6988,7 +6988,7 @@ class mob():
 									player.inventory.food[i] = deepcopy(il.ilist['food'][8])#turn a bread into rusk
 								elif player.inventory.food[i].techID == il.ilist['food'][9].techID: #this is raw meat
 									message.add('You grill raw meat.')
-									player.inventory.food[i] = deepcopy(il.ilist['food'][10])#turn a fish into a grilled fish
+									player.inventory.food[i] = deepcopy(il.ilist['food'][10])#turn raw meat into a grilled meat
 								elif player.inventory.food[i].techID == il.ilist['food'][11].techID: #this is a cult. mushroom
 									message.add('You grill a mushroom.')
 									player.inventory.food[i] = deepcopy(il.ilist['food'][12])#turn a cult. mushroom into a grilled mushroom
@@ -7011,7 +7011,7 @@ class mob():
 						
 					else:
 							
-						message.add('You have not enough wood!')
+						message.add('You do not have enough wood!')
 						run = False
 						
 				elif ui == 'x':
@@ -7127,7 +7127,7 @@ class mob():
 						if player.inventory.equipment[j] != player.inventory.nothing:
 							player.inventory.equipment[j].identification()
 							
-					message.add('Now you are aware of your equipments states.')
+					message.add('Now you are aware of your equipments attributes.')
 					run = False
 					
 				elif ui == 'x':
@@ -7195,7 +7195,7 @@ class mob():
 					else:
 						message.add('Your bags are to full to buy this item.')
 				else:
-					message.add('You havn\'t enough gems to buy this item.')
+					message.add('You havn\'t got enough gems to buy this item.')
 			else:
 				message.add('Never Mind.')
 		
@@ -7359,13 +7359,13 @@ class mob():
 								
 						
 						if (player.attribute.hunger*100)/player.attribute.hunger_max < 10:
-							message.add('You feel to hungry to wait any longer.')
+							message.add('You feel too hungry to wait any longer.')
 							return
 						elif (player.attribute.thirst*100)/player.attribute.thirst_max < 10:
-							message.add('You feel to thirsty to wait any longer.')
+							message.add('You feel too thirsty to wait any longer.')
 							return
 						elif (player.attribute.tiredness*100)/player.attribute.tiredness_max < 10:
-							message.add('You feel to tired to wait any longer.')
+							message.add('You feel too tired to wait any longer.')
 							return
 						elif hostile_count == 1:
 							message.add('You are interupted by a monster.')
@@ -9115,10 +9115,10 @@ class inventory():
 				self.misc[slot] = self.nothing
 				return True
 			
-			elif self.misc[slot].name == 'Anchanted Enhancemen Powder':
+			elif self.misc[slot].name == 'Anchanted Enhancement Powder':
 				if self.wearing['Hold(R)'] != self.nothing:
 					if self.wearing['Hold(R)'].plus < 2:
-						mes = 'Your ' + self.wearing['Hold(R)'].name + ' glowes blue.'
+						mes = 'Your ' + self.wearing['Hold(R)'].name + ' glows blue.'
 						message.add(mes)
 						self.wearing['Hold(R)'].plus += 1
 						self.wearing['Hold(R)'].set_name()
@@ -9267,7 +9267,7 @@ class inventory():
 						player.pos[1] = world.starty
 						player.pos[2] = 0
 						player.on_map = 'local_0_0'
-						message.add('You returne home.')
+						message.add('You return home.')
 					else:
 						message.add('Nothing seems to happen.')
 
@@ -9908,11 +9908,11 @@ class inventory():
 					if self.food[slot].satisfy_tiredness > 0:
 						txt.append('Can adrenalise!')
 					if self.food[slot].rise_hunger_max > 0:
-						txt.append('Let your stomach grow.')
+						txt.append('Lets you go longer without food.')
 					if self.food[slot].rise_thirst_max > 0:
-						txt.append('Raises your water capacity.')
+						txt.append('Lets you go longer without water.')
 					if self.food[slot].rise_tiredness_max > 0:
-						txt.append('Raises your sleep capacity.')#I'm not happy with this phrase
+						txt.append('Lets you go longer without sleep.')
 					if self.food[slot].heal > 0:
 						txt.append('Can heal your wounds.')
 					if self.food[slot].heal > 0:
