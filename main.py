@@ -6976,7 +6976,7 @@ class mob():
 						message.add('You ligth up a fire.')
 						
 						for i in range (0,len(player.inventory.food)):
-							if player.inventory.food[i] != player.inventory.nothing: 
+							if player.inventory.food[i] != player.inventory.nothing and player.inventory.food[i].rotten == False: 
 								if player.inventory.food[i].techID == il.ilist['food'][4].techID: #this is a fish
 									message.add('You grill a fish.')
 									player.inventory.food[i] = deepcopy(il.ilist['food'][5])#turn a fish into a grilled fish
@@ -7115,7 +7115,7 @@ class mob():
 				
 				elif ui == 'b':
 					
-					bodyparts = ('Hold(R)', 'Hold(L)', 'Head', 'Body', 'Legs', 'Feet', 'Hand', 'Neck')
+					bodyparts = ('Hold(R)', 'Hold(L)', 'Head', 'Body', 'Legs', 'Feet', 'Hand', 'Neck', 'Axe', 'Pickaxe')
 					
 					for i in bodyparts:
 						
@@ -8300,8 +8300,8 @@ class player_class(mob):
 						if self.inventory.wearing[bodypart].state > 0:
 							self.inventory.wearing[bodypart].set_name()
 						else:
-							self.inventory.wearing[bodypart] = self.inventory.nothing
 							mes = 'Your '+self.inventory.wearing[bodypart].classe+' breaks!'
+							self.inventory.wearing[bodypart] = self.inventory.nothing
 							message.add(mes)
 							sfx.play('item_break')
 				else:
@@ -8315,8 +8315,8 @@ class player_class(mob):
 						if self.inventory.wearing[bodypart].state > 0:
 							self.inventory.wearing[bodypart].set_name()
 						else:
-							self.inventory.wearing[bodypart] = self.inventory.nothing
 							mes = 'Your '+self.inventory.wearing[bodypart].classe+' breaks!'
+							self.inventory.wearing[bodypart] = self.inventory.nothing
 							message.add(mes)
 							sfx.play('item_break')
 						
@@ -8373,8 +8373,8 @@ class player_class(mob):
 						if self.inventory.wearing['Neck'].state > 0:
 							self.inventory.wearing['Neck'].set_name()
 						else:
-							self.inventory.wearing['Neck'] = self.inventory.nothing
 							mes = 'Your '+self.inventory.wearing['Neck'].classe+' breaks!'
+							self.inventory.wearing['Neck'] = self.inventory.nothing
 							message.add(mes)
 							sfx.play('item_break')
 						
@@ -8384,8 +8384,8 @@ class player_class(mob):
 						if self.inventory.wearing['Hand'].state > 0:
 							self.inventory.wearing['Hand'].set_name()
 						else:
-							self.inventory.wearing['Hand'] = self.inventory.nothing
 							mes = 'Your '+self.inventory.wearing['Hand'].classe+' breaks!'
+							self.inventory.wearing['Hand'] = self.inventory.nothing
 							message.add(mes)
 							sfx.play('item_break')
 				else:
@@ -8400,8 +8400,8 @@ class player_class(mob):
 						if self.inventory.wearing['Neck'].state > 0:
 							self.inventory.wearing['Neck'].set_name()
 						else:
-							self.inventory.wearing['Neck'] = self.inventory.nothing
 							mes = 'Your '+self.inventory.wearing['Neck'].classe+' breaks!'
+							self.inventory.wearing['Neck'] = self.inventory.nothing
 							message.add(mes)
 							sfx.play('item_break')
 						
@@ -8410,8 +8410,8 @@ class player_class(mob):
 						if self.inventory.wearing['Hand'].state > 0:
 							self.inventory.wearing['Hand'].set_name()
 						else:
-							self.inventory.wearing['Hand'] = self.inventory.nothing
 							mes = 'Your '+self.inventory.wearing['Hand'].classe+' breaks!'
+							self.inventory.wearing['Hand'] = self.inventory.nothing
 							message.add(mes)
 							sfx.play('item_break')
 				
@@ -8496,8 +8496,8 @@ class player_class(mob):
 						if self.inventory.wearing['Hold(L)'].state > 0:
 							self.inventory.wearing['Hold(L)'].set_name()
 						else:
-							self.inventory.wearing['Hold(L)'] = self.inventory.nothing
 							mes = 'Your '+self.inventory.wearing['Hold(L)'].classe+' breaks!'
+							self.inventory.wearing['Hold(L)'] = self.inventory.nothing
 							message.add(mes)
 							sfx.play('item_break')
 					 
@@ -8530,8 +8530,8 @@ class player_class(mob):
 						if self.inventory.wearing['Hold(L)'].state > 0:
 							self.inventory.wearing['Hold(L)'].set_name()
 						else:
-							self.inventory.wearing['Hold(L)'] = self.inventory.nothing
 							mes = 'Your '+self.inventory.wearing['Hold(L)'].classe+' breaks!'
+							self.inventory.wearing['Hold(L)'] = self.inventory.nothing
 							message.add(mes)
 							sfx.play('item_break')
 			else:
@@ -8597,8 +8597,8 @@ class player_class(mob):
 						if self.inventory.wearing['Hold(R)'].state > 0:
 							self.inventory.wearing['Hold(R)'].set_name()
 						else:
-							self.inventory.wearing['Hold(R)'] = self.inventory.nothing
 							mes = 'Your '+self.inventory.wearing['Hold(R)'].classe+' breaks!'
+							self.inventory.wearing['Hold(R)'] = self.inventory.nothing
 							message.add(mes)
 							sfx.play('item_break')
 					 
@@ -8632,8 +8632,8 @@ class player_class(mob):
 						if self.inventory.wearing['Hold(R)'].state > 0:
 							self.inventory.wearing['Hold(R)'].set_name()
 						else:
-							self.inventory.wearing['Hold(R)'] = self.inventory.nothing
 							mes = 'Your '+self.inventory.wearing['Hold(R)'].classe+' breaks!'
+							self.inventory.wearing['Hold(R)'] = self.inventory.nothing
 							message.add(mes)
 							sfx.play('item_break')
 			
@@ -9197,7 +9197,7 @@ class inventory():
 					
 				if self.misc[slot].effect == 0: #identify
 					
-					bodyparts = ('Head','Body','Legs','Feet','Hand','Neck','Hold(R)', 'Hold(L)')
+					bodyparts = ('Head','Body','Legs','Feet','Hand','Neck','Hold(R)', 'Hold(L)', 'Axe', 'Pickaxe')
 					
 					for i in bodyparts:
 						if self.wearing[i] != self.nothing:
@@ -9207,11 +9207,11 @@ class inventory():
 						if self.equipment[j] != self.nothing:
 							self.equipment[j].identification()
 						
-					message.add('Now you aware about your equipment\'s states.')
+					message.add('Now you aware about your equipment\'s attributes.')
 						
 				elif self.misc[slot].effect == 1: #repair
 					
-					bodyparts = ('Head','Body','Legs','Feet','Hand','Neck','Hold(R)','Hold(L)')
+					bodyparts = ('Head','Body','Legs','Feet','Hand','Neck','Hold(R)','Hold(L)', 'Axe', 'Pickaxe')
 					final_bodyparts = []
 					
 					for i in bodyparts:
@@ -9853,17 +9853,45 @@ class inventory():
 				static_txt = True
 				
 				if category == 0:
-					txt = self.wearing[worn[slot]].classe
+					static_txt = False
+					txt = list(texts[self.wearing[worn[slot]].classe])
+					test = self.wearing[worn[slot]].state_addition()
+					if test == 'Unknown':
+						string = 'Value: Unknown'
+					else:
+						string = 'Value: ' + str(test)
+					txt.append(' ')
+					txt.append(string)
+					
 				elif category == 2:
 					if self.equipment[slot].name.find('[D]') != -1:#this is decorative clothing
 						txt = 'decorative_clothes'
 					else:
-						txt = self.equipment[slot].classe
+						static_txt = False
+						txt = list(texts[self.equipment[slot].classe])
+						test = self.equipment[slot].state_addition()
+						if test == 'Unknown':
+							string = 'Value: Unknown'
+						else:
+							string = 'Value: ' + str(test)	
+						txt.append(' ')
+						txt.append(string)
+					
+						
 				elif category == 1:
 					if self.wearing[worn[slot+8]].name.find('[D]') != -1:
 						txt = 'decorative_clothes'
 					else:
-						txt = self.wearing[worn[slot+8]].classe
+						static_txt = False
+						txt = list(texts[self.wearing[worn[slot+8]].classe])
+						test = self.wearing[worn[slot+8]].state_addition()
+						if test == 'Unknown':
+							string = 'Value: Unknown'
+						else:
+							string = 'Value: ' + str(test)
+						txt.append(' ')
+						txt.append(string)
+							
 				elif category == 3:
 					static_txt = False
 					txt = []
@@ -10285,7 +10313,7 @@ class time_class():
 										world.maplist[player.pos[2]][player.on_map].set_monster_strength(x,y,player.pos[2])
 										try:
 											if player.difficulty == 4:
-												self.npcs[spawnpoints[ran2][1]][spawnpoints[ran2][0]].AI_style = 'ignore'
+												self.npcs[y][x].AI_style = 'ignore'
 										except:
 											None
 										print(world.maplist[player.pos[2]][player.on_map].npcs[y][x].name, (x,y), str(world.maplist[player.pos[2]][player.on_map].monster_count)+'/'+str(monster_max))

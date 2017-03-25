@@ -31,3 +31,7 @@ class attribute():
 		self.tiredness = tiredness_max
 		self.tiredness_max = tiredness_max
 		self.pickaxe_power = pickaxe_power
+		
+	def addition(self):
+		c = self.p_strength + self.p_defense + self.m_strength + self.m_defense + self.luck + self.pickaxe_power + self.max_lp + self.max_mp
+		return c

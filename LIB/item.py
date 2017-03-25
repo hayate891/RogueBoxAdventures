@@ -181,6 +181,13 @@ class item_wear(item):
 			return True
 			
 		return False
+	
+	def state_addition(self):
+		if self.known == True:
+			return self.attribute.addition()
+		else:
+			return 'Unknown'
+			
 		
 class item_food(item):
 	
