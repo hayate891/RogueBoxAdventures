@@ -6473,11 +6473,11 @@ class mob():
 					message.add('You feel refreshed.')
 					sleep = False
 					
-				if int((player.attribute.hunger_max*100)/player.attribute.hunger) < 11:
+				if int((player.attribute.hunger_max*100)/max(player.attribute.hunger,1)) < 11:
 					message.add('You feel hungry.')
 					sleep = False
 					
-				if int((player.attribute.thirst_max*100)/player.attribute.thirst) < 11:
+				if int((player.attribute.thirst_max*100)/max(player.attribute.thirst,1)) < 11:
 					message.add('You feel thirsty.')
 					sleep = False
 					
