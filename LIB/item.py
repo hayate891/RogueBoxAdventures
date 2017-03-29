@@ -28,9 +28,9 @@ class item_wear(item):
 		
 		item.__init__(self,inv_slot)
 		
-		materiales = ('wooden','wooden','wooden','wooden','wooden','wooden', 'tin', 'tin', 'tin', 'tin', 'tin', 'copper', 'copper', 'copper', 'copper', 'steel' ,'steel' ,'steel' ,'titan', 'titan', 'magnicum', '')
+		materiales = ('wooden','wooden','wooden','wooden','wooden','wooden', 'tin', 'tin', 'tin', 'tin', 'tin', 'bronze', 'bronze', 'bronze', 'bronze', 'steel' ,'steel' ,'steel' ,'titan', 'titan', 'magnicum', '')
 		kind = {'spear' : 1 , 'sword' : 2 , 'axe' : 3 , 'hammer' : 4 ,'shoes' : 1 , 'cuisse' : 2, 'helmet' : 3 , 'armor' : 4, 'wand' : 1, 'rune' : 2, 'rune staff' : 3, 'artefact' : 4, 'ring' : 2, 'amulet' : 4, 'necklace' : 2, 'talisman' : 4, 'pickaxe' : 1} 
-		material_boni = {'wooden' : 1, 'tin' : 2, 'copper' : 3, 'steel' : 4, 'titan' : 5, 'magnicum' : 6}
+		material_boni = {'wooden' : 1, 'tin' : 2, 'bronze' : 3, 'steel' : 4, 'titan' : 5, 'magnicum' : 6}
 		
 		self.classe = classe
 		self.material = materiales[material]
