@@ -52,7 +52,7 @@ for t in sys.argv:
 		rf = open(rf_path,'w')
 		rf.write('#This file was generated automatically. Please don\'t change anything.\n')
 		rf.write('cd ' + p + '\n')
-		rf.write('python ' + p + os.sep + 'main.py')
+		rf.write('python ' + p + os.sep + 'run.py')
 		
 		sys_com = 'chmod +x ' + p + os.sep + 'rba.desktop'
 		os.system(sys_com)
@@ -1379,6 +1379,8 @@ class g_screen():
 			string = 'Generate desert...'
 		elif num == 19:
 			string = 'Initialize level...'
+		elif num == 20:
+			string = 'Please use run.py/run.exe'
 		
 		######add more here
 		
@@ -10313,10 +10315,10 @@ class time_class():
 										world.maplist[player.pos[2]][player.on_map].set_monster_strength(x,y,player.pos[2])
 										try:
 											if player.difficulty == 4:
-												self.npcs[y][x].AI_style = 'ignore'
+												world.maplist[player.pos[2]][player.on_map].npcs[y][x].AI_style = 'ignore'
 										except:
 											None
-										print(world.maplist[player.pos[2]][player.on_map].npcs[y][x].name, (x,y), str(world.maplist[player.pos[2]][player.on_map].monster_count)+'/'+str(monster_max))
+										print(world.maplist[player.pos[2]][player.on_map].npcs[y][x].name, (x,y), str(world.maplist[player.pos[2]][player.on_map].monster_count)+'/'+str(monster_max), world.maplist[player.pos[2]][player.on_map].npcs[y][x].AI_style)
 										world.maplist[player.pos[2]][player.on_map].monster_count += 1
 							world.maplist[player.pos[2]][player.on_map].countdowns[i].countfrom = random.randint(5,60)
 						
@@ -10625,8 +10627,8 @@ def main():
 				if exitgame == True:
 					running = False
 					playing = False
-				
-if __name__ == '__main__':
+
+if __name__ != '__main__':
 	
 	everything_fine = True
 	
@@ -10648,4 +10650,7 @@ if __name__ == '__main__':
 	finally:
 		if everything_fine == False:
 			screen.render_crash()
-		
+else:
+	screen = g_screen()
+	screen.render_load(20)	
+	sleep(5)	
