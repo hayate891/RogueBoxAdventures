@@ -3130,6 +3130,53 @@ class maP():
 			if count == 0:
 				run = False
 	
+	def float_civilisation(self,start_x,start_y):
+		
+		print ('Start float')
+		
+		tm = []
+		
+		for y in range(0,max_map_size):
+			tm.append([])
+			for x in range(0,max_map_size):
+				tm[y].append(0)
+		
+		tm[start_y][start_x] = 1
+				
+		run = True
+		total_count = 1
+		
+		while run:
+			
+			count = 0
+			
+			for yy in range(0,max_map_size):
+				for xx in range(0,max_map_size):
+					
+					#print(yy,xx)
+					
+					if tm[yy][xx] == 1:
+						
+						for yyy in range(yy-1,yy+2):
+							for xxx in range(xx-1,xx+2):
+								
+								print(xxx,yyy)
+								try:
+									if tm[yyy][xxx] == 0 and self.tilemap[yyy][xxx].move_group == 'soil' and self.tilemap[yyy][xxx].civilisation == True:
+										tm[yyy][xxx] = 1
+										count += 1
+										total_count += 1
+										print(total_count)
+										#if self.tilemap[yyy][xxx].civilisation == False and tm[yyy][xxx] == 1:
+											#print('no living room' + str(xxx) + str(yyy))
+											#return False
+								except:
+									None
+					
+				if count == 0:
+					run = False
+		return total_count
+	
 	def get_quarter_size(self,startx,starty):
 		
 		#this funktion gives back a tulpel with the width and height of a quarter made out of the same tile like the start position
@@ -3165,8 +3212,7 @@ class maP():
 				
 				if x == 0 or x == max_map_size-1 or y == 0 or y == max_map_size-1:
 					self.tilemap[y][x] = tile
-
-			
+		
 	def cut(self, minx, maxx, miny, maxy, replace):
 		#everything that is not between min and mx is replaced abainst a tile
 		
@@ -9082,6 +9128,10 @@ class inventory():
 						message.add('You placed a %s' %(self.misc[slot].name))
 					if self.misc[slot].name == 'Bomb':
 						world.maplist[player.pos[2]][player.on_map].countdowns.append(countdown('bomb3',player.pos[0],player.pos[1],1))
+					if self.misc[slot].name == 'Bed':
+						ran = random.randint(5,60)
+						print ('spawn_villager '+str(ran))
+						world.maplist[player.pos[2]][player.on_map].countdowns.append(countdown('spawn_villager',player.pos[0],player.pos[1],ran))
 					self.misc[slot] = self.nothing
 					return True #if use returns a true this means after this action the inventory is closed. this action needs a turn
 				else:
@@ -10296,6 +10346,8 @@ class time_class():
 							if map_type == 'grot':
 								if world.maplist[player.pos[2]][player.on_map].tilemap[y][x].move_group == 'low_liquid':
 									spawn_here = True
+							if world.maplist[player.pos[2]][player.on_map].tilemap[y][x].civilisation == True:
+								spawn_here = False
 							
 							if world.maplist[player.pos[2]][player.on_map].npcs[y][x] == 0:
 								no_monsters = True
@@ -10322,6 +10374,26 @@ class time_class():
 										world.maplist[player.pos[2]][player.on_map].monster_count += 1
 							world.maplist[player.pos[2]][player.on_map].countdowns[i].countfrom = random.randint(5,60)
 						
+						elif world.maplist[player.pos[2]][player.on_map].countdowns[i].kind == 'spawn_villager' and world.maplist[player.pos[2]][player.on_map].countdowns[i].count < 1:
+							
+							x = world.maplist[player.pos[2]][player.on_map].countdowns[i].x
+							y = world.maplist[player.pos[2]][player.on_map].countdowns[i].y
+							
+							if world.maplist[player.pos[2]][player.on_map].tilemap[y][x].techID == tl.tlist['functional'][8].techID:#this is a bed
+								test = world.maplist[player.pos[2]][player.on_map].float_civilisation(x,y)
+								print(test)
+								if test > 5 and world.maplist[player.pos[2]][player.on_map].npcs[y][x] == 0:
+									ran = random.randint(0,len(ml.mlist['civilian'])-1)
+									world.maplist[player.pos[2]][player.on_map].npcs[y][x] = deepcopy(ml.mlist['civilian'][ran])
+									world.maplist[player.pos[2]][player.on_map].set_monster_strength(x,y,player.pos[2])
+									mes = 'A '+world.maplist[player.pos[2]][player.on_map].npcs[y][x].name+' arrived.'
+									message.add(mes)
+									print(world.maplist[player.pos[2]][player.on_map].npcs[y][x].name, (x,y), str(world.maplist[player.pos[2]][player.on_map].monster_count)+'/'+str(monster_max), world.maplist[player.pos[2]][player.on_map].npcs[y][x].AI_style)
+									world.maplist[player.pos[2]][player.on_map].monster_count += 1
+									world.maplist[player.pos[2]][player.on_map].countdowns[i] = 'del'
+								else:
+									world.maplist[player.pos[2]][player.on_map].countdowns[i].countfrom = random.randint(5,60)
+									
 							
 		newcountdown = []
 		
