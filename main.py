@@ -998,7 +998,7 @@ class g_screen():
 		else:
 			s.blit(gra_files.gdic['display'][46],(48,39))
 			magic_string = 'WEAPONS_' + player.inventory.wearing['Hold(L)'].material + '_' + player.inventory.wearing['Hold(L)'].classe
-			if player.inventory.wearing['Hold(R)'].classe != 'runestaff':
+			if player.inventory.wearing['Hold(L)'].classe != 'rune staff':
 				s.blit(gra_files.gdic['char'][magic_string],(42,39))
 			else:
 				h_sur = pygame.Surface((32,19))
@@ -1006,7 +1006,7 @@ class g_screen():
 				h_sur.blit(gra_files.gdic['char'][magic_string],(0,0))
 				h_sur.set_colorkey((255,0,255),pygame.RLEACCEL)
 				h_sur = h_sur.convert_alpha()
-				s.blit(h_sur,(37,48))	
+				s.blit(h_sur,(42,48))	
 			s.blit(gra_files.gdic['display'][47],(48,39))
 			magic_state = (15*player.inventory.wearing['Hold(L)'].state)/100
 			help_sur = pygame.Surface((magic_state,1))
@@ -3131,9 +3131,7 @@ class maP():
 				run = False
 	
 	def float_civilisation(self,start_x,start_y):
-		
-		print ('Start float')
-		
+				
 		tm = []
 		
 		for y in range(0,max_map_size):
@@ -3153,8 +3151,6 @@ class maP():
 			for yy in range(0,max_map_size):
 				for xx in range(0,max_map_size):
 					
-					#print(yy,xx)
-					
 					if tm[yy][xx] == 1:
 						
 						for yyy in range(yy-1,yy+2):
@@ -3166,10 +3162,6 @@ class maP():
 										tm[yyy][xxx] = 1
 										count += 1
 										total_count += 1
-										print(total_count)
-										#if self.tilemap[yyy][xxx].civilisation == False and tm[yyy][xxx] == 1:
-											#print('no living room' + str(xxx) + str(yyy))
-											#return False
 								except:
 									None
 					
@@ -10388,13 +10380,32 @@ class time_class():
 									world.maplist[player.pos[2]][player.on_map].set_monster_strength(x,y,player.pos[2])
 									mes = 'A '+world.maplist[player.pos[2]][player.on_map].npcs[y][x].name+' arrived.'
 									message.add(mes)
-									print(world.maplist[player.pos[2]][player.on_map].npcs[y][x].name, (x,y), str(world.maplist[player.pos[2]][player.on_map].monster_count)+'/'+str(monster_max), world.maplist[player.pos[2]][player.on_map].npcs[y][x].AI_style)
+									world.maplist[player.pos[2]][player.on_map].countdowns.append(countdown('despawn_villager',x,y,random.randint(5,60),world.maplist[player.pos[2]][player.on_map].npcs[y][x].personal_id))
+									print(world.maplist[player.pos[2]][player.on_map].countdowns[-1].kind, world.maplist[player.pos[2]][player.on_map].countdowns[-1].count)
 									world.maplist[player.pos[2]][player.on_map].monster_count += 1
 									world.maplist[player.pos[2]][player.on_map].countdowns[i] = 'del'
 								else:
-									world.maplist[player.pos[2]][player.on_map].countdowns[i].countfrom = random.randint(5,60)
+									world.maplist[player.pos[2]][player.on_map].countdowns[i].count = random.randint(5,60)
 									
+						elif world.maplist[player.pos[2]][player.on_map].countdowns[i].kind == 'despawn_villager' and world.maplist[player.pos[2]][player.on_map].countdowns[i].count < 1:
 							
+							x = world.maplist[player.pos[2]][player.on_map].countdowns[i].x
+							y = world.maplist[player.pos[2]][player.on_map].countdowns[i].y
+							
+							test = world.maplist[player.pos[2]][player.on_map].float_civilisation(x,y)
+							
+							if test < 5 or world.maplist[player.pos[2]][player.on_map].tilemap[y][x].techID != tl.tlist['functional'][8].techID:
+								print('Despawning')
+								for yy in range(0,max_map_size):
+									for xx in range(0,max_map_size):
+										if world.maplist[player.pos[2]][player.on_map].npcs[yy][xx].persistent_id == world.maplist[player.pos[2]][player.on_map].countdowns[i].data:
+											mes = 'A '+world.maplist[player.pos[2]][player.on_map].npcs[yy][xx].name+' has left.'
+											message.add(mes)
+											world.maplist[player.pos[2]][player.on_map].npcs[yy][xx] = 0
+											world.maplist[player.pos[2]][player.on_map].monster_count -= 1
+											world.maplist[player.pos[2]][player.on_map].countdowns[i] = 'del'
+							else:
+								world.maplist[player.pos[2]][player.on_map].countdowns[i].count = random.randint(5,60)
 		newcountdown = []
 		
 		for k in world.maplist[player.pos[2]][player.on_map].countdowns:
@@ -10725,4 +10736,5 @@ if __name__ != '__main__':
 else:
 	screen = g_screen()
 	screen.render_load(20)	
-	sleep(5)	
+	sleep(5)
+	import run	
