@@ -194,6 +194,9 @@ class g_screen():
 		else:
 			str_ext = ''
 		
+		if __name__ == '__main__':
+			show_logo = False
+				
 		if show_logo == True:
 			display_path = basic_path +os.sep + 'GRAPHIC' + os.sep + 'DISPLAY' + os.sep
 			ran = random.randint(0,4)
@@ -4564,6 +4567,13 @@ class maP():
 				
 				for z in range (0,num_container):
 					
+					c_type = container_type
+					
+					if c_type == 'chest':
+						ch = random.randint(0,99)
+						if ch < 5:
+							c_type = 'fridge'
+					
 					place = self.find_any(on_tile)
 					
 					inventory = []
@@ -4572,7 +4582,7 @@ class maP():
 					
 					for t in range (0,num_items):
 					
-						if container_type == 'chest':
+						if c_type == 'chest':
 							
 							coin = random.randint(0,1)
 							
@@ -4610,7 +4620,7 @@ class maP():
 								ran = random.randint(0,len(items)-1)
 								inventory.append(deepcopy(items[ran]))
 									
-						elif container_type == 'remains':
+						elif c_type == 'remains':
 						
 							classes = ['sword', 'axe', 'hammer', 'spear', 'helmet', 'armor', 'cuisse', 'shoes', 'wand', 'rune', 'rune staff', 'artefact', 'amulet', 'ring', 'talisman', 'necklace', 'pickaxe']
 						
@@ -4624,18 +4634,27 @@ class maP():
 					
 							item = item_wear(classes[class_num], material, plus, state, curses[curse_num], False)
 							inventory.append(item)
+						
+						elif c_type == 'fridge':
+							ran = random.randint(0,len(il.ilist['food']))
+							inventory.append(deepcopy(il.ilist['food'][ran]))
 					
-					if container_type == 'chest':
-					
+					if c_type == 'chest':
 						self.add_container(inventory, place[0], place[1])
 						replace = self.tilemap[place[1]][place[0]]
 						self.tilemap[place[1]][place[0]] = deepcopy(tl.tlist['functional'][4])#chest
 						self.tilemap[place[1]][place[0]].replace = replace
 					
-					elif container_type == 'remains':
+					elif c_type == 'remains':
 						replace_tile = self.tilemap[place[1]][place[0]]
 						self.add_container(inventory, place[0], place[1])
 						self.tilemap[place[1]][place[0]] = deepcopy(tl.tlist['functional'][6])#remains
+						self.tilemap[place[1]][place[0]].replace = replace_tile
+						
+					elif c_type == 'fridge':
+						replace_tile = self.tilemap[place[1]][place[0]]
+						self.add_container(inventory, place[0], place[1])
+						self.tilemap[place[1]][place[0]] = deepcopy(tl.tlist['functional'][25])#fridge
 						self.tilemap[place[1]][place[0]].replace = replace_tile
 
 	def exchange_when_surrounded(self, tile_check, tile_replace, number_neighbors):
@@ -4712,6 +4731,8 @@ class maP():
 		#original
 		self.add_container([pick,axe,amo,il.ilist['misc'][3],il.ilist['misc'][2],il.ilist['misc'][51],il.ilist['clothe'][ran_tunica]],startx,starty-1)
 		#/original
+		
+		# fridge demo: self.add_container([pick,axe,amo,il.ilist['misc'][3],il.ilist['misc'][2],il.ilist['misc'][52],il.ilist['clothe'][ran_tunica]],startx,starty-1)
 		
 		# build demo: self.add_container([pick,axe,amo,il.ilist['misc'][3],il.ilist['misc'][16],il.ilist['misc'][22],il.ilist['misc'][23],il.ilist['clothe'][ran_tunica]],startx,starty-1)
 		
@@ -8271,14 +8292,9 @@ class player_class(mob):
 					for y in range (-ymin,ymax+1):
 							for x in range (-xmin,xmax+1):
 					
-								if player.pos[2] == 0:
-									if world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]+y][player.pos[0]+x].civilisation == True and world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]+y][player.pos[0]+x].build_here == True:
-										world.maplist[player.pos[2]][player.on_map].containers[player.pos[1]+y][player.pos[0]+x] = 0 #first of all erase all items that are at this pos
-										world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]+y][player.pos[0]+x] = tl.tlist['local'][0] #set gras here
-								elif player.pos[2] != 0 and world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]+y][player.pos[0]+x].build_here == True:
-									if world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]+y][player.pos[0]+x].civilisation == True:
-										world.maplist[player.pos[2]][player.on_map].containers[player.pos[1]+y][player.pos[0]+x] = 0 #first of all erase all items that are at this pos
-										world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]+y][player.pos[0]+x] = tl.tlist['global_caves'][0] #set cave ground here	
+								if world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]+y][player.pos[0]+x].civilisation == True and world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]+y][player.pos[0]+x].build_here == True:
+									world.maplist[player.pos[2]][player.on_map].containers[player.pos[1]+y][player.pos[0]+x] = 0 #first of all erase all items that are at this pos
+									world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]+y][player.pos[0]+x] = tl.tlist['functional'][26] #set rubble here
 				
 				run = False
 			
@@ -8972,6 +8988,27 @@ class inventory():
 			
 			self.inv_mes = 'You can\'t! It\'s cursed!'
 			self.wearing[worn[slot]].identification()
+	
+	def drop_check(self,x,y,z, check_exceptions=True):
+		#This function chencks if a tile is suitable to drop a item on it
+		exceptions = (tl.tlist['functional'][3],#empty chest
+					tl.tlist['functional'][4],#chest
+					tl.tlist['functional'][5],#stack
+					tl.tlist['functional'][24],#empty fridge
+					tl.tlist['functional'][25])#fridge
+		
+		if world.maplist[z][player.on_map].tilemap[y][x].replace != None:
+			exception_found = False
+			if check_exceptions == True:
+				for i in exceptions:
+					if world.maplist[z][player.on_map].tilemap[y][x].techID == i.techID:
+						exception_found = True
+			if exception_found == True:
+				return True
+			else: 
+				return False
+		else:
+			return True
 			
 	def drop(self,category, slot):
 		
@@ -8980,18 +9017,26 @@ class inventory():
 		try:
 			field_full = False
 			sacrifice = False
+			fridge = False
+			exception = False
 			
 			string = 'foo'
 			
-			if world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]].replace != None and world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]].techID != tl.tlist['functional'][3].techID and world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]].techID != tl.tlist['functional'][4].techID and world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]].techID != tl.tlist['functional'][5].techID: #only at fields with empty ground the player can drop something. exeptions are full chests, empty chests and stacks. 
+			if not self.drop_check(player.pos[0],player.pos[1],player.pos[2]):
 				field_full = True
 				string = 'Not here!'
+			
+			if self.drop_check(player.pos[0],player.pos[1],player.pos[2],False) != self.drop_check(player.pos[0],player.pos[1],player.pos[2]):
+				exception = True
 				
-			if world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]].techID == tl.tlist['functional'][3].techID or world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]].techID == tl.tlist['functional'][4].techID or world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]].techID == tl.tlist['functional'][5].techID:
+			if self.drop_check(player.pos[0],player.pos[1],player.pos[2]):
 				if 	world.maplist[player.pos[2]][player.on_map].containers[player.pos[1]][player.pos[0]] != 0: #there are already things here
 					if len(world.maplist[player.pos[2]][player.on_map].containers[player.pos[1]][player.pos[0]].items) > 6:
 						field_full = True
 						string = 'There are already too many items at this place!'
+			
+			if world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]].techID == tl.tlist['functional'][24].techID or world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]].techID == tl.tlist['functional'][25].techID: #this is a Fridge (full or empty)
+				fridge = True
 			
 			if world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]].techID == tl.tlist['functional'][15].techID:#this is a altar 
 				field_full = False
@@ -9009,7 +9054,7 @@ class inventory():
 				if world.maplist[player.pos[2]][player.on_map].containers[player.pos[1]][player.pos[0]] == 0: #if there is no container
 					world.maplist[player.pos[2]][player.on_map].add_container([self.nothing],player.pos[0],player.pos[1],False) #make new container
 				
-					if world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]].techID != tl.tlist['functional'][3].techID and sacrifice == False: #if there is no empty chest at this pos and this is no sacrifice make a stack
+					if world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]].techID != tl.tlist['functional'][3].techID and sacrifice == False and exception == False: #if there is no empty chest at this pos and this is no sacrifice and no other exception make a stack
 						help_tile = deepcopy(world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]]) #get old tile at player pos
 						world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]] = deepcopy(tl.tlist['functional'][5]) #set new tile on player pos
 						world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]].replace = help_tile #set replace tile at the new position to the old tile at this pos
@@ -9017,27 +9062,40 @@ class inventory():
 						replace = deepcopy(world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]].replace)
 						world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]] = deepcopy(tl.tlist['functional'][4])#else make a full chest out of the empty one
 						world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]].replace = replace
+					elif world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]].techID == tl.tlist['functional'][24].techID and category == 3:
+						replace = deepcopy(world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]].replace)
+						world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]] = deepcopy(tl.tlist['functional'][25])#else make a full fridge out of the empty one
+						world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]].replace = replace
 					
-				if category == 0 or category == 1:
+				if (category == 0 or category == 1) and fridge == False:
 					world.maplist[player.pos[2]][player.on_map].containers[player.pos[1]][player.pos[0]].items.append(self.wearing[worn[slot]])
 					if self.wearing[worn[slot]] != self.nothing: #this slot isn't empty
 						self.inv_mes = 'You drop a %s.' %(self.wearing[worn[slot]].name)
 					self.wearing[worn[slot]] = self.nothing
-				elif category == 2:
+				elif fridge == True:
+					self.inv_mes = 'Only food can be stored in a fridge!'
+					
+				if category == 2 and fridge == False:
 					world.maplist[player.pos[2]][player.on_map].containers[player.pos[1]][player.pos[0]].items.append(self.equipment[slot])
 					if self.equipment[slot] != self.nothing:
 						self.inv_mes = 'You drop a %s.' %(self.equipment[slot].name)
 					self.equipment[slot] = self.nothing
-				elif category == 3:
+				elif fridge == True:
+					self.inv_mes = 'Only food can be stored in a fridge!'
+					
+				if category == 3:
 					world.maplist[player.pos[2]][player.on_map].containers[player.pos[1]][player.pos[0]].items.append(self.food[slot])
 					if self.food[slot] != self.nothing:
 						self.inv_mes = 'You drop a %s.' %(self.food[slot].name)
 					self.food[slot] = self.nothing
-				elif category == 4:
+				
+				if category == 4 and fridge == False:
 					world.maplist[player.pos[2]][player.on_map].containers[player.pos[1]][player.pos[0]].items.append(self.misc[slot])
 					if self.misc[slot] != self.nothing:
 						self.inv_mes = 'You drop a %s.' %(self.misc[slot].name)
 					self.misc[slot] = self.nothing
+				elif fridge == True:
+					self.inv_mes = 'Only food can be stored in a fridge!'
 				
 				for i in range (0, len(world.maplist[player.pos[2]][player.on_map].containers[player.pos[1]][player.pos[0]].items)): #check for empty slots and errase them if necessary ---------- unsure because the -1
 					try:#try-except is needed because the length of the list can change
@@ -9122,7 +9180,6 @@ class inventory():
 						world.maplist[player.pos[2]][player.on_map].countdowns.append(countdown('bomb3',player.pos[0],player.pos[1],1))
 					if self.misc[slot].name == 'Bed':
 						ran = random.randint(5,60)
-						print ('spawn_villager '+str(ran))
 						world.maplist[player.pos[2]][player.on_map].countdowns.append(countdown('spawn_villager',player.pos[0],player.pos[1],ran))
 					self.misc[slot] = self.nothing
 					return True #if use returns a true this means after this action the inventory is closed. this action needs a turn
@@ -10198,12 +10255,16 @@ class container():
 					
 				if len(self.items) == 0 and tile_change == True:
 					
-					if world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]].techID != tl.tlist['functional'][4].techID:#this is no chest
-						world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]] = world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]].replace
-					else:
+					if world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]].techID == tl.tlist['functional'][4].techID:#this is a chest
 						replace = deepcopy(world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]].replace)
 						world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]] = deepcopy(tl.tlist['functional'][3])
 						world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]].replace = replace
+					elif world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]].techID == tl.tlist['functional'][25].techID:#this is a fridge
+						replace = deepcopy(world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]].replace)
+						world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]] = deepcopy(tl.tlist['functional'][24])
+						world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]].replace = replace
+					else:
+						world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]] = world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]].replace
 						
 					world.maplist[player.pos[2]][player.on_map].containers[player.pos[1]][player.pos[0]] = 0
 					message.add('You looted everything.')
@@ -10398,12 +10459,12 @@ class time_class():
 								print('Despawning')
 								for yy in range(0,max_map_size):
 									for xx in range(0,max_map_size):
-										if world.maplist[player.pos[2]][player.on_map].npcs[yy][xx].persistent_id == world.maplist[player.pos[2]][player.on_map].countdowns[i].data:
+										if world.maplist[player.pos[2]][player.on_map].npcs[yy][xx].personal_id == world.maplist[player.pos[2]][player.on_map].countdowns[i].data:
 											mes = 'A '+world.maplist[player.pos[2]][player.on_map].npcs[yy][xx].name+' has left.'
 											message.add(mes)
 											world.maplist[player.pos[2]][player.on_map].npcs[yy][xx] = 0
 											world.maplist[player.pos[2]][player.on_map].monster_count -= 1
-											world.maplist[player.pos[2]][player.on_map].countdowns[i] = 'del'
+								world.maplist[player.pos[2]][player.on_map].countdowns[i] = 'del'
 							else:
 								world.maplist[player.pos[2]][player.on_map].countdowns[i].count = random.randint(5,60)
 		newcountdown = []
@@ -10734,7 +10795,4 @@ if __name__ != '__main__':
 		if everything_fine == False:
 			screen.render_crash()
 else:
-	screen = g_screen()
-	screen.render_load(20)	
-	sleep(5)
 	import run	

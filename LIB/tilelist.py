@@ -443,13 +443,14 @@ class tilelist():
 		t=tile(techID = techID,
 					name = 'Empty chest',
 					tile_color = 'white',
-					use_group = 'None',
+					use_group = 'gather',
 					move_group = 'soil',
 					grow_group = 'None',
 					damage = 0, 
-					move_message = 'Here is a empty chest.', 
+					move_message = 'You stand in front of a empty chest.', 
 					damage_message = None,
 					civilisation = True,
+					conected_items = il.ilist['misc'][1],
 					tile_pos = (5,10))
 		self.tlist['functional'].append(t)
 		techID+=1
@@ -461,7 +462,7 @@ class tilelist():
 					move_group = 'soil',
 					grow_group = 'None',
 					damage = 0, 
-					move_message = 'Here is a chest.', 
+					move_message = 'You stand in front of a chest.', 
 					damage_message = None,
 					civilisation = True,
 					tile_pos = (6,9))
@@ -579,7 +580,7 @@ class tilelist():
 		techID+=1
 		#13
 		t=tile(techID = techID,
-					name = 'alchemist\'s workshop',
+					name = 'Alchemist\'s workshop',
 					tile_color = 'white',
 					use_group = 'alchemist',
 					move_group = 'soil',
@@ -637,13 +638,14 @@ class tilelist():
 		t=tile(techID = techID,
 					name = 'Wooden seat',
 					tile_color = 'white',
-					use_group = 'None',
+					use_group = 'gather',
 					move_group = 'soil',
 					grow_group = 'None',
 					damage = 0, 
 					move_message = 'Here is a comfortable looking wooden seat.', 
 					damage_message = None,
 					civilisation = True,
+					conected_items = il.ilist['misc'][11],
 					tile_pos = (3,6))
 		self.tlist['functional'].append(t)
 		techID+=1
@@ -651,13 +653,14 @@ class tilelist():
 		t=tile(techID = techID,
 					name = 'Stone seat',
 					tile_color = 'white',
-					use_group = 'None',
+					use_group = 'gather',
 					move_group = 'soil',
 					grow_group = 'None',
 					damage = 0, 
 					move_message = 'Here is a comfortable looking stone seat.', 
 					damage_message = None,
 					civilisation = True,
+					conected_items = il.ilist['misc'][12],
 					tile_pos = (3,7))
 		self.tlist['functional'].append(t)
 		techID+=1
@@ -731,6 +734,49 @@ class tilelist():
 					move_message = 'You stand in front of a legendary master forge.', 
 					damage_message = None,
 					tile_pos = (0,6))
+		self.tlist['functional'].append(t)
+		techID+=1
+		#24
+		t=tile(techID = techID,
+					name = 'Empty fridge',
+					tile_color = 'white',
+					use_group = 'gather',
+					move_group = 'soil',
+					grow_group = 'None',
+					damage = 0, 
+					move_message = 'You stand in front of a empty... fridge?!', 
+					damage_message = None,
+					civilisation = True,
+					conected_items = (il.ilist['misc'][52]),
+					tile_pos = (2,11))
+		self.tlist['functional'].append(t)
+		techID+=1
+		#25
+		t=tile(techID = techID,
+					name = 'Fridge',
+					tile_color = 'white',
+					use_group = 'container',
+					move_group = 'soil',
+					grow_group = 'None',
+					damage = 0, 
+					move_message = 'You stand in front of a... fridge?!', 
+					damage_message = None,
+					civilisation = True,
+					tile_pos = (1,11))
+		self.tlist['functional'].append(t)
+		techID+=1
+		#26
+		t=tile(techID = techID,
+					name = 'Rubble',
+					tile_color = 'white',
+					use_group = 'None',
+					move_group = 'soil',
+					grow_group = 'None',
+					damage = 0, 
+					move_message = 'You walk over rubble.', 
+					damage_message = None,
+					civilisation = True,
+					tile_pos = (3,11))
 		self.tlist['functional'].append(t)
 		techID+=1
 	
