@@ -232,7 +232,25 @@ class g_files():
 		
 		#built
 		
-		built_names = ('wall_false','wall_true','door_false','door_true','floor_false','floor_true','wall_over','floor_over','door_over','remove','stairup_true','stairup_false','stairdown_true','stairdown_false','agriculture_false','agriculture_true','agriculture_over')
+		built_names = ('wall_false',#0
+						'wall_true',#1
+						'door_false',#2
+						'door_true',#3
+						'floor_false',#4
+						'floor_true',#5
+						'wall_over',#6
+						'floor_over',#7
+						'door_over',#8
+						'remove',#9
+						'stairup_true',#10
+						'stairup_false',#11
+						'stairdown_true',#12
+						'stairdown_false',#13
+						'agriculture_false',#14
+						'agriculture_true',#15
+						'agriculture_over',#16
+						'place_false',#17
+						'place_true')#18
 		
 		for c in built_names:
 			i_name = built_path + c + '.png'

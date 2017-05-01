@@ -1445,6 +1445,10 @@ class g_screen():
 					else: 
 						built_here = 0
 						
+					if world.maplist[player.pos[2]][player.on_map].npcs[player.pos[1]+y][player.pos[0]+x] != 0:
+						built_here = False
+							
+						
 					if world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]+y][player.pos[0]+x].build_here == False:
 						if built_here == 1:
 							price -= 2 
@@ -1548,7 +1552,7 @@ class g_screen():
 			for y in range (-ymin,ymax+1):
 				for x in range (-xmin,xmax+1):
 				
-					if world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]+y][player.pos[0]+x].move_group == 'soil' and world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]+y][player.pos[0]+x].damage == False and world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]+y][player.pos[0]+x].civilisation == False and world.maplist[player.pos[2]][player.on_map].npcs[player.pos[1]+y][player.pos[0]+x] == 0:
+					if world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]+y][player.pos[0]+x].move_group == 'soil' and world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]+y][player.pos[0]+x].damage == False and world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]+y][player.pos[0]+x].civilisation == False:
 						built_here = 1
 						price += 2
 					elif world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]+y][player.pos[0]+x].civilisation == True:
@@ -1650,6 +1654,9 @@ class g_screen():
 				price += 1
 			else: 
 				built_here = 0
+				
+			if world.maplist[player.pos[2]][player.on_map].npcs[player.pos[1]+ymin][player.pos[0]+xmin] != 0:
+						built_here = False
 						
 			if world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]+ymin][player.pos[0]+xmin].build_here == False:
 				if built_here == 1:
@@ -1895,7 +1902,7 @@ class g_screen():
 			for y in range (-ymin,ymax+1):
 				for x in range (-xmin,xmax+1):
 				
-					if world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]+y][player.pos[0]+x].move_group == 'soil' and world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]+y][player.pos[0]+x].damage == False and world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]+y][player.pos[0]+x].civilisation == False and world.maplist[player.pos[2]][player.on_map].npcs[player.pos[1]+y][player.pos[0]+x] == 0:
+					if world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]+y][player.pos[0]+x].move_group == 'soil' and world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]+y][player.pos[0]+x].damage == False and world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]+y][player.pos[0]+x].civilisation == False:
 						built_here = 1
 						price += 1
 					elif world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]+y][player.pos[0]+x].civilisation == True:
@@ -2045,6 +2052,157 @@ class g_screen():
 		pygame.display.flip()
 		
 		return (wood_need,stone_need)
+	
+	def render_place(self,tile,use_name):
+		
+		global player
+		
+		x = player.pos[0]
+		y = player.pos[1]
+		
+		if low_res == False:
+			start_pos_x = 240 #the center of the main map view
+			start_pos_y = 180
+		else:
+			start_pos_x = 152 #the center of the main map view
+			start_pos_y = 122
+		
+		run = True
+		
+		while run:
+			
+			lootable = False
+			placeable = True
+			plantable = False
+			
+			#1: check if lootable
+			for i in range(9,15):
+				if tile.techID == tl.tlist['functional'][i]:#this is a workbench or a furnace
+					lootable = True
+					
+			if tile.use_group == 'gather':
+				lootable = True
+				
+			#2: check if placeable
+			if world.maplist[player.pos[2]][player.on_map].tilemap[y][x].move_group != 'soil':
+				placeable = False
+			
+			if world.maplist[player.pos[2]][player.on_map].tilemap[y][x].replace != None:
+				placeable = False
+				print(world.maplist[player.pos[2]][player.on_map].tilemap[y][x].replace)
+				
+			if world.maplist[player.pos[2]][player.on_map].npcs[y][x] != 0:
+				placeable = False
+				
+			if tile.move_group != 'soil':
+				if x == player.pos[0] and y == player.pos[1]:
+					placeable = False
+			
+			#2.5: check if plantable
+			if world.maplist[player.pos[2]][player.on_map].tilemap[y][x].can_grown == True:
+				plantable = True
+				
+			if use_name != 'plant':
+				plantable = True #if the object to be placeced no plant plantable is always true 
+			
+			print(placeable)
+			
+			#3: render
+			self.render(0,True)
+			
+			if low_res == False:
+				s = pygame.Surface((640,360))
+			else:
+				s = pygame.Surface((320,240))
+		
+			s.fill((255,0,255))
+		
+			s.blit(gra_files.gdic['display'][5],(0,0)) #render gui_transparent over gui
+			
+			string1 ='~'+tile.name+'~'
+			string1_image = self.font.render(string1,1,(255,255,255))
+			s.blit(string1_image,(0,0))
+			
+			if lootable == False:
+				warning = self.font.render('Can\'t be moved later!',1,(200,0,0))
+				s.blit(warning,(0,20))
+				
+			string2 = '['+key_name['wasd']+']Move ['+key_name['e']+']Place! ['+key_name['x']+']Leave'
+			string2_image = self.font.render(string2,1,(255,255,255))
+			s.blit(string2_image,(0,40))
+			
+			xx = x - player.pos[0]
+			yy = y - player.pos[1]
+			
+			if placeable == True and plantable == True:
+				s.blit(gra_files.gdic['built'][18],(start_pos_x+(xx*32),start_pos_y+(yy*32)))
+			else:
+				s.blit(gra_files.gdic['built'][17],(start_pos_x+(xx*32),start_pos_y+(yy*32)))
+				
+			if game_options.mousepad == 0 and low_res == False:
+				s_help = pygame.Surface((640,360))
+				s_help.fill((255,0,255))
+				s_help.blit(s,(80,0))
+				s = s_help
+			
+			s.set_colorkey((255,0,255),pygame.RLEACCEL)	
+			s = s.convert_alpha()
+			if low_res == False:
+				s = pygame.transform.scale(s,(self.displayx,self.displayy))
+		
+			self.screen.blit(s,(0,0))
+		
+			pygame.display.flip()
+			
+			#4: user input
+			ui = getch(screen.displayx,screen.displayy,game_options.sfxmode,game_options.turnmode,mouse=game_options.mousepad)
+			
+			if ui == 'exit':
+				global master_loop
+				global playing
+				global exitgame
+				exitgame = True
+				try:
+					save_options(game_options,options_path,os.sep)
+					screen.render_load(5)
+					save(world,player,time,gods,save_path,os.sep)
+					screen.save_tmp_png()
+					del player
+				except:
+					None
+				master_loop = False
+				playing = False
+				run = False
+				return('exit')
+			
+			if ui == 'w':
+				if y > 0 and y > player.pos[1]-2:
+					y -= 1
+			elif ui == 's':
+				if y < max_map_size-1 and y < player.pos[1]+2:
+					y += 1
+			elif ui == 'a':
+				if x > 0 and x > player.pos[0]-2:
+					x -= 1
+			elif ui == 'd':
+				if x < max_map_size-1 and x < player.pos[0]+2:
+					x += 1
+			elif ui == 'e':
+				if placeable == True and plantable == True:
+					replace = world.maplist[player.pos[2]][player.on_map].tilemap[y][x]
+					world.maplist[player.pos[2]][player.on_map].tilemap[y][x] = deepcopy(tile)
+					world.maplist[player.pos[2]][player.on_map].tilemap[y][x].replace = replace
+					if use_name == 'plant':
+						mes = 'You planted a '+tile.name+'.'
+					else:
+						mes = 'You placed a '+tile.name+'.'
+					message.add(mes)
+					return(x,y)
+			elif ui == 'x':
+				run = False
+				return False
+				
+		return False#only to be sure
 		
 	def render_request(self,line1,line2,line3):
 		#this function just renders 3 lines of text in the textbox
@@ -8147,7 +8305,10 @@ class player_class(mob):
 									
 								if world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]+y][player.pos[0]+x].build_here == False:
 									built_here = False
-							
+								
+								if world.maplist[player.pos[2]][player.on_map].npcs[player.pos[1]+y][player.pos[0]+x] != 0:
+									built_here = False
+								
 								if built_here == True:
 									
 									world.maplist[player.pos[2]][player.on_map].containers[player.pos[1]+y][player.pos[0]+x] = 0 #first of all erase all items that are at this pos
@@ -8208,6 +8369,9 @@ class player_class(mob):
 							built_here = False
 								
 						if world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]+ymin][player.pos[0]+xmin].build_here == False:
+							built_here = False
+						
+						if world.maplist[player.pos[2]][player.on_map].npcs[player.pos[1]+ymin][player.pos[0]+xmin] != 0:
 							built_here = False
 								
 						if built_here == True:
@@ -9162,31 +9326,19 @@ class inventory():
 			
 			if self.misc[slot].use_name == 'place' or self.misc[slot].use_name == 'plant':
 				
-				if self.misc[slot].use_name == 'plant':
-					grown_check = world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]].can_grown
-				else:
-					grown_check = True
+				cat = self.misc[slot].place_cat
+				num = self.misc[slot].place_num
 				
-				if world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]].replace == None and world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]].damage == 0 and grown_check == True:
+				test = screen.render_place(tl.tlist[cat][num],self.misc[slot].use_name)
 				
-					replace = deepcopy(world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]])
-					world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]] = deepcopy(tl.tlist[self.misc[slot].place_cat][self.misc[slot].place_num])
-					world.maplist[player.pos[2]][player.on_map].tilemap[player.pos[1]][player.pos[0]].replace = replace
-					if self.misc[slot].use_name == 'plant':
-						message.add('You planted a %s' %(self.misc[slot].name))
-					else:
-						message.add('You placed a %s' %(self.misc[slot].name))
+				if test != False:
 					if self.misc[slot].name == 'Bomb':
-						world.maplist[player.pos[2]][player.on_map].countdowns.append(countdown('bomb3',player.pos[0],player.pos[1],1))
+						world.maplist[player.pos[2]][player.on_map].countdowns.append(countdown('bomb3',test[0],test[1],1))
 					if self.misc[slot].name == 'Bed':
 						ran = random.randint(5,60)
-						world.maplist[player.pos[2]][player.on_map].countdowns.append(countdown('spawn_villager',player.pos[0],player.pos[1],ran))
+						world.maplist[player.pos[2]][player.on_map].countdowns.append(countdown('spawn_villager',test[0],test[1],ran))
 					self.misc[slot] = self.nothing
 					return True #if use returns a true this means after this action the inventory is closed. this action needs a turn
-				else:
-				
-					self.inv_mes = 'Not here!'
-					return False #this dosn't need a turn
 			
 			elif self.misc[slot].use_name == 'apply':#this is a blueprint. only blueprints are allowed to use 'apply'
 				helpslot = player.inventory.blueprint
