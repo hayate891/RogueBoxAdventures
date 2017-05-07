@@ -165,7 +165,8 @@ class g_files():
 						'no_helmet',#54
 						'no_armor',#55
 						'no_cuisse',#56
-						'no_shoes')#57
+						'no_shoes',#57
+						'monster_die')#58
 
 		for c in display_names:
 			i_name = display_path + c + '.png'
