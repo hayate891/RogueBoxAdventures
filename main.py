@@ -622,7 +622,7 @@ class g_screen():
 	
 		return s
 		
-	def render(self,mes_num, simulate = False):
+	def render(self,mes_num, simulate = False, photo = False):
 		
 		radius = 6
 		
@@ -940,6 +940,19 @@ class g_screen():
 		s.blit(screen.generate_light_effect(),(0,0))
 		
 		s.blit(self.render_hits(),(0,0))
+		
+		if photo == True:
+			
+			if low_res == False:
+				photo_help = pygame.Surface((480,360))
+				photo_help.blit(s,(0,0))
+				s = photo_help
+			else:
+				photo_help = pygame.Surface((320,240))
+				photo_help.blit(s,(0,0))
+				s = photo_help
+			
+			return s
 		
 		if self.fire_mode == 0:
 			if (player.lp*100)/player.attribute.max_lp>20 and (player.attribute.hunger*100)/player.attribute.hunger_max>10 and (player.attribute.thirst*100)/player.attribute.thirst_max>10 and (player.attribute.tiredness*100)/player.attribute.tiredness_max>10:
@@ -4914,7 +4927,7 @@ class maP():
 		ran_tunica = random.randint(0,2)
 		
 		#original
-		self.add_container([pick,axe,amo,il.ilist['misc'][3],il.ilist['misc'][2],il.ilist['misc'][51],il.ilist['clothe'][ran_tunica]],startx,starty-1)
+		self.add_container([pick,axe,amo,il.ilist['misc'][53],il.ilist['misc'][2],il.ilist['misc'][51],il.ilist['clothe'][ran_tunica]],startx,starty-1)
 		#/original
 		
 		# fridge demo: self.add_container([pick,axe,amo,il.ilist['misc'][3],il.ilist['misc'][2],il.ilist['misc'][52],il.ilist['clothe'][ran_tunica]],startx,starty-1)
@@ -9765,6 +9778,24 @@ class inventory():
 				message.add('The burning torch illumines your surroundings.')
 				player.stand_check()
 				return True
+			
+			elif self.misc[slot].name == 'Camera':
+				
+				screenshot_path = basic_path + os.sep + 'SCREENSHOT'
+				
+				if os.path.exists(screenshot_path) == False:
+					os.makedirs(screenshot_path)
+				
+				screenshot_name = player.name + '_' + str(time.hour) + '_' + str(time.minute) + '_' + str(time.day_total) + '.png'
+				pic = screen.render(0,photo = True)
+				final_path = screenshot_path + os.sep + screenshot_name
+				pygame.image.save(pic,final_path)
+				message.add('You take a photo.')
+				message.add('[Saved as: '+screenshot_name+']')
+				sfx.play('photo')
+				
+				return True
+				
 							
 	def eat(self,slot):
 		
@@ -10843,7 +10874,9 @@ class sfX():
 						'item_break' : pygame.mixer.Sound(sfx_path + 'item_break.ogg'),
 						'shatter' : pygame.mixer.Sound(sfx_path + 'shatter.ogg'),
 						'got_fish' : pygame.mixer.Sound(sfx_path + 'got_fish.ogg'),
-						'no_fish' : pygame.mixer.Sound(sfx_path + 'no_fish.ogg')}
+						'no_fish' : pygame.mixer.Sound(sfx_path + 'no_fish.ogg'),
+						'photo'	: pygame.mixer.Sound(sfx_path + 'photo.ogg')
+						}
 						
 	def play(self,sfx_name):
 		

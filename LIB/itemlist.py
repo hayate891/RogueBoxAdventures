@@ -185,7 +185,10 @@ class itemlist():
 		t=item_misc(techID, 'Fridge', 'place', 'functional', 24)#empty fridge
 		self.ilist['misc'].append(t)
 		techID += 1
-
+		t=item_misc(techID, 'Camera', 'use', None, None, None)
+		self.ilist['misc'].append(t)
+		techID += 1
+		
 		#food items
 
 		t=item_food(techID, 'Red Berries', 200,600, 0, 0, 0, 0, 0, 0, 1, 1, 'You eat some sweet red berries.')#0

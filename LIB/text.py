@@ -240,4 +240,13 @@ texts ={'tutorial_1.1' : ('Welcome to the RogueBox Adventures',
 						' ',
 						'Increases your number',
 						'of HEALTH POINTS.'),
+		'Fridge' : ('Fridge',
+						' ',
+						'A special pice of',
+						'furniture to store food',
+						'inside'),
+		'Camera' : ('Camera',
+						' ',
+						'Can be used to take a photo.',
+						'(Saved in \'SCREENSHOT\')')
 				}
