@@ -30,8 +30,14 @@ class countdown():
 	
 	def countdown(self):
 	#count down and check if it got 0
+		if self.count > 0:
+			self.count -= 1
 		
-		self.count -= 1
+		if self.count < 0:
+			print('count to low')
+			self.count = 1
+		
+		print(self.kind,self.count)
 		
 		if self.count <= 0:
 			return True

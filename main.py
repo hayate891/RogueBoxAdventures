@@ -2105,7 +2105,6 @@ class g_screen():
 			
 			if world.maplist[player.pos[2]][player.on_map].tilemap[y][x].replace != None:
 				placeable = False
-				print(world.maplist[player.pos[2]][player.on_map].tilemap[y][x].replace)
 				
 			if world.maplist[player.pos[2]][player.on_map].npcs[y][x] != 0:
 				placeable = False
@@ -2120,8 +2119,6 @@ class g_screen():
 				
 			if use_name != 'plant':
 				plantable = True #if the object to be placeced no plant plantable is always true 
-			
-			print(placeable)
 			
 			#3: render
 			self.render(0,True)
@@ -3337,7 +3334,6 @@ class maP():
 						for yyy in range(yy-1,yy+2):
 							for xxx in range(xx-1,xx+2):
 								
-								print(xxx,yyy)
 								try:
 									if tm[yyy][xxx] == 0 and self.tilemap[yyy][xxx].move_group == 'soil' and self.tilemap[yyy][xxx].civilisation == True:
 										tm[yyy][xxx] = 1
@@ -3524,8 +3520,6 @@ class maP():
 	def spawn_monsters(self,depth):
 		#This function spawns monsters on the map
 		
-		print('start spawn')
-		
 		if self.map_type == 'elfish_fortress':
 			monster_max = 0
 			for y in range(0,max_map_size):
@@ -3563,7 +3557,6 @@ class maP():
 		
 		if monster_max > len(spawnpoints):
 			monster_max = len(spawnpoints)
-		print(monster_max,monster_count)	
 		for k in range(0,monster_max):
 			
 			ran = random.randint(0,len(ml.mlist[self.map_type])-1)
@@ -3584,8 +3577,6 @@ class maP():
 			#set monsters personal_id
 			
 			self.npcs[spawnpoints[ran2][1]][spawnpoints[ran2][0]].personal_id = str(self.npcs[spawnpoints[ran2][1]][spawnpoints[ran2][0]].techID)+'_'+str(spawnpoints[ran2][0])+'_'+str(spawnpoints[ran2][1])+'_'+str(random.randint(0,9999))
-			
-		print('Spawn success')
 			
 	def set_monster_strength(self,x,y,z,preset_lvl=None ):
 		
@@ -3720,8 +3711,6 @@ class maP():
 		self.tilemap[pos[1]+2][pos[0]-2].replace = deepcopy(on_tile)	 #
 		self.tilemap[pos[1]+2][pos[0]+2] = deepcopy(tl.tlist['misc'][12])#
 		self.tilemap[pos[1]+2][pos[0]+2].replace = deepcopy(on_tile)	 #
-		
-		print('orc cave at '+str(pos[0])+','+str(pos[1]))
 		
 	def AI_move(self):
 		#This function moves all monsters that are 7 or less fields away from the player.
@@ -4631,7 +4620,35 @@ class maP():
 							if rand < 50:
 								self.tilemap[y][x] = self.tilemap[y][x].replace
 								self.containers[y][x] = 0
-							
+				
+					#######Misc#######
+						
+						#0. Rubble
+						if tile.techID == tl.tlist['functional'][26].techID:
+							rand = random.randint(0,99)
+							if rand < 20:
+								count_rubble = 0
+								count_sand = 0
+								count_grass = 0
+								count_cave = 0
+								for yy in range(y-1,y+2):
+									for xx in range(x-1,x+2):
+										if self.tilemap[yy][xx].techID == tl.tlist['functional'][26]:#this is rubble
+											count_rubble += 1
+										elif self.tilemap[yy][xx].techID == tl.tlist['local'][0]:#this is grass
+											count_grass += 1
+										elif self.tilemap[yy][xx].techID == tl.tlist['extra'][0]:#this is sand
+											count_sand += 1
+										elif self.tilemap[yy][xx].techID == tl.tlist['global_caves'][0]:#this is cave
+											count_cave +=1
+								if count_rubble < 8: #this tile isnt surrounded by rubble
+									if count_cave > 1:
+										self.tilemap[y][x] = deepcopy(tl.tlist['global_caves'][0])
+									elif count_grass >= count_sand:
+										self.tilemap[y][x] = deepcopy(tl.tlist['local'][0])
+									else:
+										self.tilemap[y][x] = deepcopy(tl.tlist['extra'][0])
+					
 						#########add other events for growing plants etc here########
 			
 				self.last_visit = time.day_total #change the day of last visit to today to prevent the map of changed a second time for this day
@@ -4913,6 +4930,7 @@ class maP():
 		
 		self.tilemap[starty-1][startx] = deepcopy(tl.tlist['functional'][20])#divine gift
 		self.tilemap[starty-1][startx].replace = tl.tlist['sanctuary'][0]
+		self.countdowns.append(countdown('gift_to_workbench',startx,starty-1,1))
 		
 		material_pick = random.randint(0,10)
 		material_axe = random.randint(0,10)
@@ -8240,9 +8258,6 @@ class player_class(mob):
 				else:
 					t = screen.render_text(texts['Will'])
 		
-		mes = 'Congratulations! You reached level ' + str(player.lvl) + '!'
-		message.add(mes) 
-		
 	def built(self):
 		
 		style = 'wall'
@@ -8727,6 +8742,8 @@ class player_class(mob):
 	def attack_monster(self,x,y,style='melee'):
 		#This function is called when the player try to move at the same position like a monster. The x and the y variable definates the monsters pos. 
 		
+		check_lvl_up = False
+		
 		if world.maplist[self.pos[2]][self.on_map].npcs[y][x].behavior == 'talk':
 			message.add(world.maplist[self.pos[2]][self.on_map].npcs[y][x].message)
 			return 'Done'
@@ -8778,6 +8795,7 @@ class player_class(mob):
 						
 						if self.xp >= 100:
 							self.lvl_up()
+							check_lvl_up = True
 						
 						test = False
 						while test == False:
@@ -8812,6 +8830,7 @@ class player_class(mob):
 						
 						if self.xp >= 100:
 							self.lvl_up()
+							check_lvl_up = True
 						
 						test = False
 						while test == False:
@@ -8879,6 +8898,7 @@ class player_class(mob):
 						
 						if self.xp >= 100:
 							self.lvl_up()
+							check_lvl_up = True
 						
 						test = False
 						while test == False:
@@ -8914,6 +8934,7 @@ class player_class(mob):
 						
 						if self.xp >= 100:
 							self.lvl_up()
+							check_lvl_up = True
 						
 						test = False
 						while test == False:
@@ -8934,6 +8955,10 @@ class player_class(mob):
 				message_string = 'You miss the ' + world.maplist[self.pos[2]][self.on_map].npcs[y][x].name + '.'
 				message.add(message_string)
 				screen.write_hit_matrix(x,y,3)
+			
+			if check_lvl_up == True:
+				mes = 'Congratulations! You reached level ' + str(player.lvl) + '!'
+				message.add(mes)
 	
 	def player_fire(self,direction):
 		
@@ -10665,9 +10690,8 @@ class time_class():
 												world.maplist[player.pos[2]][player.on_map].npcs[y][x].AI_style = 'ignore'
 										except:
 											None
-										print(world.maplist[player.pos[2]][player.on_map].npcs[y][x].name, (x,y), str(world.maplist[player.pos[2]][player.on_map].monster_count)+'/'+str(monster_max), world.maplist[player.pos[2]][player.on_map].npcs[y][x].AI_style)
 										world.maplist[player.pos[2]][player.on_map].monster_count += 1
-							world.maplist[player.pos[2]][player.on_map].countdowns[i].countfrom = random.randint(5,60)
+							world.maplist[player.pos[2]][player.on_map].countdowns[i].count = random.randint(5,60)
 						
 						elif world.maplist[player.pos[2]][player.on_map].countdowns[i].kind == 'spawn_villager' and world.maplist[player.pos[2]][player.on_map].countdowns[i].count < 1:
 							
@@ -10676,7 +10700,6 @@ class time_class():
 							
 							if world.maplist[player.pos[2]][player.on_map].tilemap[y][x].techID == tl.tlist['functional'][8].techID:#this is a bed
 								test = world.maplist[player.pos[2]][player.on_map].float_civilisation(x,y)
-								print(test)
 								if test > 5 and world.maplist[player.pos[2]][player.on_map].npcs[y][x] == 0:
 									ran = random.randint(0,len(ml.mlist['civilian'])-1)
 									world.maplist[player.pos[2]][player.on_map].npcs[y][x] = deepcopy(ml.mlist['civilian'][ran])
@@ -10684,7 +10707,6 @@ class time_class():
 									mes = 'A '+world.maplist[player.pos[2]][player.on_map].npcs[y][x].name+' arrived.'
 									message.add(mes)
 									world.maplist[player.pos[2]][player.on_map].countdowns.append(countdown('despawn_villager',x,y,random.randint(5,60),world.maplist[player.pos[2]][player.on_map].npcs[y][x].personal_id))
-									print(world.maplist[player.pos[2]][player.on_map].countdowns[-1].kind, world.maplist[player.pos[2]][player.on_map].countdowns[-1].count)
 									world.maplist[player.pos[2]][player.on_map].monster_count += 1
 									world.maplist[player.pos[2]][player.on_map].countdowns[i] = 'del'
 								else:
@@ -10698,7 +10720,6 @@ class time_class():
 							test = world.maplist[player.pos[2]][player.on_map].float_civilisation(x,y)
 							
 							if test < 5 or world.maplist[player.pos[2]][player.on_map].tilemap[y][x].techID != tl.tlist['functional'][8].techID:
-								print('Despawning')
 								for yy in range(0,max_map_size):
 									for xx in range(0,max_map_size):
 										if world.maplist[player.pos[2]][player.on_map].npcs[yy][xx].personal_id == world.maplist[player.pos[2]][player.on_map].countdowns[i].data:
@@ -10709,6 +10730,24 @@ class time_class():
 								world.maplist[player.pos[2]][player.on_map].countdowns[i] = 'del'
 							else:
 								world.maplist[player.pos[2]][player.on_map].countdowns[i].count = random.randint(5,60)
+						
+						elif world.maplist[player.pos[2]][player.on_map].countdowns[i].kind == 'gift_to_workbench':
+							
+							x = world.maplist[player.pos[2]][player.on_map].countdowns[i].x
+							y = world.maplist[player.pos[2]][player.on_map].countdowns[i].y
+							
+							if world.maplist[player.pos[2]][player.on_map].tilemap[y][x].techID == tl.tlist['sanctuary'][0].techID: #this is bar sanctuary floor, ergo the devine gift has already disapeared
+								replace = world.maplist[player.pos[2]][player.on_map].tilemap[y][x]
+								world.maplist[player.pos[2]][player.on_map].tilemap[y][x] = deepcopy(tl.tlist['functional'][9])#set carpenter's workbench
+								world.maplist[player.pos[2]][player.on_map].tilemap[y][x].replace = replace
+								world.maplist[player.pos[2]][player.on_map].tilemap[y][x].damage = -1
+								screen.write_hit_matrix(x,y,7)
+								message.add('A workbench appears all of a sudden.')
+								world.maplist[player.pos[2]][player.on_map].countdowns[i] = 'del'
+								sfx.play('lvl_up')
+							else:
+								world.maplist[player.pos[2]][player.on_map].countdowns[i].count = 2
+						
 		newcountdown = []
 		
 		for k in world.maplist[player.pos[2]][player.on_map].countdowns:
